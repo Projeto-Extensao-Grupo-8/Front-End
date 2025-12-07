@@ -1,0 +1,7 @@
+.active {
+    background-color: var(--green-100);
+    color: var(--green-500);
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-sm);
+    padding: var(--padding-xs) var(--padding-sm);
+}

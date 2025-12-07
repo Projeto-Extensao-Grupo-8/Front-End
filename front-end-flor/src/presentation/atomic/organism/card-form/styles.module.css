@@ -1,0 +1,25 @@
+.container {
+  display: flex; 
+  flex-direction: row; 
+  background-color: transparent;
+  width: 60%;
+  min-height: 578px;
+}
+
+.containerForm {
+  display: flex; 
+  flex-direction: column; 
+  background-color: var(--brancoBaseModal); 
+  width: 50%;
+  padding: var(--padding-xl);
+  justify-content: center;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    background-color: var(--secondary);
+    align-items: center;
+    justify-content: center;
+}

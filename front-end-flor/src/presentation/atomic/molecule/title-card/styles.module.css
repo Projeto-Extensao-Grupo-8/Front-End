@@ -1,0 +1,25 @@
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    text-align: left;
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+    min-height: 60px;
+}
+
+.title {
+    font-size: var(--font-size-xlarge);
+    font-weight: 600;
+    color: var(--font);
+    padding-bottom: var(--padding-sm);
+}
+
+.subtitle {
+    font-size: var(--font-size-medium);
+    color: var(--label);
+}
+
+.container {
+    width: 100%;
+}

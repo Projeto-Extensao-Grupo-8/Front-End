@@ -1,0 +1,16 @@
+.button {
+    background-color: transparent;
+    color: var(--black);
+    padding: var(--padding-xs);
+    border: 0;
+}
+
+.button:hover {
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.active {
+    color: var(--primary);
+    font-weight: var(--font-weight-bold);
+}

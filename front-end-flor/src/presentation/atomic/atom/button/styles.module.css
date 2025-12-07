@@ -1,0 +1,46 @@
+.button {
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    width: 100%;
+    padding: var(--padding-md);
+    font-size: var(--font-size-xlarge);
+}
+
+.login {
+    background-color: var(--cinzaClaro);
+    color: var(--pretoClaro);
+    /* border: none; */
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    width: 100%;
+    padding: var(--padding-md);
+    font-size: var(--font-size-xlarge);
+}
+
+.logar {
+
+}
+
+.logoff {
+    background-color: transparent;
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    width: 100%;
+    padding: var(--padding-md);
+    font-size: var(--font-size-xlarge);
+}
+
+.voltar {
+
+}
+
+
+.ok {
+    
+}

@@ -1,0 +1,28 @@
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  list-style: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+}
+
+p {
+  color: var(--label);
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: var(--gap-xxl);
+  list-style: none;
+}
+
+.divContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

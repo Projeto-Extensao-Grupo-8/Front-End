@@ -1,0 +1,16 @@
+.input {
+  background-color: var(--white);
+  width: 100%;
+  color: var(--font);
+  padding: var(--padding-md);
+  font-size: var(--font-size-xlarge);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  border: 2px solid var(--input-border);
+  outline: none;
+}
+
+.label {
+  color: var(--font);
+  font-size: var(--font-size-xlarge);
+}

@@ -1,0 +1,19 @@
+:root {
+  --white: #FFFFFF;
+  --black: #000000;
+  --black-transparent: #000000AA;
+  --primary: #D390A3;
+  --secondary: #FFF9FB;
+  --background: #FFFFFF;
+  --font: #06142B;
+
+  --label: #333333;
+
+  --cinzaClaro: #E5E7EB;
+  --pretoClaro: #364153;
+  --brancoBaseModal: #F9FAFB;
+
+  --green-100: #F0FDF4;
+  --green-200: #B9F8CF;
+  --green-500: #00A63E;
+}

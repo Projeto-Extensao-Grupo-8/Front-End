@@ -1,0 +1,47 @@
+:root {
+  /* Font Sizes */
+  --font-size-xsmall: 8px;
+  --font-size-small: 11px;
+  --font-size-medium: 12px;
+  --font-size-large: 14px;
+  --font-size-xlarge: 16px;
+  --font-size-xxlarge: 18px;
+  --font-size-xxxlarge: 20px;
+  --font-size-xxxxlarge: 24px;
+  --font-size-xxxxxlarge: 30px;
+
+  /* Margins */
+  --margin-none: 0px;
+  --margin-xs: 4px;
+  --margin-sm: 8px;
+  --margin-md: 12px;
+  --margin-lg: 16px;
+  --margin-xl: 20px;
+  --margin-xxl: 24px;
+
+  /* Paddings */
+  --padding-none: 0px;
+  --padding-xsm: 2px;
+  --padding-xs: 4px;
+  --padding-sm: 8px;
+  --padding-md: 12px;
+  --padding-lg: 16px;
+  --padding-xl: 20px;
+  --padding-xxl: 24px;
+
+  /* Radius */
+  --radius-none: 0px;
+  --radius-sm: 12px;
+  --radius-xxl: 32px;
+  --radius-full: 9999px;
+
+  /* Gaps */
+  --gap-none: 0px;
+  --gap-xsm: 2px;
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 20px;
+  --gap-xxl: 24px;
+}

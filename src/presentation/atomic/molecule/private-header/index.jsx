@@ -7,6 +7,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 export const PrivateHeader = ({ paths }) => {
   const location = useLocation();
 
+  console.log(paths)
   return (
     <header className={styles.header}>
       <img className={styles.img} src={Logo} alt="" />
@@ -16,6 +17,7 @@ export const PrivateHeader = ({ paths }) => {
             return (
               <li>
                 <LinkText
+                  key={name}
                   text={name}
                   isActive={location.pathname === path}
                   redirect={path}

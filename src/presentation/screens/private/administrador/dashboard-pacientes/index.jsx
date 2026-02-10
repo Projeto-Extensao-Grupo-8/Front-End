@@ -6,7 +6,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 
 export default function DashboardPaciente() {
   return (
-    <AdminTemplate> 
+    <> 
       <div style={{display: "flex", flexDirection: "column", width: "100%", gap: "30px"}}>
         <div>
           <h2>Dashboard de Pacientes</h2>
@@ -71,6 +71,6 @@ export default function DashboardPaciente() {
           </TitleCard>
         </div>
       </div>
-    </AdminTemplate>
+    </>
   );
 }

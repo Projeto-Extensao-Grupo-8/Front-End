@@ -1,5 +1,6 @@
 export * from "./data-card"
 export * from "./login-form";
+export * from "./dashboard-header";
 export * from "./private-header";
 export * from "./public-header";
 export * from "./register-form-step-one";

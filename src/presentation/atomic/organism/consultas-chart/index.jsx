@@ -33,7 +33,7 @@ export function ConsultasChart() {
       .getPropertyValue("--primary")
       .trim();
 
-    setPrimaryColor(color);
+      setPrimaryColor(color);
   }, []);
 
   return (

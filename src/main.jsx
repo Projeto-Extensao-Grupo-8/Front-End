@@ -1,13 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {Login, Cadastro, DashboardHub} from "./presentation/screens";
 import "./index.css";
-import {Login, Cadastro, DashboardPacientes} from "./presentation/screens";
 
 const router = createBrowserRouter([
   { path: "/", element: <Cadastro /> },
   { path: "/login", element: <Login/> },
-  { path: "/dashboard", element: <DashboardPacientes/>}
+  { path: "/dashboard", element: <DashboardHub/>}
   // { path: "/admin", element: </> },
 ]);
 

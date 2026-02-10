@@ -33,3 +33,9 @@
     font-size: var(--font-size-xlarge);
     color: var(--pretoClaro);
 }
+
+.subtitle {
+    font-weight: 600;
+    font-size: var(--font-size-medium);
+    color: var(--pretoClaro);
+}

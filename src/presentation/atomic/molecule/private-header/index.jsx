@@ -9,8 +9,8 @@ export const PrivateHeader = ({ paths }) => {
 
   console.log(paths)
   return (
-    <header className={styles.header}>
-      <img className={styles.img} src={Logo} alt="" />
+    <header className={styles.header }>
+      <img className={styles.img} src={Logo} alt="" onClick={() => {window.location.href = "/"}}/>
       <div>
         <ul className={styles.buttonsContainer}>
           {paths.map(({ name, path }) => {

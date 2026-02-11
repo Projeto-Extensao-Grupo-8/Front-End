@@ -21,6 +21,10 @@
   width: 120px;
 }
 
+.img:hover {
+  cursor: pointer;
+}
+
 .divButtons {
   display: flex;
   gap: var(--gap-md);

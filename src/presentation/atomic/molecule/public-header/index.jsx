@@ -9,7 +9,7 @@ export const PublicHeader = () => {
 
   return (
     <header className={styles.header}>
-        <img className={styles.img} src={Logo} alt=""/>
+        <img className={styles.img} src={Logo} alt="" onClick={() => {navigate("/")}}/>
       <div>
         <ul className={styles.buttonsContainer}>
           <li>
@@ -40,7 +40,7 @@ export const PublicHeader = () => {
           <Button text="Login" onClick={() => {navigate("/login")}} variant="login" />
         </div>
         <div className={styles.buttonsContainer}>
-          <Button text="Cadastrar" onClick={() => {navigate("/")}}/>
+          <Button text="Cadastrar" onClick={() => {navigate("/cadastro")}}/>
         </div>
       </div>
     </header>

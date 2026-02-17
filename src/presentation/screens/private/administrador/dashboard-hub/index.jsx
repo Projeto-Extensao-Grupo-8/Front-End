@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DashboardHeader } from "../../../../atomic/molecule";
 import  DashboardFinanceira from "../dashboard-financeira"
 import  DashboardPacientes from "../dashboard-pacientes";
+import  DashboardAgendamentos from "../dashboard-agendamentos";
 import { AdminTemplate } from "../../../../atomic/template";
 import styles from "./styles.module.css"
 
@@ -13,7 +14,7 @@ export default function DashboardHub() {
             <div className={styles.div}>
                 {index === 1 && <DashboardFinanceira/>}
                 {index === 2 && <DashboardPacientes/>}
-                {/* {index === 3 && <DashboardAgendamento/>} */}
+                {index === 3 && <DashboardAgendamentos/>}
             </div>
         </AdminTemplate>
     )

@@ -6,3 +6,4 @@ export * from "./public-header";
 export * from "./register-form-step-one";
 export * from "./register-form-step-two";
 export * from "./title-card";
+export * from "./banner";

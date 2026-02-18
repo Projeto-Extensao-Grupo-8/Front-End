@@ -1,0 +1,126 @@
+.card {
+  background-color: #fff;
+  padding: 30px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #d4d4d4;
+}
+
+.name {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.clinic {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+}
+
+.price {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #D390A3;
+}
+
+.specialtiesContainer {
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+
+.specialtiesLabel {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.badge {
+  display: inline-block;
+  background-color: #f5f5f5;
+  color: #666;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.button {
+  background-color: #D390A3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #c07a8f;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 24px 16px;
+  }
+
+  .image,
+  .placeholder {
+    width: 70px;
+    height: 70px;
+  }
+
+  .name {
+    font-size: 15px;
+  }
+
+  .clinic {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+}

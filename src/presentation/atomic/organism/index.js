@@ -3,3 +3,12 @@ export * from "./consultas-chart"
 export * from "./sales-chart"
 export * from "./billing-chart"
 export * from "./performance-chart"
+export * from "./service-card";
+export * from "./services-section";
+export * from "./professional-card";
+export * from "./professionals-section";
+export * from "./feature-card";
+export * from "./why-choose-section";
+export * from "./testimonial-card";
+export * from "./testimonials-section";
+export * from "./about-section";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { Badge } from "../../../../atomic/atom";
@@ -7,6 +7,14 @@ import styles from "./styles.module.css";
 
 const Perfil = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    nome: "João da Silva",
+    email: "joao@email.com",
+    telefone: "(11) 1234-4321",
+    senhaAntiga: "",
+    novaSenha: ""
+  });
 
   const history = [
     { date: "17/08/2025", doctor: "Dra. Ana Souza", status: "Concluída" },
@@ -20,6 +28,31 @@ const Perfil = () => {
     { title: "Teste de Depressão (Beck)", date: "Adquirido em 29/03/2025", by: "Por: Dra. Ana", result: "Válido", badge2: "Moderado" },
     { title: "Teste de Ansiedade (BAI)", date: "Adquirido em 23/03/2025", by: "Por: Dra. Ana", result: "Válido", badge2: "Leve" },
   ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveChanges = () => {
+    // Aqui você pode enviar os dados para a API
+    console.log("Dados salvos:", formData);
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setFormData({
+      nome: "João da Silva",
+      email: "joao@email.com",
+      telefone: "(11) 1234-4321",
+      senhaAntiga: "",
+      novaSenha: ""
+    });
+  };
 
   return (
     <ClientTemplate>
@@ -44,7 +77,7 @@ const Perfil = () => {
               </div>
             </div>
             <div className={styles.profileRight}>
-              <button className={styles.editBtn}>✏️ Editar Perfil</button>
+              <button className={styles.editBtn} onClick={() => setIsModalOpen(true)}>✏️ Editar Perfil</button>
             </div>
           </div>
         </div>
@@ -127,6 +160,83 @@ const Perfil = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Editar Perfil */}
+      {isModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>Editar Perfil</h2>
+              <button className={styles.closeBtn} onClick={handleCancel}>✕</button>
+            </div>
+            <p className={styles.modalSubtitle}>Atualize suas informações pessoais</p>
+            
+            <div className={styles.formGroup}>
+              <label>Nome Completo *</label>
+              <input
+                type="text"
+                name="nome"
+                value={formData.nome}
+                onChange={handleInputChange}
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.twoInputsRow}>
+              <div className={styles.formGroup}>
+                <label>E-mail *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Telefone *</label>
+                <input
+                  type="tel"
+                  name="telefone"
+                  value={formData.telefone}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+            </div>
+
+            <div className={styles.twoInputsRow}>
+              <div className={styles.formGroup}>
+                <label>Senha antiga:</label>
+                <input
+                  type="password"
+                  name="senhaAntiga"
+                  value={formData.senhaAntiga}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="••••"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Nova Senha:</label>
+                <input
+                  type="password"
+                  name="novaSenha"
+                  value={formData.novaSenha}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="••••"
+                />
+              </div>
+            </div>
+
+            <div className={styles.modalButtons}>
+              <button className={styles.cancelBtn} onClick={handleCancel}>Cancelar</button>
+              <button className={styles.saveBtn} onClick={handleSaveChanges}>Salvar Alterações</button>
+            </div>
+          </div>
+        </div>
+      )}
     </ClientTemplate>
   );
 };

@@ -6,3 +6,12 @@
     padding: var(--padding-xs) var(--padding-sm);
     font-size: 11px;
 }
+
+.inactive {
+    background-color: transparent;
+    color: #D4789F;
+    border: 1px solid #FFD8ED;
+    border-radius: var(--radius-sm);
+    padding: var(--padding-xs) var(--padding-sm);
+    font-size: 11px;
+}

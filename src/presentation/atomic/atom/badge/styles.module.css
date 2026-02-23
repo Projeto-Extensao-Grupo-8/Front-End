@@ -4,4 +4,5 @@
     border: 1px solid var(--green-200);
     border-radius: var(--radius-sm);
     padding: var(--padding-xs) var(--padding-sm);
+    font-size: 11px;
 }

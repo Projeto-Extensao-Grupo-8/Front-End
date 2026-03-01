@@ -1,6 +1,6 @@
 import { PrivateHeader } from "../../molecule";
 import styles from "./styles.module.css";
-import ReactVLibrasPlugin from '@moreiraste/react-vlibras';
+import { VLibras } from "../../atom";
 
 export const AdminTemplate = ({children }) => {
   
@@ -15,7 +15,7 @@ export const AdminTemplate = ({children }) => {
 
   return (
     <div>
-      <ReactVLibrasPlugin forceOnload={true} position="left" avatar="hosana" opacity="0.8" />
+      <VLibras />
       <PrivateHeader paths={paths} />
       <div className={styles.container}>{children}</div>
     </div>

@@ -1,11 +1,11 @@
 import { PublicHeader } from "../../molecule";
 import styles from "./styles.module.css";
-import ReactVLibrasPlugin from '@moreiraste/react-vlibras';
+import { VLibras } from "../../atom";
 
 export const PublicTemplate = ({ children }) => {
   return (
     <div>
-      <ReactVLibrasPlugin forceOnload={true} position="left" avatar="hosana" opacity="0.8" />
+      <VLibras />
       <PublicHeader />
       <div className={styles.container}>{children}</div>
     </div>

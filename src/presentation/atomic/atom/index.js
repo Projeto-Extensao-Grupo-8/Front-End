@@ -6,3 +6,4 @@ export * from "./input"
 export * from "./link-text"
 export * from "./link-text-icon"
 export * from "./button-text-icon"
+export { default as VLibras } from './vlibras/index.jsx';

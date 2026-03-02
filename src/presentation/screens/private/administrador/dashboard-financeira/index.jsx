@@ -1,6 +1,5 @@
 import { DataCard, TitleCard } from "../../../../atomic/molecule";
 import { SalesChart, ConsultasChart, BillingChart } from "../../../../atomic/organism";
-import { AdminTemplate } from "../../../../atomic/template";
 import InventoryIcon from '@mui/icons-material/Inventory';
 
 export default function DashboardFinanceira() {

@@ -1,6 +1,6 @@
 // import { DataCard, TitleCard } from "../../../../atomic/molecule";
 import { DataCard, TitleCard} from "../../../../atomic/molecule"
-import { SalesChart, ConsultasChart, BillingChart, PerformanceChart } from "../../../../atomic/organism";
+import { ConsultasChart, PerformanceChart } from "../../../../atomic/organism";
 
 export default function DashboardAgendamentos() {
   return (

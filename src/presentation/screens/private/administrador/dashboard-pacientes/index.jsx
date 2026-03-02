@@ -1,7 +1,6 @@
 import { Badge } from "../../../../atomic/atom";
 import { DataCard, TitleCard } from "../../../../atomic/molecule";
 import { SalesChart, ConsultasChart } from "../../../../atomic/organism";
-import { AdminTemplate } from "../../../../atomic/template";
 import InventoryIcon from '@mui/icons-material/Inventory';
 
 export default function DashboardPaciente() {

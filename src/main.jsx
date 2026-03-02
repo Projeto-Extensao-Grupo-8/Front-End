@@ -7,6 +7,7 @@ import {
   Cadastro, 
   Home, 
   Blog, 
+  AdminHome,
   DashboardHub 
 } from "./presentation/screens";
 
@@ -42,7 +43,11 @@ const router = createBrowserRouter([
     element: <Perfil />,
   },
   {
-    path: "/dashboard",
+    path: "/admin",
+    element: <AdminHome />,
+  },
+  {
+    path: "/admin/dashboard",
     element: <DashboardHub />,
   },
 ]);

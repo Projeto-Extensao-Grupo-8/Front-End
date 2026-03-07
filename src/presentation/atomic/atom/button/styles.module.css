@@ -37,10 +37,18 @@
 }
 
 .voltar {
-
+    background-color: transparent;
+    color: var(--black);
+    border: 1px solid #ccc;
+    width: auto;
+    padding: var(--padding-sm) var(--padding-lg);
+    border-radius: var(--radius-sm);
 }
 
-
 .ok {
-    
+    background-color: #e91e63;
+    color: white;
+    width: auto;
+    padding: var(--padding-sm) var(--padding-lg);
+    border-radius: var(--radius-sm);
 }

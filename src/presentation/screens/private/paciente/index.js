@@ -1,3 +1,5 @@
-// export * from "./agendar-consulta";
+export * from "./agendar-consulta";
+// export * from "./blog";
+export * from "./perfil";
 // export * from "./blog";
 export * from "./perfil"

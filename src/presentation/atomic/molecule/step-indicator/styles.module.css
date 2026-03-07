@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto 24px;
+  max-width: 360px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+/* horizontal connector line between steps */
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 19px; /* approximate vertical center of larger circle */
+  left: 50%;
+  width: calc(100% - 20px); /* shorten to not overlap circles too much */
+  height: 2px;
+  background: #ccc;
+  z-index: -1;
+}
+
+.circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.label {
+  font-size: 12px;
+  text-align: center;
+  max-width: 80px;
+  word-wrap: break-word;
+}
+
+/* use primary color for active/completed rather than green/pink hardcodes */
+.active .circle,
+.completed .circle {
+  background: var(--primary);
+}
+
+/* color line for completed steps */
+.completed::after {
+  background: var(--primary);
+}

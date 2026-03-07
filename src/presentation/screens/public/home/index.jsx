@@ -21,7 +21,7 @@ const Home = () => {
       <ProfessionalsSection />
       <WhyChooseSection />
       <TestimonialsSection />
-      <AboutSection image="/src/assets/logoCard.png" />
+      <AboutSection image="/src/assets/logo_flor_de_lotus_600_x_600_px_1.png" />
       <main className={styles.hero}>
 
 

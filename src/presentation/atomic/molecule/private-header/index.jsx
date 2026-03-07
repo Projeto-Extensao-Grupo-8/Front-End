@@ -1,7 +1,8 @@
 import Logo from "@/assets/logo.png";
 import { useLocation } from "react-router-dom";
 import { LinkText, LinkTextIcon } from "../../atom";
-import styles from "./styles.module.css";
+// reuse public header styles so visual appearance stays in sync
+import styles from "../public-header/styles.module.css";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 export const PrivateHeader = ({ paths }) => {

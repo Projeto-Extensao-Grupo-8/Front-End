@@ -8,8 +8,10 @@ import {
   Home, 
   Blog, 
   AdminHome,
-  DashboardHub 
+  DashboardHub, 
 } from "./presentation/screens";
+import { AgendarConsulta } from "./presentation/screens/private/paciente";   // new screen
+import { Psicologo } from "./presentation/screens/private/psicologo"; // placeholder page
 
 import BlogDetalhe from "./presentation/screens/public/blog-detalhe";
 import Perfil from "./presentation/screens/private/paciente/perfil";
@@ -41,6 +43,14 @@ const router = createBrowserRouter([
   {
     path: "/perfil",
     element: <Perfil />,
+  },
+  {
+    path: "/agendar-consulta",
+    element: <AgendarConsulta />,
+  },
+  {
+    path: "/psicologo",
+    element: <Psicologo />,
   },
   {
     path: "/admin",

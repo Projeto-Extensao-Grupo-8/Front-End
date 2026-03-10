@@ -19,12 +19,51 @@ h1 {
   font-size: 14px;
 }
 
+.stepsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.progressBar {
+  width: 100%;
+  max-width: 360px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
 .question {
   text-align: center;
   margin: 0 auto 24px;
   font-size: 16px;
   font-weight: 500;
   color: #333;
+}
+
+.stepTitle {
+  text-align: center;
+  margin: 0 auto 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.stepDescription {
+  text-align: center;
+  margin: 0 auto 24px;
+  font-size: 14px;
+  color: #555;
 }
 
 .mainContent {
@@ -69,6 +108,7 @@ h1 {
   margin-right: 6px;
   vertical-align: middle;
 }
+
 .noteBox {
   background: #ffe4ec;
   border: 1px solid #ffd1dc;
@@ -104,4 +144,88 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+}
+
+/* Step 2 main content - full width */
+.step2MainContent {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Step 2 two column layout */
+.step2Container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.psychologistsColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.psychologistsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Psychologist detail card */
+.psychologistDetailCard {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  position: sticky;
+  top: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.profileImagePlaceholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #e8e8e8;
+  margin: 0 auto 16px;
+}
+
+.psychologistDetailCard h3 {
+  text-align: center;
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: #333;
+}
+
+.crp {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin: 0 0 16px;
+}
+
+.detailSection {
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.detailSection strong {
+  display: block;
+  color: #333;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.detailSection p {
+  margin: 0;
+  color: #555;
+}
+
+.price {
+  color: var(--primary);
+  font-weight: 600;
 }

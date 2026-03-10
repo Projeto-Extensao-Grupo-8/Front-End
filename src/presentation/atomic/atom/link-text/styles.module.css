@@ -13,6 +13,6 @@
 .active {
     color: var(--primary);
     font-weight: var(--font-weight-bold);
-    border-bottom: 2px solid var(--primary);
+    /* border-bottom: 2px solid var(--primary); */
     padding-bottom: 2px;
 }

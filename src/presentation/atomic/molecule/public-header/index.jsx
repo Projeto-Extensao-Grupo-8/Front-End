@@ -47,6 +47,13 @@ export const PublicHeader = () => {
               onClick={() => scrollToSection("depoimentos")}
             />
           </li>
+          <li>
+            <LinkText
+              text="Blog"
+              isActive={location.pathname === "/blog"}
+              redirect="/blog"
+            />
+          </li>
         </ul>
       </div>
       <div className={styles.divButtons}>

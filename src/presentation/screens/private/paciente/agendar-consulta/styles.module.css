@@ -1,38 +1,56 @@
-.container {
-  width: 80%;
-  max-width: 960px;
+/* ── Page wrapper ── */
+.page {
+  padding: 32px 20px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
 }
 
-h1 {
+.pageTitle {
   text-align: center;
-  margin-bottom: 8px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
 }
 
-.subtitle {
+.pageSubtitle {
   text-align: center;
-  margin-bottom: 24px;
-  color: #555;
   font-size: 14px;
+  color: #888;
+  margin: 0 0 28px 0;
 }
 
+/* ── Two-column layout ── */
+.layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* ── Main card ── */
+.mainCard {
+  flex: 0 0 62%;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f1d5e0;
+  padding: 28px 24px 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Step indicator + progress bar ── */
 .stepsWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .progressBar {
   width: 100%;
-  max-width: 360px;
   height: 4px;
   background: #e0e0e0;
   border-radius: 2px;
-  margin-top: 16px;
+  margin-top: 14px;
   overflow: hidden;
 }
 
@@ -43,189 +61,397 @@ h1 {
   border-radius: 2px;
 }
 
-.question {
-  text-align: center;
-  margin: 0 auto 24px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+/* ── Content area ── */
+.content {
+  min-height: 220px;
+  margin-bottom: 20px;
 }
 
-.stepTitle {
-  text-align: center;
-  margin: 0 auto 8px;
+.stepHeading {
   font-size: 18px;
   font-weight: 600;
   color: #333;
-}
-
-.stepDescription {
   text-align: center;
-  margin: 0 auto 24px;
-  font-size: 14px;
-  color: #555;
+  margin: 0 0 6px 0;
 }
 
-.mainContent {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  width: 100%;
+.stepSubheading {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin: 0 0 22px 0;
 }
 
-.formSection {
-  flex: 0 0 60%;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* ── Options grid (step 1 & 2) ── */
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.sidebar {
-  flex: 0 0 35%;
-  background: #fafafa;
-  padding: 0;
-}
-
-/* sidebar internal panels */
-.infoBox, .noteBox {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  font-size: 14px;
+/* ── Psychologist cards (step 2) ── */
+.psychCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
   background: #fff;
 }
 
-.infoHint {
-  margin-top: 8px;
-  color: #555;
+.psychCard:hover {
+  border-color: #d4789f;
+}
+
+.psychCardSelected {
+  border-color: #e91e63;
+  background: #fff5f8;
+}
+
+.psychCardName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.psychCardSpecialty {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.psychCardModality {
+  display: inline-block;
+  font-size: 11px;
+  color: #d4789f;
+  background: #fce4ee;
+  border: 1px solid #f9c0d4;
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+/* ── Date/Time (step 3) ── */
+.sectionLabel {
   font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin: 0 0 12px 0;
+}
+
+.datesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.dateCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 8px;
+  font-size: 12px;
+  color: #444;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.dateCard:hover:not(:disabled) {
+  border-color: #d4789f;
+}
+
+.dateCardDisabled {
+  color: #bbb;
+  cursor: not-allowed;
+  background: #f9f9f9;
+}
+
+.dateCardSelected {
+  border-color: #e91e63 !important;
+  background: #fff5f8;
+  color: #e91e63;
+  font-weight: 600;
+}
+
+.timesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.timeCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 6px;
+  font-size: 12px;
+  color: #444;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+}
+
+.timeCard:hover {
+  border-color: #d4789f;
+}
+
+.timeCardSelected {
+  border-color: #e91e63 !important;
+  background: #fff5f8;
+  color: #e91e63;
+  font-weight: 600;
+}
+
+/* ── Confirmation / Summary (step 4) ── */
+.summaryCard {
+  background: #fafafa;
+  border: 1px solid #f1d5e0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.summaryIconCircle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fce4ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: #d4789f;
+  margin: 0 0 2px 0;
+  font-weight: 500;
+}
+
+.summaryValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  margin: 0;
+}
+
+.summaryValueSub {
+  font-size: 12px;
+  color: #888;
+  margin: 2px 0 0 0;
+}
+
+.observationsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.observationsLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.observationsTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #555;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: #fff;
+}
+
+.observationsTextarea:focus {
+  outline: none;
+  border-color: #d4789f;
+}
+
+.observationsTextarea::placeholder {
+  color: #aaa;
+}
+
+/* ── Navigation row ── */
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1e6ea;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.infoBox {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.infoTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .infoIcon {
-  font-size: 18px;
-  margin-right: 6px;
-  vertical-align: middle;
+  font-size: 16px;
+}
+
+.infoHint {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .noteBox {
-  background: #ffe4ec;
-  border: 1px solid #ffd1dc;
+  background: #fde8f0;
+  border: 1px solid #f9c0d4;
+  border-radius: 12px;
+  padding: 16px;
 }
 
-.noteBox h3 {
-  margin-top: 0;
+.noteTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c0547a;
+  margin: 0 0 10px 0;
 }
 
-.noteBox ul {
-  padding-left: 20px;
-}
-
-.tip {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #777;
-}
-
-.navigationButtons {
-  margin-top: 24px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.inlineButtons {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.optionsContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* Step 2 main content - full width */
-.step2MainContent {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* Step 2 two column layout */
-.step2Container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  width: 100%;
-  max-width: 1000px;
-}
-
-.psychologistsColumn {
+.noteList {
+  padding: 0;
+  list-style: none;
+  margin: 0 0 8px 0;
   display: flex;
   flex-direction: column;
-}
-
-.psychologistsContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* Psychologist detail card */
-.psychologistDetailCard {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 24px;
-  position: sticky;
-  top: 20px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.profileImagePlaceholder {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #e8e8e8;
-  margin: 0 auto 16px;
-}
-
-.psychologistDetailCard h3 {
-  text-align: center;
-  margin: 0 0 4px;
-  font-size: 18px;
-  color: #333;
-}
-
-.crp {
-  text-align: center;
+  gap: 6px;
   font-size: 12px;
-  color: #999;
-  margin: 0 0 16px;
-}
-
-.detailSection {
-  margin-bottom: 16px;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.detailSection strong {
-  display: block;
-  color: #333;
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-
-.detailSection p {
-  margin: 0;
   color: #555;
 }
 
-.price {
-  color: var(--primary);
+.tip {
+  font-size: 11px;
+  color: #888;
+  margin: 8px 0 0 0;
+  border-top: 1px solid #f9c0d4;
+  padding-top: 8px;
+}
+
+/* ── Psychologist profile card (sidebar, steps 3-4) ── */
+.psychProfileCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 16px;
+}
+
+.psychAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e8e8e8;
+  margin: 0 auto 12px;
+}
+
+.psychProfileName {
+  text-align: center;
+  font-size: 15px;
   font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.psychProfileCrp {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin: 0 0 16px 0;
+}
+
+.psychProfileDetail {
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.psychProfileDetail strong {
+  display: block;
+  color: #444;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.psychProfileDetail p {
+  margin: 0;
+  color: #666;
+}
+
+.price {
+  color: #d4789f;
+  font-weight: 600;
+}
+
+/* ── Toast notification ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }

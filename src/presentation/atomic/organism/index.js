@@ -1,4 +1,5 @@
 export * from "./about-section";
+export * from "./footer";
 export * from "./administrative-card"
 export * from "./billing-chart"
 export * from "./card-form";

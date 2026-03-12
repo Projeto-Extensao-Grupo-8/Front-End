@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Button, Input } from "../../atom";
 import styles from "./styles.module.css";
-import { useNavigate } from "react-router-dom";
 
 export const RegisterFormStepTwo = ({ finish, prev }) => {
   const [valorInputUsuario, setValorInputUsuario] = useState("");
   const [valorInputSenha, setValorInputSenha] = useState("");
 
-  const navigate = useNavigate();
-
   const handleSubmit = () => {
-    finish
-    navigate("/login")
+    finish();
   }
 
   return (

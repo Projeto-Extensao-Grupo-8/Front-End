@@ -4,9 +4,9 @@ import { VLibras } from "../../atom";
 
 export const ClientTemplate = ({children }) => {
   const paths = [
-    {name:"Agendar Consulta", path: "/agendar-consulta"},
-    {name:"Meu Perfil", path: "/perfil"},
-    {name:"Blog", path: "/blog"},
+    {name:"Agendar Consulta", path: "/paciente/agendar-consulta"},
+    {name:"Meu Perfil", path: "/paciente/perfil"},
+    {name:"Blog", path: "/paciente/blog"},
   ]
 
   return (

@@ -5,6 +5,8 @@ export const Badge = ({ text, status = "active" }) => {
     switch (status) {
       case "active":
         return styles.active;
+      case "danger":
+        return styles.danger;
       default:
         return styles.inactive;
     }

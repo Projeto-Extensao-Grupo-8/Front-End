@@ -7,6 +7,17 @@ export const PublicHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const scrollToSection = (id) => {
+    if (location.pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
+
   return (
     <header className={styles.header}>
         <img className={styles.img} src={Logo} alt="" onClick={() => {navigate("/")}}/>
@@ -15,22 +26,25 @@ export const PublicHeader = () => {
           <li>
             <LinkText
               text="Nossos serviços"
-              isActive={location.pathname === "/p"}
+              isActive={false}
               redirect="/"
+              onClick={() => scrollToSection("servicos")}
             />
           </li>
           <li>
             <LinkText
               text="Nosso time"
-              isActive={location.pathname === "/new"}
-              redirect="/new"
+              isActive={false}
+              redirect="/"
+              onClick={() => scrollToSection("nosso-time")}
             />
           </li>
           <li>
             <LinkText
               text="Depoimentos"
-              isActive={location.pathname === "/about"}
-              redirect="/about"
+              isActive={false}
+              redirect="/"
+              onClick={() => scrollToSection("depoimentos")}
             />
           </li>
         </ul>

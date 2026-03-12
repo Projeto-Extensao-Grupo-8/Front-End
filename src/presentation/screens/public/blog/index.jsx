@@ -4,7 +4,7 @@ import { PublicTemplate } from "../../../atomic/template";
 import { useNavigate } from "react-router-dom";
 import styles from "./styles.module.css";
 
-const Blog = () => {
+const Blog = ({ Template = PublicTemplate }) => {
     const [posts, setPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -71,7 +71,7 @@ const Blog = () => {
     };
 
     return (
-        <PublicTemplate>
+        <Template>
             <div className={styles.page}>
                 <div className={styles.header}>
                     <div className={styles.headerContent}>
@@ -154,7 +154,7 @@ const Blog = () => {
                     </div>
                 )}
             </div>
-        </PublicTemplate>
+        </Template>
     );
 };
 

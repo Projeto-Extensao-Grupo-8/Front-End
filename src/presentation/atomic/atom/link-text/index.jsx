@@ -5,11 +5,16 @@ export const LinkText = ({
   redirect,
   text,
   isActive = false,
+  onClick,
 }) => {
   const navigate = useNavigate();
 
   const handleRedirect = () => {
-    navigate(redirect);
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(redirect);
+    }
   };
 
   return (

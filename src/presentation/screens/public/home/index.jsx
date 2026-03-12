@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicTemplate } from "../../../atomic/template/public-template";
 import { Banner } from "../../../atomic/molecule";
+
 import { ServicesSection, ProfessionalsSection, WhyChooseSection, TestimonialsSection, AboutSection } from "../../../atomic/organism";
 
 const Home = () => {
@@ -22,6 +23,8 @@ const Home = () => {
       <section id="sobre"><AboutSection image="/src/assets/logo_flor_de_lotus_600_x_600_px_1.png" /></section>
     </PublicTemplate>
   );
+  <Footer />
+
 };
 
 export default Home;

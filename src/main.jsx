@@ -9,6 +9,7 @@ import {
   Blog,
   AdminHome,
   DashboardHub,
+  EsqueciMinhaSenha,
 } from "./presentation/screens";
 import { AgendarConsulta } from "./presentation/screens/private/paciente";
 import { Psicologo } from "./presentation/screens/private/psicologo";
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/esqueci-minha-senha",
+    element: <EsqueciMinhaSenha />,
   },
   {
     path: "/blog",

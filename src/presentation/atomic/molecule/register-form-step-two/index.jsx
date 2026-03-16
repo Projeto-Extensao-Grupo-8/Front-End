@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 export const RegisterFormStepTwo = ({ finish, prev }) => {
   const [valorInputUsuario, setValorInputUsuario] = useState("");
   const [valorInputSenha, setValorInputSenha] = useState("");
+  const [newsletter, setNewsletter] = useState(false);
 
   const handleSubmit = () => {
     finish();
@@ -68,6 +69,15 @@ export const RegisterFormStepTwo = ({ finish, prev }) => {
           onChange={(e) => setValorInputSenha(e.target.value)}
         />
       </div>
+      <label className={styles.checkboxContainer}>
+        <input
+          type="checkbox"
+          checked={newsletter}
+          onChange={(e) => setNewsletter(e.target.checked)}
+          className={styles.checkbox}
+        />
+        <span>Desejo receber newsletter com novidades e artigos</span>
+      </label>
       <div className={styles.buttonsContainer}>
         <Button text="Voltar" variant="voltar" onClick={prev} />
         <Button text="Cadastrar" variant= "" onClick={handleSubmit} />

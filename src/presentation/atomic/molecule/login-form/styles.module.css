@@ -26,3 +26,14 @@ p {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.forgotPassword {
+  font-size: 0.85rem;
+  color: var(--primary, #E1ABBA);
+  text-decoration: none;
+  align-self: flex-end;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}

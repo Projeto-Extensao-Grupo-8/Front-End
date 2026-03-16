@@ -30,6 +30,12 @@ export const LoginForm = () => {
           onChange={e => setValorInputSenha(e.target.value)}
         />   
       </div>
+      <a
+        href="/esqueci-minha-senha"
+        className={styles.forgotPassword}
+      >
+        Esqueci minha senha
+      </a>
       <div className={styles.buttonsContainer}>
         <Button text="Logar" onClick={() => {navigate("/dashboard")}} />
       </div>

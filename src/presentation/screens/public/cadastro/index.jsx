@@ -40,19 +40,28 @@ export default function Cadastro() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/usuarios/cadastro", {
+      const { data: usuario } = await api.post("/usuarios/cadastro", {
         nome: formData.nome,
         email: formData.email,
-        telefone: formData.telefone,
+        telefone: formData.telefone.replace(/\D/g, ""),
         dataNascimento: formData.dataNascimento,
         cpf: formData.cpf.replace(/\D/g, ""),
         senha: formData.senha,
-        nivelPermissao: "PACIENTE",
+        nivelPermissao: "2",
         newsletter: formData.newsletter,
         cep: formData.cep.replace(/\D/g, ""),
         numero: formData.numero,
         complemento: formData.complemento,
       });
+
+      const { data: auth } = await api.post("/usuarios/login", {
+        email: formData.email,
+        senha: formData.senha,
+      });
+
+      localStorage.setItem("token", auth.token);
+      await api.post("/pacientes", { fkUsuario: usuario.id });
+      localStorage.removeItem("token");
 
       setShowToast(true);
       setTimeout(() => {
@@ -60,9 +69,16 @@ export default function Cadastro() {
         navigate("/login");
       }, 2000);
     } catch (err) {
-      const data = err.response?.data;
-      const msg = (typeof data === "string" ? data : data?.message) || "Erro ao realizar cadastro. Tente novamente.";
-      setError(msg);
+      localStorage.removeItem("token");
+      if (!err.response) {
+        setError("Erro de conexão com o servidor. Verifique se o backend está rodando na porta 8080.");
+      } else {
+        const data = err.response.data;
+        const msg =
+          (typeof data === "string" ? data : data?.message ?? data?.error) ||
+          `Erro ${err.response.status}: Tente novamente.`;
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }

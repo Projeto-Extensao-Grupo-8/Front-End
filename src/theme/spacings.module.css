@@ -35,6 +35,9 @@
   --radius-xxl: 32px;
   --radius-full: 9999px;
 
+  /* Navbar */
+  --navbar-height: 80px;
+
   /* Gaps */
   --gap-none: 0px;
   --gap-xsm: 2px;

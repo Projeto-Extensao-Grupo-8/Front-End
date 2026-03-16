@@ -1,79 +1,46 @@
 import Logo from "@/assets/logo.png";
-<<<<<<< Updated upstream
-import { useLocation, useNavigate } from "react-router-dom";
-=======
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
->>>>>>> Stashed changes
 import { LinkText, LinkTextIcon } from "../../atom";
 import styles from "./styles.module.css";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 export const PrivateHeader = ({ paths, homePath }) => {
   const location = useLocation();
-<<<<<<< Updated upstream
-  const navigate = useNavigate();
-
-  return (
-    <header className={styles.header}>
-      <div className={styles.inner}>
-        <img className={styles.img} src={Logo} alt="" onClick={() => navigate(homePath ?? paths[0]?.path ?? "/")}/>
-        <div>
-          <ul className={styles.buttonsContainer}>
-            {paths.map(({ name, path }) => {
-              return (
-                <li key={name}>
-                  <LinkText
-                    text={name}
-                    isActive={location.pathname === path}
-                    redirect={path}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className={styles.buttonsContainer}>
-          <LinkTextIcon
-            text="Sair"
-            redirect="/login"
-            Icon={ExitToAppIcon}
-          />
-        </div>
-=======
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className={styles.header}>
-      <img className={styles.img} src={Logo} alt="" onClick={() => { window.location.href = "/paciente/perfil"; }} />
+      <div className={styles.inner}>
+        <img className={styles.img} src={Logo} alt="" onClick={() => { window.location.href = "/paciente/perfil"; }} />
 
-      {/* Links desktop */}
-      <div className={styles.desktopNav}>
-        <ul>
-          {paths.map(({ name, path }) => (
-            <li key={name}>
-              <LinkText text={name} isActive={location.pathname === path} redirect={path} />
-            </li>
-          ))}
-        </ul>
+        {/* Links desktop */}
+        <div className={styles.desktopNav}>
+          <ul>
+            {paths.map(({ name, path }) => (
+              <li key={name}>
+                <LinkText text={name} isActive={location.pathname === path} redirect={path} />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Sair desktop */}
+        <div className={styles.desktopSair}>
+          <LinkTextIcon text="Sair" redirect="/login" Icon={ExitToAppIcon} />
+        </div>
+
+        {/* Botão hamburguer (só mobile) */}
+        <button
+          className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-
-      {/* Sair desktop */}
-      <div className={styles.desktopSair}>
-        <LinkTextIcon text="Sair" redirect="/login" Icon={ExitToAppIcon} />
->>>>>>> Stashed changes
-      </div>
-
-      {/* Botão hamburguer (só mobile) */}
-      <button
-        className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ""}`}
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Menu"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
 
       {/* Overlay */}
       {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}

@@ -28,90 +28,44 @@ export const PublicHeader = () => {
 
   return (
     <header className={styles.header}>
-<<<<<<< Updated upstream
       <div className={styles.inner}>
-        <img className={styles.img} src={Logo} alt="" onClick={() => {navigate("/")}}/>
-        <div>
+        <img className={styles.img} src={Logo} alt="" onClick={() => navigate("/")} />
+
+        {/* Links desktop */}
+        <div className={styles.desktopNav}>
           <ul className={styles.buttonsContainer}>
             <li>
-              <LinkText
-                text="Nossos serviços"
-                isActive={false}
-                redirect="/"
-                onClick={() => scrollToSection("servicos")}
-              />
+              <LinkText text="Nossos serviços" isActive={false} redirect="/" onClick={() => scrollToSection("servicos")} />
             </li>
             <li>
-              <LinkText
-                text="Nosso time"
-                isActive={false}
-                redirect="/"
-                onClick={() => scrollToSection("nosso-time")}
-              />
+              <LinkText text="Nosso time" isActive={false} redirect="/" onClick={() => scrollToSection("nosso-time")} />
             </li>
             <li>
-              <LinkText
-                text="Depoimentos"
-                isActive={false}
-                redirect="/"
-                onClick={() => scrollToSection("depoimentos")}
-              />
+              <LinkText text="Depoimentos" isActive={false} redirect="/" onClick={() => scrollToSection("depoimentos")} />
             </li>
             <li>
-              <LinkText
-                text="Blog"
-                isActive={location.pathname === "/blog"}
-                redirect="/blog"
-              />
+              <LinkText text="Blog" isActive={location.pathname === "/blog"} redirect="/blog" />
             </li>
           </ul>
         </div>
-        <div className={styles.divButtons}>
-          <div className={styles.buttonsContainer}>
-            <Button text="Login" onClick={() => {navigate("/login")}} variant="login" />
-          </div>
-          <div className={styles.buttonsContainer}>
-            <Button text="Cadastrar" onClick={() => {navigate("/cadastro")}}/>
-          </div>
+
+        {/* Botões desktop */}
+        <div className={styles.desktopButtons}>
+          <Button text="Login" onClick={() => navigate("/login")} variant="login" />
+          <Button text="Cadastrar" onClick={() => navigate("/cadastro")} />
         </div>
-=======
-      <img className={styles.img} src={Logo} alt="" onClick={() => navigate("/")} />
 
-      {/* Links desktop */}
-      <div className={styles.desktopNav}>
-        <ul className={styles.buttonsContainer}>
-          <li>
-            <LinkText text="Nossos serviços" isActive={false} redirect="/" onClick={() => scrollToSection("servicos")} />
-          </li>
-          <li>
-            <LinkText text="Nosso time" isActive={false} redirect="/" onClick={() => scrollToSection("nosso-time")} />
-          </li>
-          <li>
-            <LinkText text="Depoimentos" isActive={false} redirect="/" onClick={() => scrollToSection("depoimentos")} />
-          </li>
-          <li>
-            <LinkText text="Blog" isActive={location.pathname === "/blog"} redirect="/blog" />
-          </li>
-        </ul>
-      </div>
-
-      {/* Botões desktop */}
-      <div className={styles.desktopButtons}>
-        <Button text="Login" onClick={() => navigate("/login")} variant="login" />
-        <Button text="Cadastrar" onClick={() => navigate("/cadastro")} />
->>>>>>> Stashed changes
-      </div>
-
-      {/* Botão hamburguer (só mobile) */}
-      <button
+        {/* Botão hamburguer (só mobile) */}
+        <button
         className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Menu"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
 
       {/* Overlay */}
       {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}

@@ -10,6 +10,8 @@ import {
   AdminHome,
   DashboardHub,
   EsqueciMinhaSenha,
+  AdminStock,
+  AdminEmployee,
 } from "./presentation/screens";
 import { AgendarConsulta } from "./presentation/screens/private/paciente";
 import { PsicologoPacientes } from "./presentation/screens/private/psicologo";
@@ -72,6 +74,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/dashboard",
     element: <DashboardHub />,
+  },
+  {
+    path: "/admin/estoque",
+    element: <AdminStock/>,
+  },
+  {
+    path: "/admin/funcionario",
+    element: <AdminEmployee/>,
   },
 ]);
 

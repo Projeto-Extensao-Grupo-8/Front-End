@@ -7,6 +7,8 @@ export const Badge = ({ text, status = "active" }) => {
         return styles.active;
       case "danger":
         return styles.danger;
+      case "information":
+        return styles.information  
       default:
         return styles.inactive;
     }

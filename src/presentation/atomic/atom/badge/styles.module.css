@@ -16,6 +16,16 @@
     font-size: 11px;
 }
 
+.information {
+    background-color: #D390A3; 
+    color: #FFFFFF;
+    max-height: min-content;
+    border: none;    
+    border-radius: 50px; 
+    padding: var(--padding-xs) var(--padding-sm);
+    font-size: 11px;
+}
+
 .danger {
     background-color: var(--red-100);
     color: var(--red-200);

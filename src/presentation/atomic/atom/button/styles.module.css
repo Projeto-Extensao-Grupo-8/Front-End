@@ -52,3 +52,17 @@
     padding: var(--padding-sm) var(--padding-lg);
     border-radius: var(--radius-sm);
 }
+
+.cadastrarFunc {
+    background-color: #e85d7a;
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    width: auto;
+    padding: var(--padding-sm) var(--padding-lg);
+    font-size: var(--font-size-xlarge);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

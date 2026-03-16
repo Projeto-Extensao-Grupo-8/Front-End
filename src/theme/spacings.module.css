@@ -32,6 +32,7 @@
   /* Radius */
   --radius-none: 0px;
   --radius-sm: 12px;
+  --radius-lg: 20px;
   --radius-xxl: 32px;
   --radius-full: 9999px;
 
@@ -47,4 +48,9 @@
   --gap-lg: 16px;
   --gap-xl: 20px;
   --gap-xxl: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0px 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0px 4px 16px rgba(0, 0, 0, 0.10);
+
 }

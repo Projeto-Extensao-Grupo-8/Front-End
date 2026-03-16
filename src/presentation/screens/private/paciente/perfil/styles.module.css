@@ -574,3 +574,88 @@
   justify-content: center;
   margin-top: 20px;
 }
+
+/* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 768px) {
+  .page {
+    width: 95%;
+    padding: 16px 12px;
+  }
+
+  /* Profile card empilhado */
+  .profileCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .profileCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contactRow {
+    justify-content: center;
+  }
+
+  /* Appointment card empilhado */
+  .appointmentCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .appRightBtn {
+    width: 100%;
+  }
+
+  .linkBtn {
+    width: 100%;
+  }
+
+  /* Duas colunas viram uma */
+  .twoColumns {
+    grid-template-columns: 1fr;
+  }
+
+  /* Histórico: botão avaliar abaixo do badge */
+  .historyRow {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .historyLeft {
+    flex: 1 1 100%;
+  }
+
+  .historyRight {
+    flex-wrap: wrap;
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Modal: inputs empilhados */
+  .twoInputsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .modalContent {
+    padding: 20px 16px;
+  }
+
+  .ratingModalContent {
+    padding: 20px 16px;
+  }
+
+  .starsRow {
+    gap: 4px;
+  }
+
+  .starBtn {
+    font-size: 30px;
+    padding: 4px 7px;
+  }
+}

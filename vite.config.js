@@ -8,12 +8,14 @@ const __dirname = path.dirname(__filename)
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "./",
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+  },
+  server: {
+    historyApiFallback: true,
   },
 })
 

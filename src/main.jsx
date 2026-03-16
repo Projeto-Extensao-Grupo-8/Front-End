@@ -12,11 +12,11 @@ import {
   EsqueciMinhaSenha,
 } from "./presentation/screens";
 import { AgendarConsulta } from "./presentation/screens/private/paciente";
-import { Psicologo } from "./presentation/screens/private/psicologo";
+import { PsicologoPacientes } from "./presentation/screens/private/psicologo";
 
 import BlogDetalhe from "./presentation/screens/public/blog-detalhe";
 import Perfil from "./presentation/screens/private/paciente/perfil";
-import { ClientTemplate } from "./presentation/atomic/template";
+import { ClientTemplate, PsicologoTemplate } from "./presentation/atomic/template";
 
 import "./index.css";
 
@@ -46,7 +46,10 @@ const router = createBrowserRouter([
     element: <Blog Template={ClientTemplate} />,
   },
   {
-  
+    path: "/psicologo/blog",
+    element: <Blog Template={PsicologoTemplate} />,
+  },
+  {
     path: "/blog/:slug",
     element: <BlogDetalhe />,
   },
@@ -59,8 +62,8 @@ const router = createBrowserRouter([
     element: <AgendarConsulta />,
   },
   {
-    path: "/psicologo",
-    element: <Psicologo />,
+    path: "/psicologo/pacientes",
+    element: <PsicologoPacientes />,
   },
   {
     path: "/admin",

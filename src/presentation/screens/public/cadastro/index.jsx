@@ -27,7 +27,7 @@ export default function Cadastro() {
   };
 
   return (
-    <PublicTemplate>
+    <PublicTemplate hideFooter>
       <CardForm>
         {step === 1 && <RegisterFormStepOne next={next} />}
         {step === 2 && <RegisterFormStepTwo finish={handleFinish} prev={prev} />}

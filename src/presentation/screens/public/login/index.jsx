@@ -4,7 +4,7 @@ import { PublicTemplate } from "../../../atomic/template/public-template";
 
 export default function Login() {
   return (
-    <PublicTemplate>
+    <PublicTemplate hideFooter>
       <CardForm type={"login"}>
         <LoginForm/>
       </CardForm>

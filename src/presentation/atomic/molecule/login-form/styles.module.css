@@ -37,3 +37,9 @@ p {
 .forgotPassword:hover {
   text-decoration: underline;
 }
+
+.error {
+  color: #e53e3e;
+  font-size: 13px;
+  text-align: center;
+}

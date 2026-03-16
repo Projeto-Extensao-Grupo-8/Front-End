@@ -18,3 +18,17 @@
   from { opacity: 0; transform: translateX(-50%) translateY(16px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+.error {
+  color: #e53e3e;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.loading {
+  color: #888;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 4px;
+}

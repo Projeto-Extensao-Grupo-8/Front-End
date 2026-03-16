@@ -1,6 +1,6 @@
 import styles from "./styles.module.css";
 
-export const Input = ({ value, onChange, placeholder, label }) => {
+export const Input = ({ value, onChange, placeholder, label, type = "text" }) => {
   return (
     <div>
       {
@@ -9,8 +9,8 @@ export const Input = ({ value, onChange, placeholder, label }) => {
       <div className={styles.container}>
         <input
           className={styles.input}
-          type="text"
-          placeholder={placeholder || "Digite aqui..."}
+          type={type}
+          placeholder={type === "date" ? undefined : (placeholder || "Digite aqui...")}
           value={value}
           onChange={onChange}
         />

@@ -1,86 +1,52 @@
-import { useState } from "react";
 import { Button, Input } from "../../atom";
 import styles from "./styles.module.css";
 
-export const RegisterFormStepTwo = ({ finish, prev }) => {
-  const [valorInputUsuario, setValorInputUsuario] = useState("");
-  const [valorInputSenha, setValorInputSenha] = useState("");
-  const [newsletter, setNewsletter] = useState(false);
-
-  const handleSubmit = () => {
-    finish();
-  }
+export const RegisterFormStepTwo = ({ data, onChange, finish, prev }) => {
+  const handle = (field) => (e) => onChange(field, e.target.value);
 
   return (
     <div className={styles.container}>
       <div className={styles.inputContainer}>
         <p>CEP:</p>
         <Input
-          value={valorInputUsuario}
-          onChange={(e) => setValorInputUsuario(e.target.value)}
-          placeholder="Seu CEP"
+          value={data.cep}
+          onChange={handle("cep")}
+          placeholder="00000-000"
         />
       </div>
+
       <div className={styles.divContainer}>
-        <div className={styles.inputContainer}>
-          <p>Estado</p>
-          <Input
-            value={valorInputUsuario}
-            onChange={(e) => setValorInputUsuario(e.target.value)}
-          />
-        </div>
-        <div className={styles.inputContainer}>
-          <p>Cidade:</p>
-          <Input
-            value={valorInputUsuario}
-            onChange={(e) => setValorInputUsuario(e.target.value)}
-            placeholder="123.456.789.0"
-          />
-        </div>
-      </div>
-      <div className={styles.divContainer}>
-        <div className={styles.inputContainer}>
-          <p>Rua</p>
-          <Input
-            value={valorInputUsuario}
-            onChange={(e) => setValorInputUsuario(e.target.value)}
-          />
-        </div>
         <div className={styles.inputContainer}>
           <p>Número:</p>
           <Input
-            value={valorInputUsuario}
-            onChange={(e) => setValorInputUsuario(e.target.value)}
-            placeholder="123.456.789.0"
+            value={data.numero}
+            onChange={handle("numero")}
+            placeholder="Ex: 123"
+          />
+        </div>
+        <div className={styles.inputContainer}>
+          <p>Complemento:</p>
+          <Input
+            value={data.complemento}
+            onChange={handle("complemento")}
+            placeholder="Apto 42, Bloco B..."
           />
         </div>
       </div>
-      <div>
-        <p>Bairro</p>
-        <Input
-          value={valorInputSenha}
-          onChange={(e) => setValorInputSenha(e.target.value)}
-        />
-      </div>
-      <div>
-        <p>Complemento</p>
-        <Input
-          value={valorInputSenha}
-          onChange={(e) => setValorInputSenha(e.target.value)}
-        />
-      </div>
+
       <label className={styles.checkboxContainer}>
         <input
           type="checkbox"
-          checked={newsletter}
-          onChange={(e) => setNewsletter(e.target.checked)}
+          checked={data.newsletter}
+          onChange={(e) => onChange("newsletter", e.target.checked)}
           className={styles.checkbox}
         />
         <span>Desejo receber newsletter com novidades e artigos</span>
       </label>
+
       <div className={styles.buttonsContainer}>
         <Button text="Voltar" variant="voltar" onClick={prev} />
-        <Button text="Cadastrar" variant= "" onClick={handleSubmit} />
+        <Button text="Cadastrar" onClick={finish} />
       </div>
     </div>
   );

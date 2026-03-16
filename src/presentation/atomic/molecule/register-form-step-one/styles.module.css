@@ -26,3 +26,9 @@ p {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.hint {
+  font-size: 11px;
+  color: #aaa;
+  line-height: 1.4;
+}

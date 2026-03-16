@@ -1,63 +1,71 @@
-import { useState } from "react";
 import { Button, Input } from "../../atom";
 import styles from "./styles.module.css";
 
-export const RegisterFormStepOne = ({ next }) => {
-  const [valorInputUsuario, setValorInputUsuario] = useState("");
-  const [valorInputSenha, setValorInputSenha] = useState("");
+export const RegisterFormStepOne = ({ data, onChange, next }) => {
+  const handle = (field) => (e) => onChange(field, e.target.value);
 
   return (
     <div className={styles.container}>
       <div className={styles.inputContainer}>
         <p>Nome:</p>
         <Input
-          value={valorInputUsuario}
-          onChange={(e) => setValorInputUsuario(e.target.value)}
-          placeholder="nome sobrenome"
+          value={data.nome}
+          onChange={handle("nome")}
+          placeholder="Nome Sobrenome"
         />
       </div>
+
       <div className={styles.inputContainer}>
         <p>E-mail:</p>
         <Input
-          value={valorInputUsuario}
-          onChange={(e) => setValorInputUsuario(e.target.value)}
-          placeholder="seu@gmail.com"
+          value={data.email}
+          onChange={handle("email")}
+          placeholder="seu@email.com"
+          type="email"
         />
       </div>
+
       <div className={styles.inputContainer}>
         <p>Telefone:</p>
         <Input
-          value={valorInputUsuario}
-          onChange={(e) => setValorInputUsuario(e.target.value)}
-          placeholder="55 11 9999-9999"
+          value={data.telefone}
+          onChange={handle("telefone")}
+          placeholder="11 99999-9999"
         />
       </div>
-      <div className={styles.inputContainer}>
-        <div className={styles.divContainer}>
-          <div className={styles.inputContainer}>
-            <p>Data de nascimento:</p>
-            <Input
-              value={valorInputUsuario}
-              onChange={(e) => setValorInputUsuario(e.target.value)}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <p>CPF:</p>
-            <Input
-              value={valorInputUsuario}
-              onChange={(e) => setValorInputUsuario(e.target.value)}
-              placeholder="123.456.789.0"
-            />
-          </div>
+
+      <div className={styles.divContainer}>
+        <div className={styles.inputContainer}>
+          <p>Data de nascimento:</p>
+          <Input
+            value={data.dataNascimento}
+            onChange={handle("dataNascimento")}
+            type="date"
+          />
+        </div>
+        <div className={styles.inputContainer}>
+          <p>CPF:</p>
+          <Input
+            value={data.cpf}
+            onChange={handle("cpf")}
+            placeholder="000.000.000-00"
+          />
         </div>
       </div>
-      <div>
+
+      <div className={styles.inputContainer}>
         <p>Senha:</p>
         <Input
-          value={valorInputSenha}
-          onChange={(e) => setValorInputSenha(e.target.value)}
+          value={data.senha}
+          onChange={handle("senha")}
+          placeholder="Ex: Senha1234"
+          type="password"
         />
+        <span className={styles.hint}>
+          8–32 caracteres · apenas letras e números · 1 maiúscula · 1 minúscula · 1 número
+        </span>
       </div>
+
       <div className={styles.buttonsContainer}>
         <Button text="Próximo passo" onClick={next} />
       </div>

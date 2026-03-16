@@ -20,48 +20,50 @@ export const PublicHeader = () => {
 
   return (
     <header className={styles.header}>
+      <div className={styles.inner}>
         <img className={styles.img} src={Logo} alt="" onClick={() => {navigate("/")}}/>
-      <div>
-        <ul className={styles.buttonsContainer}>
-          <li>
-            <LinkText
-              text="Nossos serviços"
-              isActive={false}
-              redirect="/"
-              onClick={() => scrollToSection("servicos")}
-            />
-          </li>
-          <li>
-            <LinkText
-              text="Nosso time"
-              isActive={false}
-              redirect="/"
-              onClick={() => scrollToSection("nosso-time")}
-            />
-          </li>
-          <li>
-            <LinkText
-              text="Depoimentos"
-              isActive={false}
-              redirect="/"
-              onClick={() => scrollToSection("depoimentos")}
-            />
-          </li>
-          <li>
-            <LinkText
-              text="Blog"
-              isActive={location.pathname === "/blog"}
-              redirect="/blog"
-            />
-          </li>
-        </ul>
-      </div>
-      <div className={styles.divButtons}>
-        <div className={styles.buttonsContainer}>
-          <Button text="Login" onClick={() => {navigate("/login")}} variant="login" />
+        <div>
+          <ul className={styles.buttonsContainer}>
+            <li>
+              <LinkText
+                text="Nossos serviços"
+                isActive={false}
+                redirect="/"
+                onClick={() => scrollToSection("servicos")}
+              />
+            </li>
+            <li>
+              <LinkText
+                text="Nosso time"
+                isActive={false}
+                redirect="/"
+                onClick={() => scrollToSection("nosso-time")}
+              />
+            </li>
+            <li>
+              <LinkText
+                text="Depoimentos"
+                isActive={false}
+                redirect="/"
+                onClick={() => scrollToSection("depoimentos")}
+              />
+            </li>
+            <li>
+              <LinkText
+                text="Blog"
+                isActive={location.pathname === "/blog"}
+                redirect="/blog"
+              />
+            </li>
+          </ul>
         </div>
-        <div className={styles.buttonsContainer}>
-          <Button text="Cadastrar" onClick={() => {navigate("/cadastro")}}/>
+        <div className={styles.divButtons}>
+          <div className={styles.buttonsContainer}>
+            <Button text="Login" onClick={() => {navigate("/login")}} variant="login" />
+          </div>
+          <div className={styles.buttonsContainer}>
+            <Button text="Cadastrar" onClick={() => {navigate("/cadastro")}}/>
+          </div>
         </div>
       </div>
     </header>

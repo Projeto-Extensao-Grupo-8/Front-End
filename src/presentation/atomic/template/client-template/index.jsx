@@ -12,7 +12,7 @@ export const ClientTemplate = ({children }) => {
   return (
     <div>
       <VLibras />
-      <PrivateHeader paths={paths} />
+      <PrivateHeader paths={paths} homePath="/paciente/perfil" />
       <div className={styles.container}>{children}</div>
     </div>
   );

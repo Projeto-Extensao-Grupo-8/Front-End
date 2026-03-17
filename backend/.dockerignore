@@ -1,0 +1,8 @@
+@"
+node_modules
+dist
+.tmp
+.env
+.git
+*.log
+"@ | Out-File -FilePath .dockerignore -Encoding utf8

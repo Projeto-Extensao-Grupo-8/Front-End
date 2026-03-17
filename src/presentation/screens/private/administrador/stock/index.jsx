@@ -2,7 +2,8 @@ import { Monitor, Package, AlertTriangle, Calendar } from "lucide-react";
 import { Button } from "../../../../atomic/atom";
 import { AdminTemplate } from "../../../../atomic/template";
 import { DataCard, StockResume } from "../../../../atomic/molecule";
-import { StockTable } from "../../../../atomic/organism";
+import { StockTable, TestModal } from "../../../../atomic/organism";
+import { useState } from "react";
 
 export default function Stock() {
 
@@ -12,6 +13,7 @@ export default function Stock() {
         { nome: "Teste de Atenção Concentrada - AC", categoria: "Atenção", quantidade: 8, status: "critico", validade: "14/09/2025" },
         { nome: "NEO-PI-R", categoria: "Personalidade", quantidade: 20, status: "ok", validade: "19/11/2026" },
     ];
+    const [testModalOpen, setTestModalOpen] = useState(false);
 
     return (
         <AdminTemplate>
@@ -30,13 +32,16 @@ export default function Stock() {
     </div>
 
     <div>
-        <Button text="+ Cadastrar Novo Teste" variant="cadastrarFunc" onClick={() => {}} />
+        <Button text="+ Cadastrar Novo Teste" variant="cadastrarFunc" onClick={() => setTestModalOpen(true)} />
     </div>
     <StockResume valorTotal="41970,00" totalUnidades={104} tiposTestes={8} />
     <StockTable variant="digital" testes={testes} />
     <StockTable variant="fisico" testes={testes} />
-
 </div>
+        {testModalOpen && (
+            <TestModal onClose={() => setTestModalOpen(false)} />
+        )}
+        
         </AdminTemplate>
     );
 }

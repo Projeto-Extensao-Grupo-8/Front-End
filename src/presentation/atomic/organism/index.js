@@ -3,6 +3,8 @@ export * from "./administrative-card"
 export { default as AdministrativeEmployeeCards} from "./administrative-employee-card";
 export * from "./administrative-employee-table";
 export * from "./administrative-step-personal-data";
+export * from "./administrative-test-detail-card";
+export * from "./administrative-test-modal";
 export * from "./billing-chart"
 export * from "./card-form";
 export * from "./consultas-chart"

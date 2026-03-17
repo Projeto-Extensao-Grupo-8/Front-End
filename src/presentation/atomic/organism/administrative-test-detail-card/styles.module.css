@@ -1,0 +1,232 @@
+/* styles.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 580px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.header {
+  background: #e8a0b0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+}
+
+.headerNome {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.editBtn {
+  background: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: #e85d7a;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.editBtnActive {
+  background: #fff0f3;
+  color: #c0395a;
+}
+
+/* ── Image Area ── */
+.imageArea {
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px;
+  margin: 16px;
+  border-radius: 8px;
+}
+
+.imageLabel {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ── View Mode ── */
+.viewContent {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.estoqueBar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estoqueBarHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.estoqueLabel { color: #555; }
+.estoqueOk { color: #4caf50; font-weight: 600; }
+.estoqueCritico { color: #e85d7a; font-weight: 600; }
+
+.barTrack {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s;
+}
+
+.barOk { background: #4caf50; }
+.barCritico { background: #e85d7a; }
+
+.estoqueMin {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 10px;
+  color: #aaa;
+}
+
+.infoValue {
+  display: block;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* ── Edit Mode ── */
+.editContent {
+  padding: 0 16px;
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+}
+
+.editCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editField {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.editFieldInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.editLabel {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.editInputRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  width: 100%;
+}
+
+.editSelect {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.saveBtn {
+  width: 100%;
+  background: #e85d7a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: #d44d6a;
+}

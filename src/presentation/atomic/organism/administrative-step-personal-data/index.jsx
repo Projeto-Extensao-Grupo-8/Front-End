@@ -156,7 +156,7 @@ function Stepper({ total, current, onNext, onBack, onSubmit }) {
 
 const INITIAL_DATA = {
   nome: "", sobrenome: "", dataNascimento: "", cpf: "",
-  telefone: "", permissao: "", especialidade: "",
+  telefone: "", CRP: "", especialidade: "",
   cep: "", estado: "", cidade: "", bairro: "",
   logradouro: "", complemento: "", numero: "",
   email: "", senha: "", confirmarSenha: "",

@@ -1,16 +1,22 @@
 .banner {
   width: 100%;
   background: linear-gradient(90deg, #555555 0%, #aaaaaa 60%, #e0e0e0 100%);
-  padding: 72px 71px;
-  text-align: left;
+  padding: 72px 0;
+  min-height: 220px;
+  box-sizing: border-box;
+  margin-top: 1px;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 var(--padding-xl);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
   gap: 16px;
-  min-height: 220px;
-  box-sizing: border-box;
-  margin-top: -25px;
 }
 
 .title {
@@ -52,7 +58,7 @@
 
 @media (max-width: 768px) {
   .banner {
-    padding: 48px 32px;
+    padding: 48px 0;
     min-height: 180px;
   }
 
@@ -67,7 +73,7 @@
 
 @media (max-width: 480px) {
   .banner {
-    padding: 36px 20px;
+    padding: 36px 0;
     min-height: 160px;
   }
 

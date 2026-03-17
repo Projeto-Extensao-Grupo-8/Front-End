@@ -12,7 +12,7 @@ export const PrivateHeader = ({ paths, homePath }) => {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <img className={styles.img} src={Logo} alt="" onClick={() => { window.location.href = "/paciente/perfil"; }} />
+        <img className={styles.img} src={Logo} alt="" onClick={() => { window.location.href = homePath ?? "/"; }} />
 
         {/* Links desktop */}
         <div className={styles.desktopNav}>

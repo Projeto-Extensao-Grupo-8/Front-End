@@ -14,7 +14,7 @@ import {
   AdminEmployee,
 } from "./presentation/screens";
 import { AgendarConsulta } from "./presentation/screens/private/paciente";
-import { PsicologoPacientes } from "./presentation/screens/private/psicologo";
+import { PsicologoPacientes, PsicologoAgenda, PsicologoPerfil } from "./presentation/screens/private/psicologo";
 
 import BlogDetalhe from "./presentation/screens/public/blog-detalhe";
 import Perfil from "./presentation/screens/private/paciente/perfil";
@@ -64,8 +64,16 @@ const router = createBrowserRouter([
     element: <AgendarConsulta />,
   },
   {
+    path: "/psicologo/agenda",
+    element: <PsicologoAgenda />,
+  },
+  {
     path: "/psicologo/pacientes",
     element: <PsicologoPacientes />,
+  },
+  {
+    path: "/psicologo/perfil",
+    element: <PsicologoPerfil />,
   },
   {
     path: "/admin",

@@ -10,10 +10,12 @@ export const Banner = ({
 }) => {
   return (
     <div className={styles.banner}>
-      <h2 className={styles.title}>{title}</h2>
-      <p className={styles.description}>{description}</p>
-      <div className={styles.buttonWrapper}>
-        <Button text={buttonText} onClick={onButtonClick} />
+      <div className={styles.inner}>
+        <h2 className={styles.title}>{title}</h2>
+        <p className={styles.description}>{description}</p>
+        <div className={styles.buttonWrapper}>
+          <Button text={buttonText} onClick={onButtonClick} />
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,560 @@
+/* Page */
+.page {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px var(--padding-xl);
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 28px;
+}
+
+/* Grid */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.leftCol,
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.cardTitleIcon {
+  color: #D4789F !important;
+}
+
+/* Avatar */
+.avatarWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.avatarCircle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #fff0f5;
+  border: 3px solid #FFD8ED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatarCircle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nomePsicologo {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.badgeEspecialidade {
+  display: block;
+  text-align: center;
+  background: #fff0f5;
+  color: #D4789F;
+  border: 1px solid #FFD8ED;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  margin: 0 auto 20px;
+  width: fit-content;
+}
+
+/* Info list */
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #555;
+}
+
+.infoIcon {
+  color: #D4789F !important;
+  flex-shrink: 0;
+}
+
+/* Edit profile btn */
+.editarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  background: #D4789F;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.editarBtn:hover {
+  background: #c0637f;
+}
+
+/* Edit form */
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editInput {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.editInput:focus {
+  border-color: #D4789F;
+}
+
+.editActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cancelarBtn {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cancelarBtn:hover {
+  background: #f5f5f5;
+}
+
+.salvarBtn {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  background: #D4789F;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.salvarBtn:hover {
+  background: #c0637f;
+}
+
+/* Stats */
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.statItem svg {
+  flex-shrink: 0;
+}
+
+.statBlue {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.statGreen {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.statPurple {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #555;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* ── Calendar ── */
+.calendar {
+  margin-bottom: 18px;
+}
+
+.calNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  color: #555;
+  transition: background 0.12s;
+}
+
+.calNavBtn:hover {
+  background: #f5f5f5;
+}
+
+.calMes {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.calDiaSemana {
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.calDia {
+  font-size: 12px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.12s;
+}
+
+.calDia:hover {
+  background: #fff0f5;
+  color: #D4789F;
+}
+
+.calDiaSelecionado {
+  background: #D4789F !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.calDiaHoje {
+  background: #fff0f5;
+  color: #D4789F;
+  font-weight: 600;
+}
+
+/* Horários */
+.horariosLabel {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.horariosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.horarioCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 12px 8px;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.horarioCard:hover:not(.horarioIndisponivel) {
+  border-color: #D4789F;
+  box-shadow: 0 2px 8px rgba(212, 120, 159, 0.15);
+}
+
+.horarioIndisponivel {
+  background: #f5f5f5;
+  opacity: 0.7;
+  cursor: default;
+}
+
+.horarioIcon {
+  color: #D4789F !important;
+}
+
+.horarioIndisponivel .horarioIcon {
+  color: #aaa !important;
+}
+
+.horarioHora {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.horarioIndisponivel .horarioHora {
+  color: #aaa;
+}
+
+.horarioDuracao {
+  font-size: 11px;
+  color: #888;
+}
+
+.horarioTag {
+  font-size: 10px;
+  color: #aaa;
+  background: #eee;
+  border-radius: 10px;
+  padding: 2px 8px;
+  margin-top: 2px;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: #bbb;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* Agendamentos */
+.agendamentosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.adicionarBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #D4789F;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.adicionarBtn:hover {
+  background: #c0637f;
+}
+
+.agendamentosList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agendamentoRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+}
+
+.agendamentoAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff0f5;
+  border: 1px solid #FFD8ED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agendamentoInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.agendamentoPaciente {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.agendamentoMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #888;
+}
+
+.agendamentoBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Badges */
+.badgeConfirmado {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.badgePendente {
+  background: #fef9c3;
+  color: #ca8a04;
+  border: 1px solid #fde68a;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.badgeCancelado {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.badgeOnline {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.badgePresencial {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  white-space: nowrap;
+}

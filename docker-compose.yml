@@ -1,0 +1,27 @@
+services:
+
+  frontend:
+    build:
+      context: ./Front-End
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - strapi
+    networks:
+      - app-network
+
+  strapi:
+    build:
+      context: ./Front-End/backend
+      dockerfile: dockerfile
+    expose:
+      - "1337"
+    env_file:
+      - ./Front-End/backend/.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

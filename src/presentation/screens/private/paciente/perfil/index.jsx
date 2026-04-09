@@ -1,100 +1,180 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { ClientTemplate } from "../../../../atomic/template";
 import { Badge } from "../../../../atomic/atom";
+import { api } from "../../../../../services/api";
 import styles from "./styles.module.css";
 
-const history = [
-  { date: "17/08/2025", doctor: "Dra. Ana Souza", status: "Concluída", statusType: "active" },
-  { date: "10/08/2025", doctor: "Dra. Ana Souza", status: "Concluída", statusType: "active" },
-  { date: "25/07/2025", doctor: "Dr. João Silva", status: "Cancelar", statusType: "danger" },
-  { date: "15/07/2025", doctor: "Dra. Maria Lima", status: "Concluída", statusType: "active" },
-  { date: "08/07/2025", doctor: "Dra. Ana Souza", status: "Concluída", statusType: "active" },
-];
+const STATUS_MAP = {
+  PENDENTE:   { label: "Pendente",   type: "inactive" },
+  CONFIRMADA: { label: "Confirmada", type: "active" },
+  REALIZADA:  { label: "Concluída",  type: "active" },
+  CANCELADA:  { label: "Cancelada",  type: "danger" },
+};
 
-const tests = [
-  {
-    title: "Teste de Depressão (Beck)",
-    date: "Adquirido em 29/03/2025",
-    by: "Por: Dra. Ana",
-    result: "Válido",
-    severity: "Moderado",
-  },
-  {
-    title: "Teste de Ansiedade (BAI)",
-    date: "Adquirido em 23/03/2025",
-    by: "Por: Dra. Ana",
-    result: "Válido",
-    severity: "Leve",
-  },
-];
+const formatData = (isoString) => {
+  if (!isoString) return "—";
+  const d = new Date(isoString);
+  return d.toLocaleDateString("pt-BR");
+};
+
+const formatDataHora = (isoString) => {
+  if (!isoString) return "—";
+  const d = new Date(isoString);
+  return `${d.toLocaleDateString("pt-BR")} às ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+};
 
 const Perfil = () => {
+  const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+  const [usuario, setUsuario] = useState({
+    nome: usuarioLocal.nome || "",
+    email: usuarioLocal.email || "",
+    telefone: "",
+  });
+  const [, setIdPaciente] = useState(null);
+  const [proximaConsulta, setProximaConsulta] = useState(null);
+  const [historico, setHistorico] = useState([]);
+  const [testes, setTestes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRatingOpen, setIsRatingOpen] = useState(false);
+  const [selectedConsultaId, setSelectedConsultaId] = useState(null);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [formData, setFormData] = useState({
-    nome: "João da Silva",
-    email: "joao@email.com",
-    telefone: "(11) 1234-4321",
+    nome: "",
+    email: "",
+    telefone: "",
     senhaAntiga: "",
     novaSenha: "",
   });
+  const [saveError, setSaveError] = useState("");
+  const [ratingError, setRatingError] = useState("");
+
+  useEffect(() => {
+    const idUsuario = usuarioLocal.id;
+    if (!idUsuario) return;
+
+    const carregarDados = async () => {
+      try {
+        const [usuarioRes, pacienteRes] = await Promise.all([
+          api.get(`/usuarios/${idUsuario}`),
+          api.get(`/pacientes/buscarPorUsuario/${idUsuario}`),
+        ]);
+
+        const u = usuarioRes.data;
+        setUsuario({ nome: u.nome, email: u.email, telefone: u.telefone || "" });
+        setFormData({ nome: u.nome, email: u.email, telefone: u.telefone || "", senhaAntiga: "", novaSenha: "" });
+
+        const pacId = pacienteRes.data.idPaciente;
+        setIdPaciente(pacId);
+
+        const [proximasRes, historicoRes, testesRes] = await Promise.allSettled([
+          api.get(`/consultas/pacienteConsultas/${pacId}`),
+          api.get(`/consultas/paciente/${pacId}`),
+          api.get(`/movimentacoes/${pacId}`),
+        ]);
+
+        if (proximasRes.status === "fulfilled") setProximaConsulta(proximasRes.value.data[0] || null);
+        if (historicoRes.status === "fulfilled") setHistorico(historicoRes.value.data || []);
+        if (testesRes.status === "fulfilled") setTestes(testesRes.value.data || []);
+      } catch (err) {
+        console.error("Erro ao carregar dados do perfil:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarDados();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveChanges = () => {
-    console.log("Dados salvos:", formData);
-    setIsModalOpen(false);
+  const handleSaveChanges = async () => {
+    setSaveError("");
+    try {
+      const body = { nome: formData.nome, email: formData.email, telefone: formData.telefone };
+      if (formData.novaSenha) body.senha = formData.novaSenha;
+
+      await api.patch(`/usuarios/${usuarioLocal.id}`, body);
+
+      setUsuario({ nome: formData.nome, email: formData.email, telefone: formData.telefone });
+      const stored = JSON.parse(localStorage.getItem("usuario") || "{}");
+      localStorage.setItem("usuario", JSON.stringify({ ...stored, nome: formData.nome, email: formData.email }));
+      setIsModalOpen(false);
+    } catch (err) {
+      setSaveError(err.response?.data?.message || "Erro ao salvar alterações.");
+    }
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setFormData({
-      nome: "João da Silva",
-      email: "joao@email.com",
-      telefone: "(11) 1234-4321",
-      senhaAntiga: "",
-      novaSenha: "",
-    });
+    setFormData({ nome: usuario.nome, email: usuario.email, telefone: usuario.telefone, senhaAntiga: "", novaSenha: "" });
+    setSaveError("");
   };
 
-  const handleOpenRating = () => {
+  const handleOpenRating = (idConsulta) => {
+    setSelectedConsultaId(idConsulta);
     setRating(0);
     setHoverRating(0);
     setComment("");
+    setRatingError("");
     setIsRatingOpen(true);
   };
 
-  const handleSubmitRating = () => {
-    console.log("Avaliação enviada:", { rating, comment });
-    setIsRatingOpen(false);
+  const handleSubmitRating = async () => {
+    setRatingError("");
+    if (rating === 0) {
+      setRatingError("Selecione ao menos uma estrela.");
+      return;
+    }
+    try {
+      await api.post("/avaliacoes", {
+        estrelas: rating,
+        descricao: comment,
+        fkConsulta: selectedConsultaId,
+      });
+      setIsRatingOpen(false);
+    } catch (err) {
+      setRatingError(err.response?.data?.message || "Erro ao enviar avaliação.");
+    }
   };
+
+  if (loading) {
+    return (
+      <ClientTemplate>
+        <div className={styles.page}>
+          <p>Carregando...</p>
+        </div>
+      </ClientTemplate>
+    );
+  }
 
   return (
     <ClientTemplate>
       <div className={styles.page}>
-        <h1 className={styles.greeting}>Saudações, João! 👋</h1>
+        <h1 className={styles.greeting}>Saudações, {usuario.nome.split(" ")[0]}! 👋</h1>
 
         {/* Profile Card */}
         <div className={styles.profileCard}>
           <div className={styles.profileLeft}>
             <div className={styles.avatarWrapper}>
-              <img src="/src/assets/logoCard.png" alt="João" className={styles.avatar} />
+              <img src="/src/assets/logoCard.png" alt={usuario.nome} className={styles.avatar} />
               <span className={styles.avatarEditIcon}>📷</span>
             </div>
           </div>
           <div className={styles.profileCenter}>
             <p className={styles.nameLabel}>Nome:</p>
-            <h2 className={styles.name}>João da Silva</h2>
+            <h2 className={styles.name}>{usuario.nome}</h2>
             <div className={styles.contactRow}>
-              <span className={styles.contactItem}>✉️ joao@email.com</span>
+              <span className={styles.contactItem}>✉️ {usuario.email}</span>
               <span className={styles.contactDivider}>•</span>
-              <span className={styles.contactItem}>📱 (11) 1234-4321</span>
+              <span className={styles.contactItem}>📱 {usuario.telefone || "—"}</span>
             </div>
           </div>
           <div className={styles.profileRight}>
@@ -109,14 +189,27 @@ const Perfil = () => {
           <div className={styles.appIconCircle}>📅</div>
           <div className={styles.appCenter}>
             <p className={styles.appLabel}>Próxima consulta agendada:</p>
-            <p className={styles.appText}>Dra. Ana Souza – 10/09/2025 às 14:00</p>
-            <div className={styles.appTagRow}>
-              <Badge text="🔗 Consulta Online →" status="inactive" />
+            {proximaConsulta ? (
+              <>
+                <p className={styles.appText}>
+                  {proximaConsulta.nomeFuncionario} – {formatDataHora(proximaConsulta.dataConsulta)}
+                </p>
+                <div className={styles.appTagRow}>
+                  <Badge
+                    text={proximaConsulta.tipo === "ONLINE" ? "🔗 Consulta Online →" : "🏥 Consulta Presencial"}
+                    status="inactive"
+                  />
+                </div>
+              </>
+            ) : (
+              <p className={styles.appText}>Nenhuma consulta agendada.</p>
+            )}
+          </div>
+          {proximaConsulta?.tipo === "ONLINE" && (
+            <div className={styles.appRightBtn}>
+              <button className={styles.linkBtn}>🔗 Link da Consulta</button>
             </div>
-          </div>
-          <div className={styles.appRightBtn}>
-            <button className={styles.linkBtn}>🔗 Link da Consulta</button>
-          </div>
+          )}
         </div>
 
         {/* Two columns */}
@@ -127,22 +220,36 @@ const Perfil = () => {
               <span className={styles.headerIcon}>📋</span>
               Histórico de Consultas
             </div>
-            <ul className={styles.historyList}>
-              {history.map((h, idx) => (
-                <li key={idx} className={styles.historyRow}>
-                  <div className={styles.historyLeft}>
-                    <span className={styles.rowCalIcon}>📅</span>
-                    <span className={styles.historyDate}>
-                      {h.date} – {h.doctor}
-                    </span>
-                  </div>
-                  <div className={styles.historyRight}>
-                    <button className={styles.avaliarBtn} onClick={handleOpenRating}>⭐ Avaliar Consulta</button>
-                    <Badge text={h.status} status={h.statusType} />
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {historico.length === 0 ? (
+              <p className={styles.emptyMsg}>Nenhuma consulta encontrada.</p>
+            ) : (
+              <ul className={styles.historyList}>
+                {historico.map((c) => {
+                  const statusInfo = STATUS_MAP[c.status] || { label: c.status, type: "inactive" };
+                  return (
+                    <li key={c.idConsulta} className={styles.historyRow}>
+                      <div className={styles.historyLeft}>
+                        <span className={styles.rowCalIcon}>📅</span>
+                        <span className={styles.historyDate}>
+                          {formatData(c.dataConsulta)} – {c.nomeFuncionario}
+                        </span>
+                      </div>
+                      <div className={styles.historyRight}>
+                        {c.status === "REALIZADA" && (
+                          <button
+                            className={styles.avaliarBtn}
+                            onClick={() => handleOpenRating(c.idConsulta)}
+                          >
+                            ⭐ Avaliar Consulta
+                          </button>
+                        )}
+                        <Badge text={statusInfo.label} status={statusInfo.type} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
           {/* Histórico de Testes */}
@@ -151,29 +258,38 @@ const Perfil = () => {
               <span className={styles.headerIcon}>📊</span>
               Histórico de Testes
             </div>
-            <ul className={styles.testsList}>
-              {tests.map((t, i) => (
-                <li key={i} className={styles.testItem}>
-                  <div className={styles.testRow}>
-                    <div className={styles.testLeft}>
-                      <span className={styles.rowCalIcon}>📋</span>
-                      <div>
-                        <p className={styles.testTitle}>{t.title}</p>
-                        <p className={styles.testMeta}>{t.date}</p>
-                        <p className={styles.testMeta}>{t.by}</p>
+            {testes.length === 0 ? (
+              <p className={styles.emptyMsg}>Nenhum teste encontrado.</p>
+            ) : (
+              <ul className={styles.testsList}>
+                {testes.map((t) => {
+                  const expirado = t.isValido;
+                  return (
+                    <li key={t.idMovimentacaoEstoque} className={styles.testItem}>
+                      <div className={styles.testRow}>
+                        <div className={styles.testLeft}>
+                          <span className={styles.rowCalIcon}>📋</span>
+                          <div>
+                            <p className={styles.testTitle}>{t.nomeTeste}</p>
+                            <p className={styles.testMeta}>Adquirido em {formatData(t.dataMovimentacao)}</p>
+                            {t.fkConsulta?.nomeFuncionario && (
+                              <p className={styles.testMeta}>Por: {t.fkConsulta.nomeFuncionario}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className={styles.testRight}>
+                          <Badge
+                            text={expirado ? "Expirado" : "Válido"}
+                            status={expirado ? "danger" : "active"}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className={styles.testRight}>
-                      <Badge text={t.result} status="active" />
-                      <Badge text={t.severity} status="inactive" />
-                    </div>
-                  </div>
-                  <div className={styles.testFooter}>
-                    <button className={styles.moreInfoBtn}>Ver mais informações</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      <div className={styles.testFooter}></div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         </div>
       </div>
@@ -247,6 +363,8 @@ const Perfil = () => {
               </div>
             </div>
 
+            {saveError && <p className={styles.errorMsg}>{saveError}</p>}
+
             <div className={styles.modalButtons}>
               <button className={styles.cancelBtn} onClick={handleCancel}>Cancelar</button>
               <button className={styles.saveBtn} onClick={handleSaveChanges}>Salvar Alterações</button>
@@ -254,6 +372,7 @@ const Perfil = () => {
           </div>
         </div>
       )}
+
       {/* Rating Modal */}
       {isRatingOpen && (
         <div className={styles.modalOverlay}>
@@ -286,6 +405,8 @@ const Perfil = () => {
                 rows={4}
               />
             </div>
+
+            {ratingError && <p className={styles.errorMsg}>{ratingError}</p>}
 
             <div className={styles.ratingFooter}>
               <button className={styles.saveBtn} onClick={handleSubmitRating}>Enviar</button>

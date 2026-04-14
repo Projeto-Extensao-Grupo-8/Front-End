@@ -1,0 +1,48 @@
+name: Build & Push Multi Images
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # =========================
+      # FRONTEND
+      # =========================
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Front-End
+          file: ./Front-End/dockerfile
+          push: true
+          tags: |
+            ${{secrets.DOCKER_USERNAME}}/fdl-frontend:latest
+            ${{secrets.DOCKER_USERNAME}}/fdl-frontend:${{ github.sha }}
+
+      # =========================
+      # STRAPI
+      # =========================
+      - name: Build & Push Strapi
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Front-End/backend
+          file: ./Front-End/backend/dockerfile
+          push: true
+          tags: |
+            SEU_USUARIO_DOCKER/flordelotus-strapi:latest
+            SEU_USUARIO_DOCKER/flordelotus-strapi:${{ github.sha }}

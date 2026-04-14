@@ -45,5 +45,5 @@ jobs:
           file: ./backend/dockerfile
           push: true
           tags: |
-            ${{secrets.DOCKER_USERNAME}}/flordelotus-strapi:latest
-            ${{secrets.DOCKER_USERNAME}}/flordelotus-strapi:${{ github.sha }}
+            ${{secrets.DOCKER_USERNAME}}/fdl-strapi:latest
+            ${{secrets.DOCKER_USERNAME}}/fdl-strapi:${{ github.sha }}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { Badge } from "../../../../atomic/atom";
 import { api } from "../../../../../services/api";
@@ -24,6 +25,7 @@ const formatDataHora = (isoString) => {
 };
 
 const Perfil = () => {
+  const navigate = useNavigate();
   const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
 
   const [usuario, setUsuario] = useState({
@@ -40,6 +42,7 @@ const Perfil = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRatingOpen, setIsRatingOpen] = useState(false);
   const [selectedConsultaId, setSelectedConsultaId] = useState(null);
+  const [selectedFuncionarioId, setSelectedFuncionarioId] = useState(null);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -54,8 +57,17 @@ const Perfil = () => {
   const [ratingError, setRatingError] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     const idUsuario = usuarioLocal.id;
-    if (!idUsuario) return;
+    if (!idUsuario) {
+      setLoading(false);
+      return;
+    }
 
     const carregarDados = async () => {
       try {
@@ -118,8 +130,9 @@ const Perfil = () => {
     setSaveError("");
   };
 
-  const handleOpenRating = (idConsulta) => {
+  const handleOpenRating = (idConsulta, idFuncionario) => {
     setSelectedConsultaId(idConsulta);
+    setSelectedFuncionarioId(idFuncionario);
     setRating(0);
     setHoverRating(0);
     setComment("");
@@ -137,7 +150,7 @@ const Perfil = () => {
       await api.post("/avaliacoes", {
         estrelas: rating,
         descricao: comment,
-        fkConsulta: selectedConsultaId,
+        fkFuncionario: selectedFuncionarioId,
       });
       setIsRatingOpen(false);
     } catch (err) {
@@ -238,7 +251,7 @@ const Perfil = () => {
                         {c.status === "REALIZADA" && (
                           <button
                             className={styles.avaliarBtn}
-                            onClick={() => handleOpenRating(c.idConsulta)}
+                            onClick={() => handleOpenRating(c.idConsulta, c.idFuncionario)}
                           >
                             ⭐ Avaliar Consulta
                           </button>

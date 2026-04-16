@@ -1,75 +1,17 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { StepIndicator, SelectableCard } from "../../../../atomic/molecule";
 import { Button } from "../../../../atomic/atom/button";
+import { api } from "../../../../../services/api";
 import styles from "./styles.module.css";
 
 const appointmentTypes = [
-  { id: 1, title: "Terapia de Casal", subtitle: "Duração: 50 min" },
-  { id: 2, title: "Psicologia Infantil", subtitle: "Duração: 60 min" },
-  { id: 3, title: "Terapia Individual", subtitle: "Duração: 50 min" },
-  { id: 4, title: "Avaliação Psicológica", subtitle: "Duração: 60 min" },
-  { id: 5, title: "Psicologia Infantil", subtitle: "Duração: 50 min" },
-  { id: 6, title: "Orientação Profissional", subtitle: "Duração: 60 min" },
-];
-
-const psychologists = [
-  {
-    id: 1,
-    name: "Dra. Ana Souza",
-    crp: "CRP 06/34567",
-    specialty: "TCC, Ansiedade, Depressão",
-    description: "Especialista em terapia cognitivo-comportamental com foco em transtornos de ansiedade e depressão.",
-    formation: "Psicologia pela USP | Especialização em TCC",
-    languages: "Português",
-    session_price: "R$ 180,00",
-    modality: "Presencial",
-  },
-  {
-    id: 2,
-    name: "Dra. Beatriz Souza",
-    crp: "CRP 06/34567",
-    specialty: "Psicologia Infantil, Autismo, Trauma Interpessoal",
-    description: "Dedicada ao atendimento infantil e familiar, com formação especializada em TEA.",
-    formation: "Psicologia pela UNICAMP | Especialização em Autismo",
-    languages: "Português, Espanhol",
-    session_price: "R$ 200,00",
-    modality: "Presencial",
-  },
-  {
-    id: 3,
-    name: "Gra. Solange Lopes",
-    crp: "CRP 06/34567",
-    specialty: "Ansiedade, Autoconhecimento",
-    description: "Atendimento humanizado com foco em acompanhamento contínuo e bem-estar emocional.",
-    formation: "Psicologia pela PUC | Especialização em Saúde Mental",
-    languages: "Português, Inglês",
-    session_price: "R$ 150,00",
-    modality: "Online/Presencial",
-  },
-  {
-    id: 4,
-    name: "Dra. Ana Paula Ferreira",
-    crp: "CRP 06/34567",
-    specialty: "Estresse, TPM, Ansiedade",
-    description: "Profissional com experiência em tratamento de transtornos de ansiedade e estresse.",
-    formation: "Psicologia pela UFRJ | Especialização em Ansiedade",
-    languages: "Português, Francês",
-    session_price: "R$ 170,00",
-    modality: "Online/Presencial",
-  },
-  {
-    id: 5,
-    name: "Dra. Ana Souza",
-    crp: "CRP 06/34567",
-    specialty: "Psicologia Infantil, Autismo",
-    description: "Dedicada ao atendimento infantil com especialização em transtornos do espectro autista.",
-    formation: "Psicologia pela UNIFESP | Especialização em TEA",
-    languages: "Português, Espanhol",
-    session_price: "R$ 190,00",
-    modality: "Online/Presencial",
-  },
+  { id: 1, title: "Terapia de Casal",        subtitle: "Duração: 50 min", enumKey: "TERAPIA_DE_CASAL" },
+  { id: 2, title: "Psicologia Infantil",      subtitle: "Duração: 60 min", enumKey: "PSICOLOGIA_INFANTIL" },
+  { id: 3, title: "Terapia Individual",       subtitle: "Duração: 50 min", enumKey: "TERAPIA_INDIVIDUAL" },
+  { id: 4, title: "Avaliação Psicológica",    subtitle: "Duração: 60 min", enumKey: "AVALIACAO_PSICOLOGICA" },
+  { id: 5, title: "Orientação Profissional",  subtitle: "Duração: 60 min", enumKey: "ORIENTACAO_PROFISSIONAL" },
 ];
 
 const TIME_SLOTS = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
@@ -91,34 +33,81 @@ function getAvailableDates() {
   return dates;
 }
 
-const PsychProfileCard = ({ psych }) => (
-  <div className={styles.psychProfileCard}>
-    <div className={styles.psychAvatar}></div>
-    <h3 className={styles.psychProfileName}>Sobre {psych.name}</h3>
-    <p className={styles.psychProfileCrp}>{psych.crp}</p>
-    <div className={styles.psychProfileDetail}>
-      <strong>Especialidade:</strong>
-      <p>{psych.specialty}.</p>
+function buildDateTime(date, time) {
+  const [hours, minutes] = time.split(":");
+  const dt = new Date(date);
+  dt.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+  // Format as "YYYY-MM-DDTHH:mm:ss" without timezone offset
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}:00`;
+}
+
+function getPriceForType(funcionario, enumKey) {
+  if (!funcionario?.tiposAtendimento || funcionario.tiposAtendimento.length === 0) return null;
+  const match = funcionario.tiposAtendimento.find((t) => t.tipoAtendimento === enumKey);
+  if (match?.preco > 0) return match.preco;
+  // Fallback: usa o primeiro preço válido disponível do funcionário
+  const fallback = funcionario.tiposAtendimento.find((t) => t.preco > 0);
+  return fallback?.preco ?? null;
+}
+
+function formatPrice(preco) {
+  if (preco == null) return "—";
+  return preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+// Verifica se um horário está dentro de algum bloco de agendamento do funcionário
+function isTimeInAgendamentos(time, agendamentos) {
+  if (!agendamentos || agendamentos.length === 0) return true; // sem restrição
+  const [h, m] = time.split(":").map(Number);
+  const timeMinutes = h * 60 + m;
+  return agendamentos.some(({ inicioTempo, finalTempo }) => {
+    const [ih, im] = inicioTempo.split(":").map(Number);
+    const [fh, fm] = finalTempo.split(":").map(Number);
+    return timeMinutes >= ih * 60 + im && timeMinutes < fh * 60 + fm;
+  });
+}
+
+const PsychProfileCard = ({ psych, selectedTypeEnumKey }) => {
+  const price = getPriceForType(psych, selectedTypeEnumKey);
+  return (
+    <div className={styles.psychProfileCard}>
+      <div className={styles.psychAvatar}></div>
+      <h3 className={styles.psychProfileName}>Sobre {psych.nomeUsuario}</h3>
+      <p className={styles.psychProfileCrp}>{psych.crp}</p>
+      {psych.especialidade && (
+        <div className={styles.psychProfileDetail}>
+          <strong>Especialidade:</strong>
+          <p>{psych.especialidade}</p>
+        </div>
+      )}
+      {psych.descricao && (
+        <div className={styles.psychProfileDetail}>
+          <strong>Descrição:</strong>
+          <p>{psych.descricao}</p>
+        </div>
+      )}
+      {psych.formacaoAcademica && (
+        <div className={styles.psychProfileDetail}>
+          <strong>Formação Acadêmica:</strong>
+          <p>{psych.formacaoAcademica}</p>
+        </div>
+      )}
+      {psych.idiomasAtendidos && (
+        <div className={styles.psychProfileDetail}>
+          <strong>Idiomas atendidos:</strong>
+          <p>{psych.idiomasAtendidos}</p>
+        </div>
+      )}
+      {price != null && (
+        <div className={styles.psychProfileDetail}>
+          <strong>Valor da sessão:</strong>
+          <p><span className={styles.price}>{formatPrice(price)}</span></p>
+        </div>
+      )}
     </div>
-    <div className={styles.psychProfileDetail}>
-      <strong>Descrição:</strong>
-      <p>{psych.description}</p>
-    </div>
-    <div className={styles.psychProfileDetail}>
-      <strong>Formação Acadêmica:</strong>
-      <p>{psych.formation}</p>
-    </div>
-    <div className={styles.psychProfileDetail}>
-      <strong>Idiomas atendidos:</strong>
-      <p>{psych.languages}.</p>
-    </div>
-    <div className={styles.psychProfileDetail}>
-      <strong>Informações práticas:</strong>
-      <p>Valor da sessão <span className={styles.price}>{psych.session_price}</span></p>
-      <p>Modalidade: {psych.modality}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 const HintSidebar = () => (
   <>
@@ -146,23 +135,109 @@ const HintSidebar = () => (
 export const AgendarConsulta = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [selectedType, setSelectedType] = useState(null);
-  const [selectedPsychologist, setSelectedPsychologist] = useState(null);
+  const [selectedTypeId, setSelectedTypeId] = useState(null);
+  const [selectedPsychologistId, setSelectedPsychologistId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [observations, setObservations] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastError, setToastError] = useState(false);
+
+  const [psychologists, setPsychologists] = useState([]);
+  const [loadingPsychs, setLoadingPsychs] = useState(false);
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   const availableDates = useMemo(() => getAvailableDates(), []);
-  const selectedPsych = psychologists.find((p) => p.id === selectedPsychologist);
+  const selectedType = appointmentTypes.find((t) => t.id === selectedTypeId);
+  const selectedPsych = psychologists.find((p) => p.idFuncionario === selectedPsychologistId);
   const totalSteps = 4;
 
-  const handleConfirm = () => {
+  // Redireciona para login se não houver token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  // Busca a lista de funcionários ativos ao montar
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setLoadingPsychs(true);
+    api
+      .get("/funcionarios/buscarPorStatus", { params: { ativo: true } })
+      .then((res) => setPsychologists(res.data || []))
+      .catch(() => setPsychologists([]))
+      .finally(() => setLoadingPsychs(false));
+  }, []);
+
+  // Busca os agendamentos do funcionário selecionado (horários de hoje como referência)
+  const fetchAgendamentos = useCallback((idFuncionario) => {
+    if (!idFuncionario) return;
+    api
+      .get(`/agendamentos/funcionario/${idFuncionario}`)
+      .then((res) => setAgendamentos(res.data || []))
+      .catch(() => setAgendamentos([]));
+  }, []);
+
+  const handleSelectPsychologist = (id) => {
+    setSelectedPsychologistId(id);
+    setSelectedTime(null);
+    fetchAgendamentos(id);
+  };
+
+  const handleConfirm = async () => {
+    const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
+    const idUsuario = usuarioLocal.id;
+
+    if (!idUsuario) {
+      showNotification("Você precisa estar logado para agendar.", true);
+      return;
+    }
+    if (!selectedType || !selectedPsych || !selectedDate || !selectedTime) {
+      showNotification("Preencha todas as etapas antes de confirmar.", true);
+      return;
+    }
+
+    const preco = getPriceForType(selectedPsych, selectedType.enumKey);
+    if (!preco || preco <= 0) {
+      showNotification("Profissional sem valor configurado para este atendimento. Escolha outro profissional ou tipo.", true);
+      return;
+    }
+
+    const body = {
+      dataConsulta: buildDateTime(selectedDate, selectedTime),
+      valorConsulta: preco,
+      especialidade: selectedType.enumKey,
+      tipo: selectedType.title,
+      status: "PENDENTE",
+      fkFuncionario: selectedPsych.idFuncionario,
+      fkUsuario: idUsuario,
+    };
+
+    setSubmitting(true);
+    try {
+      await api.post("/consultas", body);
+      showNotification("Pedido de agendamento criado!", false);
+      setTimeout(() => navigate("/paciente/perfil"), 2000);
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data || "Erro ao agendar. Tente novamente.";
+      showNotification(typeof msg === "string" ? msg : "Erro ao agendar. Tente novamente.", true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const showNotification = (msg, isError) => {
+    setToastMsg(msg);
+    setToastError(isError);
     setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-      navigate("/paciente/perfil");
-    }, 2000);
+    if (!isError) return; // success toast fecha via navigate
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   const next = () => setStep((s) => Math.min(totalSteps, s + 1));
@@ -171,8 +246,16 @@ export const AgendarConsulta = () => {
     else setStep((s) => s - 1);
   };
 
+  const canAdvance = () => {
+    if (step === 1) return selectedTypeId != null;
+    if (step === 2) return selectedPsychologistId != null;
+    if (step === 3) return selectedDate != null && selectedTime != null;
+    return true;
+  };
+
   const renderSidebar = () => {
-    if (selectedPsych && step >= 2) return <PsychProfileCard psych={selectedPsych} />;
+    if (selectedPsych && step >= 2)
+      return <PsychProfileCard psych={selectedPsych} selectedTypeEnumKey={selectedType?.enumKey} />;
     return <HintSidebar />;
   };
 
@@ -186,8 +269,8 @@ export const AgendarConsulta = () => {
             key={type.id}
             title={type.title}
             subtitle={type.subtitle}
-            selected={selectedType === type.id}
-            onClick={() => setSelectedType(type.id)}
+            selected={selectedTypeId === type.id}
+            onClick={() => setSelectedTypeId(type.id)}
           />
         ))}
       </div>
@@ -200,75 +283,95 @@ export const AgendarConsulta = () => {
       <p className={styles.stepSubheading}>
         Selecione a profissional que melhor atenda suas necessidades
       </p>
-      <div className={styles.optionsGrid}>
-        {psychologists.map((psych) => (
-          <div
-            key={psych.id}
-            className={`${styles.psychCard} ${selectedPsychologist === psych.id ? styles.psychCardSelected : ""}`}
-            onClick={() => setSelectedPsychologist(psych.id)}
-          >
-            <p className={styles.psychCardName}>{psych.name}</p>
-            <p className={styles.psychCardSpecialty}>{psych.specialty}</p>
-            <span className={styles.psychCardModality}>{psych.modality}</span>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-
-  const renderStep3 = () => (
-    <>
-      <h2 className={styles.stepHeading}>Escolha data e horário</h2>
-      <p className={styles.stepSubheading}>
-        Selecione o dia e horário que melhor se adequa à sua rotina
-      </p>
-      <p className={styles.sectionLabel}>Datas disponíveis:</p>
-      <div className={styles.datesGrid}>
-        {availableDates.map((item, idx) => {
-          const d = item.date;
-          const label = `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
-          const isSelected = selectedDate && selectedDate.getTime() === d.getTime();
-          return (
-            <button
-              key={idx}
-              className={`${styles.dateCard} ${item.disabled ? styles.dateCardDisabled : ""} ${isSelected ? styles.dateCardSelected : ""}`}
-              onClick={() => {
-                if (!item.disabled) {
-                  setSelectedDate(d);
-                  setSelectedTime(null);
-                }
-              }}
-              disabled={item.disabled}
-            >
-              📅 {label}
-            </button>
-          );
-        })}
-      </div>
-
-      {selectedDate && (
-        <>
-          <p className={styles.sectionLabel}>Horários disponíveis:</p>
-          <div className={styles.timesGrid}>
-            {TIME_SLOTS.map((time) => (
-              <button
-                key={time}
-                className={`${styles.timeCard} ${selectedTime === time ? styles.timeCardSelected : ""}`}
-                onClick={() => setSelectedTime(time)}
+      {loadingPsychs ? (
+        <p className={styles.stepSubheading}>Carregando profissionais...</p>
+      ) : psychologists.length === 0 ? (
+        <p className={styles.stepSubheading}>Nenhuma profissional disponível no momento.</p>
+      ) : (
+        <div className={styles.optionsGrid}>
+          {psychologists.map((psych) => {
+            const price = getPriceForType(psych, selectedType?.enumKey);
+            return (
+              <div
+                key={psych.idFuncionario}
+                className={`${styles.psychCard} ${selectedPsychologistId === psych.idFuncionario ? styles.psychCardSelected : ""}`}
+                onClick={() => handleSelectPsychologist(psych.idFuncionario)}
               >
-                ⏰ {time}
-              </button>
-            ))}
-          </div>
-        </>
+                <p className={styles.psychCardName}>{psych.nomeUsuario}</p>
+                <p className={styles.psychCardSpecialty}>{psych.especialidade || "—"}</p>
+                {price != null && (
+                  <span className={styles.psychCardModality}>{formatPrice(price)}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </>
   );
 
+  const renderStep3 = () => {
+    const availableSlots = TIME_SLOTS.filter((t) => isTimeInAgendamentos(t, agendamentos));
+
+    return (
+      <>
+        <h2 className={styles.stepHeading}>Escolha data e horário</h2>
+        <p className={styles.stepSubheading}>
+          Selecione o dia e horário que melhor se adequa à sua rotina
+        </p>
+        <p className={styles.sectionLabel}>Datas disponíveis:</p>
+        <div className={styles.datesGrid}>
+          {availableDates.map((item, idx) => {
+            const d = item.date;
+            const label = `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
+            const isSelected = selectedDate && selectedDate.getTime() === d.getTime();
+            return (
+              <button
+                key={idx}
+                className={`${styles.dateCard} ${item.disabled ? styles.dateCardDisabled : ""} ${isSelected ? styles.dateCardSelected : ""}`}
+                onClick={() => {
+                  if (!item.disabled) {
+                    setSelectedDate(d);
+                    setSelectedTime(null);
+                  }
+                }}
+                disabled={item.disabled}
+              >
+                📅 {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedDate && (
+          <>
+            <p className={styles.sectionLabel}>Horários disponíveis:</p>
+            {availableSlots.length === 0 ? (
+              <p className={styles.stepSubheading}>Sem horários disponíveis para este profissional.</p>
+            ) : (
+              <div className={styles.timesGrid}>
+                {availableSlots.map((time) => (
+                  <button
+                    key={time}
+                    className={`${styles.timeCard} ${selectedTime === time ? styles.timeCardSelected : ""}`}
+                    onClick={() => setSelectedTime(time)}
+                  >
+                    ⏰ {time}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+
   const renderStep4 = () => {
-    const typeName = appointmentTypes.find((t) => t.id === selectedType)?.title ?? "—";
-    const psychName = selectedPsych?.name ?? "—";
-    const psychSpecialty = selectedPsych?.specialty ?? "";
+    const typeName = selectedType?.title ?? "—";
+    const psychName = selectedPsych?.nomeUsuario ?? "—";
+    const psychSpecialty = selectedPsych?.especialidade ?? "";
+    const price = getPriceForType(selectedPsych, selectedType?.enumKey);
     const dateTimeStr =
       selectedDate && selectedTime
         ? `${DAY_NAMES[selectedDate.getDay()]}, ${selectedDate.getDate()} ${MONTH_NAMES[selectedDate.getMonth()]} às ${selectedTime}`
@@ -281,7 +384,7 @@ export const AgendarConsulta = () => {
 
         <div className={styles.summaryCard}>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryIconCircle}>📅</span>
+            <span className={styles.summaryIconCircle}>📋</span>
             <div>
               <p className={styles.summaryLabel}>Tipo de Atendimento</p>
               <p className={styles.summaryValue}>{typeName}</p>
@@ -302,6 +405,15 @@ export const AgendarConsulta = () => {
               <p className={styles.summaryValue}>{dateTimeStr}</p>
             </div>
           </div>
+          {price != null && (
+            <div className={styles.summaryRow}>
+              <span className={styles.summaryIconCircle}>💳</span>
+              <div>
+                <p className={styles.summaryLabel}>Valor da Sessão</p>
+                <p className={styles.summaryValue}>{formatPrice(price)}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles.observationsGroup}>
@@ -353,11 +465,21 @@ export const AgendarConsulta = () => {
             <div className={styles.content}>{renderContent()}</div>
 
             <div className={styles.navRow}>
-              <Button text="← Voltar" variant="voltar" onClick={prev} />
+              <Button text="← Voltar" variant="voltar" onClick={prev} disabled={submitting} />
               {step < totalSteps ? (
-                <Button text="Continuar >" variant="ok" onClick={next} />
+                <Button
+                  text="Continuar >"
+                  variant="ok"
+                  onClick={next}
+                  disabled={!canAdvance()}
+                />
               ) : (
-                <Button text="✓ Confirmar Agendamento" variant="ok" onClick={handleConfirm} />
+                <Button
+                  text={submitting ? "Agendando..." : "✓ Confirmar Agendamento"}
+                  variant="ok"
+                  onClick={handleConfirm}
+                  disabled={submitting}
+                />
               )}
             </div>
           </div>
@@ -365,9 +487,10 @@ export const AgendarConsulta = () => {
           <aside className={styles.sidebar}>{renderSidebar()}</aside>
         </div>
       </div>
+
       {showToast && (
-        <div className={styles.toast}>
-          ✅ Pedido de agendamento criado!
+        <div className={`${styles.toast} ${toastError ? styles.toastError : ""}`}>
+          {toastError ? "❌" : "✅"} {toastMsg}
         </div>
       )}
     </ClientTemplate>

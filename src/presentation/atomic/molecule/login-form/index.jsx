@@ -27,10 +27,12 @@ export const LoginForm = () => {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify({
-        id: data.userId,
+        id: data.idUsuario,
         nome: data.nome,
         email: data.email,
         nivelPermissao: data.nivelPermissao,
+        idPaciente: data.idPaciente ?? null,
+        idFuncionario: data.idFuncionario ?? null,
       }));
 
       const destino = REDIRECT_BY_ROLE[data.nivelPermissao] ?? "/paciente/perfil";

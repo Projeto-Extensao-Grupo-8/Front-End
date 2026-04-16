@@ -13,6 +13,7 @@ export const Button = ({
   text,
   type,
   variant = "default",
+  disabled = false,
 }) => {
 
   const buttonClass = () => {
@@ -28,7 +29,7 @@ export const Button = ({
   };
 
   return (
-    <button type={type} className={buttonClass()} onClick={onClick}>
+    <button type={type} className={buttonClass()} onClick={onClick} disabled={disabled}>
       {variant === "cadastrar" && <PersonIcon />}
       {text}
     </button>

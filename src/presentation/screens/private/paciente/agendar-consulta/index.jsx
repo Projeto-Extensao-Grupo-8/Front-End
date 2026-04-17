@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { StepIndicator, SelectableCard } from "../../../../atomic/molecule";
@@ -14,7 +14,6 @@ const appointmentTypes = [
   { id: 5, title: "Orientação Profissional",  subtitle: "Duração: 60 min", enumKey: "ORIENTACAO_PROFISSIONAL" },
 ];
 
-const TIME_SLOTS = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
 const DAY_NAMES = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTH_NAMES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -58,7 +57,6 @@ function formatPrice(preco) {
 
 // Verifica se um horário está dentro de algum bloco de agendamento do funcionário
 function isTimeInAgendamentos(time, agendamentos) {
-  if (!agendamentos || agendamentos.length === 0) return true; // sem restrição
   const [h, m] = time.split(":").map(Number);
   const timeMinutes = h * 60 + m;
   return agendamentos.some(({ inicioTempo, finalTempo }) => {
@@ -66,6 +64,24 @@ function isTimeInAgendamentos(time, agendamentos) {
     const [fh, fm] = finalTempo.split(":").map(Number);
     return timeMinutes >= ih * 60 + im && timeMinutes < fh * 60 + fm;
   });
+}
+
+// Gera slots de 1h a partir do range da agenda, respeitando as janelas de atendimento
+function generateSlotsFromAgendamentos(agendamentos) {
+  if (!agendamentos || agendamentos.length === 0) return [];
+  let dayStart = Infinity, dayEnd = -Infinity;
+  agendamentos.forEach(({ inicioTempo, finalTempo }) => {
+    const [ih, im] = inicioTempo.split(":").map(Number);
+    const [fh, fm] = finalTempo.split(":").map(Number);
+    dayStart = Math.min(dayStart, ih * 60 + im);
+    dayEnd = Math.max(dayEnd, fh * 60 + fm);
+  });
+  const slots = [];
+  for (let t = dayStart; t + 60 <= dayEnd; t += 60) {
+    const timeStr = `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+    if (isTimeInAgendamentos(timeStr, agendamentos)) slots.push(timeStr);
+  }
+  return slots;
 }
 
 const PsychProfileCard = ({ psych, selectedTypeEnumKey }) => {
@@ -147,6 +163,8 @@ export const AgendarConsulta = () => {
   const [psychologists, setPsychologists] = useState([]);
   const [loadingPsychs, setLoadingPsychs] = useState(false);
   const [agendamentos, setAgendamentos] = useState([]);
+  const [horariosOcupados, setHorariosOcupados] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const availableDates = useMemo(() => getAvailableDates(), []);
@@ -175,19 +193,37 @@ export const AgendarConsulta = () => {
       .finally(() => setLoadingPsychs(false));
   }, []);
 
-  // Busca os agendamentos do funcionário selecionado (horários de hoje como referência)
-  const fetchAgendamentos = useCallback((idFuncionario) => {
-    if (!idFuncionario) return;
-    api
-      .get(`/agendamentos/funcionario/${idFuncionario}`)
-      .then((res) => setAgendamentos(res.data || []))
-      .catch(() => setAgendamentos([]));
-  }, []);
+  // Busca agenda e horários ocupados quando psicólogo + data estão selecionados
+  useEffect(() => {
+    if (!selectedPsychologistId || !selectedDate) {
+      setAgendamentos([]);
+      setHorariosOcupados([]);
+      return;
+    }
+    const pad = (n) => String(n).padStart(2, "0");
+    const dataStr = `${selectedDate.getFullYear()}-${pad(selectedDate.getMonth() + 1)}-${pad(selectedDate.getDate())}`;
+    setLoadingSlots(true);
+    Promise.all([
+      api.get(`/agendamentos/funcionario/${selectedPsychologistId}`, { params: { data: dataStr } }),
+      api.get(`/consultas/funcionario/${selectedPsychologistId}/horariosOcupados`, { params: { data: dataStr } }),
+    ])
+      .then(([agRes, ocRes]) => {
+        setAgendamentos(agRes.data || []);
+        setHorariosOcupados(ocRes.data || []);
+      })
+      .catch(() => {
+        setAgendamentos([]);
+        setHorariosOcupados([]);
+      })
+      .finally(() => setLoadingSlots(false));
+  }, [selectedPsychologistId, selectedDate]);
 
   const handleSelectPsychologist = (id) => {
     setSelectedPsychologistId(id);
+    setSelectedDate(null);
     setSelectedTime(null);
-    fetchAgendamentos(id);
+    setAgendamentos([]);
+    setHorariosOcupados([]);
   };
 
   const handleConfirm = async () => {
@@ -311,7 +347,8 @@ export const AgendarConsulta = () => {
   );
 
   const renderStep3 = () => {
-    const availableSlots = TIME_SLOTS.filter((t) => isTimeInAgendamentos(t, agendamentos));
+    const generatedSlots = generateSlotsFromAgendamentos(agendamentos);
+    const availableSlots = generatedSlots.filter((t) => !horariosOcupados.includes(t));
 
     return (
       <>
@@ -346,8 +383,12 @@ export const AgendarConsulta = () => {
         {selectedDate && (
           <>
             <p className={styles.sectionLabel}>Horários disponíveis:</p>
-            {availableSlots.length === 0 ? (
-              <p className={styles.stepSubheading}>Sem horários disponíveis para este profissional.</p>
+            {loadingSlots ? (
+              <p className={styles.stepSubheading}>Carregando horários...</p>
+            ) : agendamentos.length === 0 ? (
+              <p className={styles.stepSubheading}>Profissional sem agenda configurada para este dia.</p>
+            ) : availableSlots.length === 0 ? (
+              <p className={styles.stepSubheading}>Sem horários disponíveis para este dia.</p>
             ) : (
               <div className={styles.timesGrid}>
                 {availableSlots.map((time) => (

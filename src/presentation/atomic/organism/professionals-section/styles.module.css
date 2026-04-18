@@ -57,3 +57,89 @@
     gap: 16px;
   }
 }
+.carouselWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.carouselTrackContainer {
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+.carouselPage {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.navBtn {
+  pointer-events: all;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e0c0ca;
+  background: #fff;
+  color: #D390A3;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+
+  /* Posiciona para fora do grid */
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.navBtn:disabled {
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: #fbeaf0;
+  border-color: #D390A3;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: #e0c0ca;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: #D390A3;
+}

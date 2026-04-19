@@ -28,53 +28,42 @@
   margin-right: auto;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+.carouselWrapper {
   max-width: 1200px;
   margin: 0 auto;
 }
 
+.carouselTrackContainer {
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  align-items: stretch; /* faz todos os cards terem a mesma altura */
+}
+
+.carouselItem {
+  flex-shrink: 0;
+  width: 33.33333% ;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex; /* necessário para o filho ocupar 100% da altura */
+}
+
+/* garante que o TestimonialCard dentro ocupe a altura total */
+.carouselItem > * {
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+  .carouselItem {
+    width: 50%;
   }
 }
 
 @media (max-width: 768px) {
-  .section {
-    padding: 40px 20px;
-  }
-
-  .title {
-    font-size: 28px;
-  }
-
-  .subtitle {
-    font-size: 13px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .section {
-    padding: 30px 16px;
-  }
-
-  .title {
-    font-size: 24px;
-  }
-
-  .subtitle {
-    font-size: 12px;
-  }
-
-  .grid {
-    gap: 16px;
+  .carouselItem {
+    width: 100%;
   }
 }

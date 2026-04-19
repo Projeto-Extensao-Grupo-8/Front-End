@@ -1,22 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProfessionalCard } from "../professional-card";
 import styles from "./styles.module.css";
+import { api } from "../../../../services/api";
 
 const CARDS_PER_VIEW = 3;
 
 export const ProfessionalsSection = () => {
   const [currentPage, setCurrentPage] = useState(0);
+  
+  const [funcionarios, setfuncionarios] = useState([]);
 
-  const professionals = [
-    { id: 1, name: "Solange Lopes", image: null, clinic: "Clínica Presencial", price: 200.00, specialties: ["Ansiedade", "Autoconhecimento"] },
-    { id: 2, name: "Ana Paula Ferreira", image: null, clinic: "Clínica Online", price: 200.00, specialties: ["Estresse no trabalho", "TPM", "Depressão", "Ansiedade"] },
-    { id: 3, name: "Beatriz Souza", image: null, clinic: "Clínica Presencial", price: 200.00, specialties: ["Psicologia Infantil", "Autismo", "Trauma Interpessoal"] },
-    { id: 4, name: "Solange Lopes", image: null, clinic: "Clínica Presencial", price: 200.00, specialties: ["Ansiedade", "Autoconhecimento"] },
-    { id: 5, name: "Ana Paula Ferreira", image: null, clinic: "Clínica Online", price: 200.00, specialties: ["Estresse no trabalho", "TPM", "Depressão", "Ansiedade"] },
-    { id: 6, name: "Beatriz Souza", image: null, clinic: "Clínica Presencial", price: 200.00, specialties: ["Psicologia Infantil", "Autismo", "Trauma Interpessoal"] }
-  ];
 
-  const totalPages = Math.ceil(professionals.length / CARDS_PER_VIEW);
+  const buscarFuncionarios = async () => {
+    try {
+      const response = await api.get("/funcionarios/cards");
+      setfuncionarios(response.data);
+    } catch (error) {
+      console.error("Nao foi possivel listar os funcionarios", error);
+    }
+  };
+
+  useEffect(() => {
+    buscarFuncionarios();
+  }, []);
+
+  const totalPages = Math.ceil(funcionarios.length / CARDS_PER_VIEW);
 
   const handleViewMore = (id) => console.log(`Ver mais do profissional: ${id}`);
 
@@ -32,17 +40,16 @@ export const ProfessionalsSection = () => {
         >
           {Array.from({ length: totalPages }).map((_, pageIndex) => (
             <div key={pageIndex} className={styles.carouselPage}>
-              {professionals
+              {funcionarios
                 .slice(pageIndex * CARDS_PER_VIEW, pageIndex * CARDS_PER_VIEW + CARDS_PER_VIEW)
                 .map((p) => (
                   <ProfessionalCard
-                    key={p.id}
-                    image={p.image}
-                    name={p.name}
-                    clinic={p.clinic}
-                    price={p.price}
-                    specialties={p.specialties}
-                    onViewMore={() => handleViewMore(p.id)}
+                    key={p.idFuncionario}
+                    image={p.imagem || p.foto || null}
+                    name={p.nomeUsuario}
+                    clinic={p.modalidade}
+                    specialties={p.especialidades}
+                    onViewMore={() => handleViewMore(p.idFuncionario)}
                   />
                 ))}
             </div>

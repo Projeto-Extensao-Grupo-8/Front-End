@@ -1,31 +1,46 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TestimonialCard } from "../testimonial-card";
 import styles from "./styles.module.css";
+import { api } from "../../../../services/api";
+
 
 const CARDS_PER_VIEW = 3;
 const INTERVAL_MS = 3500;
+
+const formatarData = (data) => {
+  if (!data) return "";
+  const date = new Date(data);
+  const dia = String(date.getDate()).padStart(2, "0");
+  const mes = String(date.getMonth() + 1).padStart(2, "0");
+  const ano = date.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+};
 
 export const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animated, setAnimated] = useState(true);
   const timerRef = useRef(null);
 
-  const testimonials = [
-    { id: 1, author: "Mariana Gomes Silva", date: "20/06/2023", text: "O atendimento humanizado fez toda a diferença no meu tratamento. Me sinto acolhida e compreendida em cada sessão. A profissional é extremamente dedicada aos seus pacientes e familiares." },
-    { id: 2, author: "João Pedro Silva", date: "10/04/2023", text: "Finalmente encontrei uma clínica onde me sinto à vontade para compartilhar minhas questões. O atendimento humanizado fez toda a diferença no meu tratamento. Minha experiência aqui tem sido transformadora." },
-    { id: 3, author: "Ana Eduardo Costa", date: "05/06/2023", text: "Excelente atendimento! A psicóloga me ajudou muito no meu processo de autoconhecimento e lida com a ansiedade de forma muito profissional e acolhedora. Recomendo muito!" },
-    { id: 4, author: "Carlos Henrique Almeida", date: "15/07/2023", text: "A clínica oferece um ambiente acolhedor e profissionais qualificados. O suporte emocional recebido foi fundamental para minha recuperação. Muito obrigado!" },
-    { id: 5, author: "Maria Clara Santos", date: "20/08/2023", text: "A clínica oferece um ambiente acolhedor e profissionais qualificados. O suporte emocional recebido foi fundamental para minha recuperação. Muito obrigado!" },
-    { id: 6, author: "Lucas Oliveira", date: "30/09/2023", text: "O atendimento humanizado fez toda a diferença no meu tratamento. Me sinto acolhido e compreendido em cada sessão. A profissional é extremamente dedicada aos seus pacientes e familiares." },
-    { id: 7, author: "Fernanda Lima", date: "12/10/2023", text: "Finalmente encontrei uma clínica onde me sinto à vontade para compartilhar minhas questões. O atendimento humanizado fez toda a diferença no meu tratamento. Minha experiência aqui tem sido transformadora." 
+    const [avaliacoes, setAvaliacoes] = useState([]);
+  
+  
+    const buscarAvaliacoes = async () => {
+      try {
+        const response = await api.get("/avaliacoes/consultas");
+        setAvaliacoes(response.data);
+      } catch (error) {
+        console.error("Nao foi possivel listar as avaliacoes", error);
+      }
+    };
+  
+    useEffect(() => {
+      buscarAvaliacoes();
+    }, []);
 
-    },
-    { id: 8, author: "Rafael Costa", date: "25/11/2023", text: "Excelente atendimento! A psicóloga me ajudou muito no meu processo de autoconhecimento e lida com a ansiedade de forma muito profissional e acolhedora. Recomendo muito!" }
-  ];
 
   // Triplica para garantir que nunca fique vazio durante o reset
-  const loopedTestimonials = [...testimonials, ...testimonials, ...testimonials];
-  const totalOriginal = testimonials.length;
+  const loopedAvaliacoes = [...avaliacoes, ...avaliacoes, ...avaliacoes];
+  const totalOriginal = avaliacoes.length;
 
   const startTimer = () => {
     clearInterval(timerRef.current);
@@ -58,7 +73,7 @@ export const TestimonialsSection = () => {
     }
   }, [animated]);
 
-  const totalCards = loopedTestimonials.length; // 15
+  const totalCards = loopedAvaliacoes.length; // 15
 
   return (
     <section className={styles.section}>
@@ -77,12 +92,12 @@ export const TestimonialsSection = () => {
               width: `100%`,
             }}
           >
-            {loopedTestimonials.map((t, i) => (
+            {loopedAvaliacoes.map((t, i) => (
               <div key={i} className={styles.carouselItem}>
                 <TestimonialCard
-                  author={t.author}
-                  date={t.date}
-                  text={t.text}
+                  author={t.nomePaciente}
+                  date={formatarData(t.data)}
+                  text={t.descricao}
                 />
               </div>
             ))}

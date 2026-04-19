@@ -5,10 +5,16 @@ export const ProfessionalCard = ({
   image, 
   name, 
   clinic,
-  price,
   specialties,
   onViewMore
 }) => {
+  const specialtiesArray = (() => {
+    if (Array.isArray(specialties)) {
+      return specialties.map(s => typeof s === 'string' ? s : s?.nome || s).filter(Boolean);
+    }
+    return specialties ? [specialties] : [];
+  })();
+
   return (
     <div className={styles.card}>
       <div className={styles.imageContainer}>
@@ -20,14 +26,14 @@ export const ProfessionalCard = ({
       </div>
       <h3 className={styles.name}>{name}</h3>
       <p className={styles.clinic}>{clinic}</p>
-      <p className={styles.price}>R$ {price.toFixed(2).replace('.', ',')}</p>
-      
       <div className={styles.specialtiesContainer}>
         <p className={styles.specialtiesLabel}>Especialidades:</p>
         <div className={styles.specialties}>
-          {specialties.map((specialty, index) => (
+          {specialtiesArray.length > 0 ? specialtiesArray.map((specialty, index) => (
             <span key={index} className={styles.badge}>{specialty}</span>
-          ))}
+          )) : (
+            <span className={styles.badge}>Nenhuma especialidade</span>
+          )}
         </div>
       </div>
 

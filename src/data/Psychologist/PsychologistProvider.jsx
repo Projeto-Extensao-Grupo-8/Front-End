@@ -1,0 +1,49 @@
+import { useState } from 'react';
+import { api } from '../../services';
+import { PsychologistContext } from './PsychologistContext';
+
+export const PsychologistProvider = ({ children }) => {
+  
+  const [psychologists, setPsychologists] = useState([])
+  const [psychologistById, setPsychologistById] = useState([])
+
+  const getPsychologist = async () => {
+    try {
+      const {data} = await api.get("/pacientes")
+      setPsychologists(data);
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getPsychologistById = async (id) => {
+    try {
+      const {data} = await api.get(`/pacientes/${id}`)
+      setPsychologistById(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const createPsychologist = async (data) => {
+    try {
+      await api.post("/pacientes", data)
+      // Dá para já deixar exibível se deu certo por aqui
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  return (
+    <PsychologistContext.Provider value={{
+      getPsychologist,
+      getPsychologistById,
+      createPsychologist,
+      psychologists,
+      psychologistById
+    }}>
+      {children}
+    </PsychologistContext.Provider>
+  );
+};

@@ -16,3 +16,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(error)
 );
+
+api.interceptors.request.use((config) => {
+  console.log('requisição:', config.method?.toUpperCase(), config.baseURL + config.url, config.params);
+  return config;
+});

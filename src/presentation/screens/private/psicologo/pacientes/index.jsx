@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PsicologoTemplate } from "../../../../atomic/template";
 import styles from "./styles.module.css";
 import EmailIcon from "@mui/icons-material/Email";
@@ -13,6 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArticleIcon from "@mui/icons-material/Article";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import { useInfiniteScroll } from "../../../../../hooks";
 
 const pacientes = [
   {
@@ -126,28 +127,28 @@ const PacientesCard = ({ paciente, onClick }) => (
   <div className={styles.card} onClick={() => onClick(paciente)}>
     <div className={styles.cardHeader}>
       <div className={styles.cardAvatar}>
-        <img src="/src/assets/logoCard.png" alt={paciente.nome} />
+        <img src="/src/assets/logoCard.png" alt={paciente.nomeUsuario} />
         <span className={styles.onlineDot} />
       </div>
       <div className={styles.cardInfo}>
-        <p className={styles.cardName}>{paciente.nome}</p>
-        <span className={styles.badgeAtivo}>{paciente.status}</span>
+        <p className={styles.cardName}>{paciente.nomeUsuario}</p>
+        <span className={paciente.ativo ? styles.badgeAtivo : styles.badgeDesativado}>{paciente.ativo}</span>
       </div>
       <ChevronRightIcon className={styles.chevron} />
     </div>
     <div className={styles.cardContact}>
-      <p><EmailIcon fontSize="inherit" /> {paciente.email}</p>
-      <p><PhoneIcon fontSize="inherit" /> {paciente.telefone}</p>
+      <p><EmailIcon fontSize="inherit" /> {paciente.emailUsuario}</p>
+      <p><PhoneIcon fontSize="inherit" /> {paciente.telefoneUsuario}</p>
     </div>
     <div className={styles.cardFooter}>
       <div className={styles.cardSessoes}>
         <ShowChartIcon fontSize="small" />
-        <span>{paciente.sessoes}</span>
+        <span>{paciente.qtdSessoes}</span>
         <span className={styles.sessLabel}>sessões</span>
       </div>
       <div className={styles.badgeData}>
         <CalendarTodayIcon fontSize="inherit" />
-        <span>{paciente.proximaSessao}</span>
+        <span>{paciente.dataProximaConsulta ?? "Retorno ainda não marcado"}</span>
       </div>
     </div>
   </div>
@@ -158,7 +159,6 @@ const ModalPaciente = ({ paciente, onClose }) => {
   const [novoTeste, setNovoTeste] = useState({ nome: "", observacoes: "" });
 
   const handleRegistrar = () => {
-    console.log("Teste registrado:", novoTeste);
     setNovoTeste({ nome: "", observacoes: "" });
   };
 
@@ -168,14 +168,14 @@ const ModalPaciente = ({ paciente, onClose }) => {
         {/* Modal Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalAvatar}>
-            <img src="/src/assets/logoCard.png" alt={paciente.nome} />
+            <img src="/src/assets/logoCard.png" alt={paciente.nomeUsuario} />
             <span className={styles.onlineDot} />
           </div>
           <div className={styles.modalPatientInfo}>
-            <h2>{paciente.nome}</h2>
+            <h2>{paciente.nomeUsuario}</h2>
             <div className={styles.modalMeta}>
-              <span className={styles.badgeAtivo}>{paciente.status}</span>
-              <span className={styles.modalSessoes}>{paciente.sessoes} sessões realizadas</span>
+              <span className={styles.badgeAtivo}>{paciente.ativo}</span>
+              <span className={styles.modalSessoes}>{paciente.qtdSessoes} sessões realizadas</span>
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
@@ -228,14 +228,14 @@ const ModalPaciente = ({ paciente, onClose }) => {
                     <span className={styles.sessaoLabel}>Total de Sessões</span>
                     <div className={styles.sessaoValue}>
                       <ShowChartIcon fontSize="small" />
-                      <strong>{paciente.sessoes}</strong>
+                      <strong>{paciente.qtdSessoes}</strong>
                     </div>
                   </div>
                   <div className={`${styles.sessaoCard} ${styles.sessaoCardPurple}`}>
                     <span className={styles.sessaoLabel}>Próxima Sessão</span>
                     <div className={styles.sessaoValue}>
                       <CalendarTodayIcon fontSize="small" />
-                      <strong>{paciente.proximaSessao}</strong>
+                      <strong>{paciente.dataProximaConsulta}</strong>
                     </div>
                   </div>
                 </div>
@@ -320,18 +320,41 @@ const ModalPaciente = ({ paciente, onClose }) => {
 };
 
 const Pacientes = () => {
+
+  // const user = JSON.parse(localStorage.getItem("usuario"))
+
+  const { data, fetchNextPage, hasNextPage } =
+    useInfiniteScroll({
+      route: `/pacientes/funcionario/${1}`,
+      queryName: 'pacientes',
+      limit: 20,
+    });
+
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage]);
+
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("Todos");
   const [viewGrid, setViewGrid] = useState(true);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
 
-  const pacientesFiltrados = pacientes.filter((p) => {
+  const pacientesFiltrados = data.length != 0 ? data.filter((p) => {
     const matchBusca =
-      p.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      p.email.toLowerCase().includes(busca.toLowerCase());
-    const matchFiltro = filtro === "Todos" || p.status === filtro;
+      p.nomeUsuario.toLowerCase().includes(busca.toLowerCase()) ||
+      p.emailUsuario.toLowerCase().includes(busca.toLowerCase());
+    const matchFiltro = filtro === "Todos" || p.ativo === (filtro == "true");
     return matchBusca && matchFiltro;
-  });
+  }) : []; 
 
   return (
     <PsicologoTemplate>
@@ -362,8 +385,8 @@ const Pacientes = () => {
               onChange={(e) => setFiltro(e.target.value)}
             >
               <option>Todos</option>
-              <option>Ativo</option>
-              <option>Inativo</option>
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
             </select>
           </div>
 
@@ -389,6 +412,7 @@ const Pacientes = () => {
             <PacientesCard key={p.id} paciente={p} onClick={setPacienteSelecionado} />
           ))}
         </div>
+        <div ref={sentinelRef} />
       </div>
 
       {pacienteSelecionado && (

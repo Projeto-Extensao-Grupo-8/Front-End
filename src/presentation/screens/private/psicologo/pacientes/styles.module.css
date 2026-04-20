@@ -192,6 +192,17 @@
   font-weight: 500;
 }
 
+.badgeDesativado {
+  display: inline-block;
+  background: var(--red-200);
+  color: var(--red-200);
+  border: 1px solid var(--red-200);
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
 .chevron {
   color: #D4789F;
   font-size: 18px !important;

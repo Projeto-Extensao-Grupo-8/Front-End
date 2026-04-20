@@ -1,9 +1,7 @@
 services:
 
   frontend:
-    build:
-      context: .          # já está dentro de Front-End
-      dockerfile: dockerfile
+    image: seu-usuario/frontend:latest
     container_name: frontend
     ports:
       - "80:80"
@@ -14,15 +12,13 @@ services:
       - app-network
 
   strapi:
-    build:
-      context: ./backend  # backend está dentro de Front-End
-      dockerfile: dockerfile
+    image: seu-usuario/strapi:latest
     container_name: strapi
     expose:
-      - "1337" 
+      - "1337"
     restart: always
     env_file:
-      - ./backend/.env    # .env está dentro de backend
+      - ./.env
     networks:
       - app-network
 

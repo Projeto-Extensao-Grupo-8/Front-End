@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useConsultation } from '../../../../../data';
 import { PsicologoTemplate } from "../../../../atomic/template";
 import styles from "./styles.module.css";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -12,13 +13,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
-const sessoesIniciais = [
-  { id: 1, data: "28/12/2025", horario: "10:00 - 11:00", paciente: "Junior das Neves", modalidade: "Online", status: "Confirmada" },
-  { id: 2, data: "28/12/2025", horario: "11:30 - 12:00", paciente: "Marcelo Castro", modalidade: "Online", status: "Confirmada" },
-  { id: 3, data: "28/12/2025", horario: "13:00 - 14:00", paciente: "Cláudia Oliveira", modalidade: "Online", status: "Confirmada" },
-  { id: 4, data: "28/12/2025", horario: "10:00 - 11:00", paciente: "Mayara da Silva", modalidade: "Online", status: "Pendente" },
-];
 
 const STATUS_OPTIONS = ["Confirmada", "Realizada", "Pendente", "Cancelada"];
 
@@ -127,22 +121,81 @@ const statusHistoricoClass = (status) => {
   return styles.badgeConcluida;
 };
 
-const MInhaAgenda = () => {
+const MinhaAgenda = () => {
+
+  const { 
+    getNextsConsultations, 
+    nextConsultations, 
+    updateConsultationStatus, 
+    getHistoricConsultations, 
+    getPatientHistoricConsultations,
+    patientHistoricConsultations,
+    historicConsultations 
+  } = useConsultation();
+
+  console.log(patientHistoricConsultations)
+
   const [expandido, setExpandido] = useState(false);
-  const [sessoes, setSessoes] = useState(sessoesIniciais);
+  const [sessoes, setSessoes] = useState([]);
+  const [selectId, setSelectId] = useState(0);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(pacientes[0]);
-  const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
+  // const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
   const fileInputRef = useRef(null);
 
-  const sessoesExibidas = expandido ? sessoes : sessoes.slice(0, 4);
+  useEffect(() => {
+    getNextsConsultations(1);
+    getHistoricConsultations(1);
+  }, []);
+
+  const pacientesUnicos = historicConsultations.reduce((acc, consulta) => {
+    if (!acc.find((p) => p.id === consulta.idPaciente)) {
+      acc.push({ id: consulta.idPaciente, nome: consulta.paciente });
+    }
+    return acc;
+  }, []);
 
   const handlePacienteChange = (e) => {
-    const p = pacientes.find((p) => p.id === Number(e.target.value));
+    const id = Number(e.currentTarget.value);
+    if (!id) {
+      setSelectId(0);
+      // setArquivos([]);
+      setPacienteSelecionado(null);
+      return;
+    }
+    setSelectId(id);
+    const p = pacientesUnicos.find((p) => p.id === id);
     if (p) {
       setPacienteSelecionado(p);
-      setArquivos(p.arquivos);
+      // setArquivos([]);
     }
   };
+
+  useEffect(() => {
+    if (selectId != 0) {
+      getPatientHistoricConsultations(selectId);
+    }
+  },[selectId])
+
+  useEffect(() => {
+    if (nextConsultations.length > 0) {
+      setSessoes(nextConsultations);
+    } 
+  }, [nextConsultations]);
+
+  const handleStatusChange = async (id, novoStatus) => {
+    // Vc vai ter que alterar +/- aqui jão, pq o que ele faz, quando ele tenta mudar o estado para confirmada pelo select, daria para ele plotar o chamado do zap aqui e dps continuar a requisição normalmente (Ele espera a API do back-end confirmar que realmente mudou)
+    const statusAnterior = sessoes.find((s) => s.id === id)?.status;
+
+    setSessoes((prev) => prev.map((s) => s.id === id ? { ...s, status: novoStatus } : s));
+
+    try {
+      await updateConsultationStatus(id, novoStatus);
+    } catch {
+      setSessoes((prev) => prev.map((s) => s.id === id ? { ...s, status: statusAnterior } : s));
+    }
+  };
+
+  const sessoesExibidas = expandido ? sessoes : sessoes.slice(0, 4);
 
   const handleAnexar = (e) => {
     const files = Array.from(e.target.files).map((f) => f.name);
@@ -151,10 +204,6 @@ const MInhaAgenda = () => {
 
   const handleRemoverArquivo = (index) => {
     setArquivos((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleStatusChange = (id, novoStatus) => {
-    setSessoes((prev) => prev.map((s) => s.id === id ? { ...s, status: novoStatus } : s));
   };
 
   return (
@@ -208,100 +257,97 @@ const MInhaAgenda = () => {
             ))}
           </div>
         </section>
-
-        {/* Bottom grid */}
         <div className={styles.bottomGrid}>
-          {/* Left: Paciente */}
           <div className={styles.leftCol}>
             {/* Select */}
             <div className={styles.card}>
               <label className={styles.selectLabel}>Selecione seu paciente</label>
               <select
                 className={styles.pacienteSelect}
-                value={pacienteSelecionado.id}
+                value={selectId}  // usa direto o selectId, que começa em 0
                 onChange={handlePacienteChange}
               >
-                {pacientes.map((p) => (
+                <option value={0}>Todos os pacientes</option>
+                {pacientesUnicos.map((p) => (
                   <option key={p.id} value={p.id}>{p.nome}</option>
                 ))}
               </select>
             </div>
-
-            {/* Patient info */}
-            <div className={styles.card}>
-              <div className={styles.pacienteInfo}>
-                <div className={styles.avatarCircle}>
-                  {pacienteSelecionado.foto ? (
-                    <img src={pacienteSelecionado.foto} alt={pacienteSelecionado.nome} />
-                  ) : (
-                    <PersonIcon style={{ fontSize: 40, color: "#D4789F" }} />
-                  )}
-                </div>
-                <p className={styles.pacienteNome}>{pacienteSelecionado.nome}</p>
-                <span className={styles.badgeAtivo}>{pacienteSelecionado.status}</span>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Email</label>
-                <div className={styles.fieldInput}>
-                  <EmailIcon fontSize="small" className={styles.fieldIcon} />
-                  <span>{pacienteSelecionado.email}</span>
-                </div>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Telefone</label>
-                <div className={styles.fieldInput}>
-                  <PhoneIcon fontSize="small" className={styles.fieldIcon} />
-                  <span>{pacienteSelecionado.telefone}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Observações / Arquivos */}
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Observações</h3>
-              <div className={styles.arquivosList}>
-                {arquivos.map((arq, idx) => (
-                  <div key={idx} className={styles.arquivoItem}>
-                    <InsertDriveFileIcon fontSize="small" className={styles.arquivoIcon} />
-                    <span className={styles.arquivoNome}>{arq}</span>
+            {
+              selectId != 0 && (
+                <>
+                  <div className={styles.card}>
+                    <div className={styles.pacienteInfo}>
+                      <div className={styles.avatarCircle}>
+                        {patientHistoricConsultations.foto ? (
+                          <img src={patientHistoricConsultations.foto} alt={patientHistoricConsultations?.nome} />
+                        ) : (
+                          <PersonIcon style={{ fontSize: 40, color: "#D4789F" }} />
+                        )}
+                      </div>
+                      <p className={styles.pacienteNome}>{patientHistoricConsultations[0]?.paciente}</p>
+                      <span className={styles.badgeAtivo}>{patientHistoricConsultations?.status}</span>
+                    </div>
+    
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel}>Email</label>
+                      <div className={styles.fieldInput}>
+                        <EmailIcon fontSize="small" className={styles.fieldIcon} />
+                        <span>{patientHistoricConsultations[0]?.email}</span>
+                      </div>
+                    </div>
+    
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel}>Telefone</label>
+                      <div className={styles.fieldInput}>
+                        <PhoneIcon fontSize="small" className={styles.fieldIcon} />
+                        <span>{patientHistoricConsultations[0]?.telefone}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.card}>
+                  <h3 className={styles.cardTitle}>Observações</h3>
+                    <div className={styles.arquivosList}>
+                      {/* {arquivos.map((arq, idx) => (
+                        <div key={idx} className={styles.arquivoItem}>
+                          <InsertDriveFileIcon fontSize="small" className={styles.arquivoIcon} />
+                          <span className={styles.arquivoNome}>{arq}</span>
+                          <button
+                            className={styles.removerArqBtn}
+                            onClick={() => handleRemoverArquivo(idx)}
+                          >
+                            <CloseIcon fontSize="inherit" />
+                          </button>
+                        </div>
+                      ))}
+                      {arquivos.length === 0 && (
+                        <p className={styles.emptyArq}>Nenhum arquivo anexado.</p>
+                      )} */}
+                    </div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      multiple
+                      onChange={handleAnexar}
+                    />
                     <button
-                      className={styles.removerArqBtn}
-                      onClick={() => handleRemoverArquivo(idx)}
+                      className={styles.anexarBtn}
+                      onClick={() => fileInputRef.current.click()}
                     >
-                      <CloseIcon fontSize="inherit" />
+                      <AttachFileIcon fontSize="small" />
+                      Anexar Arquivos
                     </button>
                   </div>
-                ))}
-                {arquivos.length === 0 && (
-                  <p className={styles.emptyArq}>Nenhum arquivo anexado.</p>
-                )}
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                multiple
-                onChange={handleAnexar}
-              />
-              <button
-                className={styles.anexarBtn}
-                onClick={() => fileInputRef.current.click()}
-              >
-                <AttachFileIcon fontSize="small" />
-                Anexar Arquivos
-              </button>
-            </div>
+                </>
+              )
+            }
           </div>
-
-          {/* Right: Histórico + Testes */}
           <div className={styles.rightCol}>
-            {/* Histórico */}
             <div className={styles.card}>
               <h3 className={styles.cardTitle}>Histórico de Consultas</h3>
               <div className={styles.historicoList}>
-                {pacienteSelecionado.historico.map((h, idx) => (
+                {selectId != 0 ? patientHistoricConsultations.map((h, idx) => (
                   <div key={idx} className={styles.historicoRow}>
                     <div className={styles.historicoBadgeData}>
                       <CalendarTodayIcon fontSize="inherit" />
@@ -310,33 +356,48 @@ const MInhaAgenda = () => {
                     <span className={styles.historicoPsicologa}>{h.psicologa}</span>
                     <span className={statusHistoricoClass(h.status)}>{h.status}</span>
                   </div>
-                ))}
-                {pacienteSelecionado.historico.length === 0 && (
+                )): historicConsultations.map((h, idx) => (
+                  <div key={idx} className={styles.historicoRow}>
+                    <div className={styles.historicoBadgeData}>
+                      <CalendarTodayIcon fontSize="inherit" />
+                      <span>{h.data}</span>
+                    </div>
+                    <span className={styles.historicoPsicologa}>{h.psicologa}</span>
+                    <span className={statusHistoricoClass(h.status)}>{h.status}</span>
+                  </div>))
+                  }
+                {selectId != 0 ? patientHistoricConsultations.length === 0 && (
+                  <p className={styles.emptyText}>Nenhuma consulta registrada.</p>
+                ) : historicConsultations.lenght === 0 && (
                   <p className={styles.emptyText}>Nenhuma consulta registrada.</p>
                 )}
               </div>
             </div>
-
-            {/* Testes */}
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Testes Aplicados</h3>
-              <div className={styles.testesList}>
-                {pacienteSelecionado.testes.map((t, idx) => (
-                  <div key={idx} className={styles.testeRow}>
-                    <div className={styles.testeInfo}>
-                      <span className={styles.testeNome}>{t.nome}</span>
-                      <span className={styles.testeDetalhe}>
-                        Aplicado em: {t.datAplicacao} &nbsp;|&nbsp; Aplicado por: {t.aplicador}
-                      </span>
+            {
+              selectId != 0 && (
+                <>               
+                  <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>Testes Aplicados</h3>
+                    <div className={styles.testesList}>
+                      {/* {pacienteSelecionado.testes.map((t, idx) => (
+                        <div key={idx} className={styles.testeRow}>
+                          <div className={styles.testeInfo}>
+                            <span className={styles.testeNome}>{t.nome}</span>
+                            <span className={styles.testeDetalhe}>
+                              Aplicado em: {t.datAplicacao} &nbsp;|&nbsp; Aplicado por: {t.aplicador}
+                            </span>
+                          </div>
+                          <span className={styles.badgeValido}>{t.status}</span>
+                        </div>
+                      ))}
+                      {pacienteSelecionado.testes.length === 0 && (
+                        <p className={styles.emptyText}>Nenhum teste aplicado.</p>
+                      )} */}
                     </div>
-                    <span className={styles.badgeValido}>{t.status}</span>
                   </div>
-                ))}
-                {pacienteSelecionado.testes.length === 0 && (
-                  <p className={styles.emptyText}>Nenhum teste aplicado.</p>
-                )}
-              </div>
-            </div>
+                </>
+              )
+            }
           </div>
         </div>
       </div>
@@ -344,4 +405,4 @@ const MInhaAgenda = () => {
   );
 };
 
-export default MInhaAgenda;
+export default MinhaAgenda;

@@ -1,19 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import { Badge, Button, ButtonTextIcon } from "../../atom";
-
-const MOCK_EMPLOYEES = [
-  { id: "1", nome: "Ana Beatriz Silva", especialidade: "Terapia Cognitivo-Comportamental",
-    email: "ana.b@email.com", dataAdmissao: "15/03/2024", crp: "06/123456", status: "ativo" },
-  { id: "2", nome: "Carlos Oliveira", especialidade: "Psicanálise",
-    email: "carlos.o@email.com", dataAdmissao: "01/11/2023", crp: "06/98543", status: "ativo" },
-  { id: "3", nome: "Marcos Vinicius", especialidade: "Neuropsicologia",
-    email: "marcos.v@email.com", dataAdmissao: "22/07/2024", crp: "06/175321", status: "ativo" },
-  { id: "4", nome: "Julia Pereira", especialidade: "Terapia de Casal",
-    email: "julia.p@email.com", dataAdmissao: "10/01/2023", crp: "06/112987", status: "ativo" },
-  { id: "5", nome: "Douglas da Costa Alves", especialidade: "Neuropsicologia",
-    email: "douglas.c@email.com", dataAdmissao: "06/06/2022", crp: "06/205468", status: "inativo" },
-];
+import { api } from "../../../../services/api";
 
 const EditIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -31,14 +19,127 @@ const ToggleIcon = () => (
   </svg>
 );
 
-export function EmployeeTable({ onEditar }) {
-  const [employees, setEmployees] = useState(MOCK_EMPLOYEES);
+export function EmployeeTable({ onEditar, searchTerm, status }) {
+  const [employees, setEmployees] = useState([]);
+  const [allResults, setAllResults] = useState([]);
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  // Pra implementar o back-end aí:
-  // useEffect(() => {
-  //   fetch("/api/employees").then(res => res.json()).then(setEmployees);
-  // }, []);
+  const pageSize = 5;
+
+  useEffect(() => {
+    setPage(1);
+    if (searchTerm) {
+      searchEmployees(searchTerm);
+    } else if (status) {
+      filterByStatus(status);
+    } else {
+      fetchEmployees(1);
+    }
+  }, [searchTerm, status]);
+
+  useEffect(() => {
+    if (allResults.length > 0) {
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setEmployees(allResults.slice(startIndex, endIndex));
+    }
+  }, [page, allResults]);
+
+  const fetchEmployees = async (currentPage) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/funcionarios?pagina=${currentPage}&tamanho=1000`);
+      const employeesData = response.data || [];
+      const mappedEmployees = employeesData.map(emp => ({
+        id: emp.idFuncionario,
+        nome: emp.nomeUsuario,
+        especialidade: emp.especialidades.map(e => e.nome).join(', '),
+        email: emp.emailUsuario,
+        dataAdmissao: formatDate(emp.dtAdmissao),
+        crp: emp.crp,
+        status: emp.ativo ? 'ativo' : 'inativo'
+      }));
+      setAllResults(mappedEmployees);
+      setTotal(mappedEmployees.length);
+      const paginatedEmployees = mappedEmployees.slice(0, pageSize);
+      setEmployees(paginatedEmployees);
+    } catch (error) {
+      console.error('Erro ao buscar funcionários:', error);
+      setEmployees([]);
+      setAllResults([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const searchEmployees = async (termo) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/funcionarios/buscarPorTermo/${termo}`);
+      const employeesData = response.data || [];
+      const mappedEmployees = employeesData.map(emp => ({
+        id: emp.idFuncionario,
+        nome: emp.nomeUsuario,
+        especialidade: emp.especialidades.map(e => e.nome).join(', '),
+        email: emp.emailUsuario,
+        dataAdmissao: formatDate(emp.dtAdmissao),
+        crp: emp.crp,
+        status: emp.ativo ? 'ativo' : 'inativo'
+      }));
+      setAllResults(mappedEmployees);
+      setTotal(mappedEmployees.length);
+      const paginatedEmployees = mappedEmployees.slice(0, pageSize);
+      setEmployees(paginatedEmployees);
+    } catch (error) {
+      console.error('Erro ao buscar funcionários:', error);
+      setEmployees([]);
+      setAllResults([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterByStatus = async (statusFilter) => {
+    setLoading(true);
+    try {
+      const ativoValue = statusFilter === 'ativo' ? true : false;
+      const response = await api.get(`/funcionarios/buscarPorStatus?ativo=${ativoValue}`);
+      const employeesData = response.data || [];
+      const mappedEmployees = employeesData.map(emp => ({
+        id: emp.idFuncionario,
+        nome: emp.nomeUsuario,
+        especialidade: emp.especialidades.map(e => e.nome).join(', '),
+        email: emp.emailUsuario,
+        dataAdmissao: formatDate(emp.dtAdmissao),
+        crp: emp.crp,
+        status: emp.ativo ? 'ativo' : 'inativo'
+      }));
+      setAllResults(mappedEmployees);
+      setTotal(mappedEmployees.length);
+      const paginatedEmployees = mappedEmployees.slice(0, pageSize);
+      setEmployees(paginatedEmployees);
+    } catch (error) {
+      console.error('Erro ao filtrar funcionários por status:', error);
+      setEmployees([]);
+      setAllResults([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDesativar = (id) => {
     setEmployees((prev) =>
@@ -52,8 +153,11 @@ export function EmployeeTable({ onEditar }) {
     );
   };
 
+  const maxPage = Math.ceil(total / pageSize);
+
   return (
     <div className={styles.wrapper}>
+      {loading && <p>Carregando...</p>}
       <table className={styles.table}>
         <thead>
           <tr>
@@ -109,11 +213,21 @@ export function EmployeeTable({ onEditar }) {
 
       <div className={styles.footer}>
         <span className={styles.exibindo}>
-          Exibindo {employees.length} de {employees.length} funcionários
+          Exibindo {employees.length} de {total} funcionários
         </span>
         <div className={styles.paginacao}>
-          <Button variant="voltar" text="Anterior" onClick={() => setPage((p) => Math.max(1, p - 1))} />
-          <Button variant="ok" text="Próxima" onClick={() => setPage((p) => p + 1)} />
+          <Button
+            variant="voltar"
+            text="Anterior"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          />
+          <Button
+            variant="ok"
+            text="Próxima"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page * pageSize >= total}
+          />
         </div>
       </div>
     </div>

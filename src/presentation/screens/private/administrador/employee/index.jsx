@@ -1,13 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, FilterSelect, SearchInput } from "../../../../atomic/atom";
 import { AdministrativeEmployeeCards, EmployeeTable, EmployeeModal } from "../../../../atomic/organism";
 import { AdminTemplate } from "../../../../atomic/template";
+import { api } from "../../../../../services/api";
+
 
 export default function Employee() {
     const [status, setStatus] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("cadastrar");
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const [funcionarios, setFuncionarios] = useState();
+
+    const [dadosKpis, setDadosKpis] = useState([]);
+
+ const buscarDadosKpis = async () => {
+    try {
+      const response = await api.get("/funcionarios/kpisGestaoFuncionarios");
+      setDadosKpis(response.data);
+    } catch (error) {
+      console.error("Nao foi possivel listar os dados da KPIS", error);
+    }
+  };
+
+   useEffect(() => {
+      buscarDadosKpis();
+    }, []);
+
+    const handleSearch = async (termo) => {
+      setSearchTerm(termo);
+    };
 
     return (
         <AdminTemplate>
@@ -27,10 +51,10 @@ export default function Employee() {
                 </div>
 
                 <AdministrativeEmployeeCards
-                    totalFuncionarios={5}
-                    ativos={5}
-                    inativos={0}
-                    especialidades={4}
+                    totalFuncionarios={dadosKpis.totaisFuncionarios}
+                    ativos={dadosKpis.totaisFuncionariosAtivos || 0}
+                    inativos={dadosKpis.totalFuncionariosDesativados || 0}
+                    especialidades={dadosKpis.totalEspecialidades || 0}
                 />
 
                 <div style={{
@@ -44,7 +68,7 @@ export default function Employee() {
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <SearchInput
                             placeholder="Buscar por nome, email ou CRP..."
-                            onSearch={(value) => console.log(value)}
+                            onSearch={handleSearch}
                         />
                         <FilterSelect
                             value={status}
@@ -64,6 +88,8 @@ export default function Employee() {
                 </div>
 
                 <EmployeeTable
+                    searchTerm={searchTerm}
+                    status={status}
                     onEditar={(emp) => {
                         setSelectedEmployee(emp);
                         setModalMode("editar");

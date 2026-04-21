@@ -1,19 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./styles.module.css";
 import { Badge, Button, ButtonTextIcon } from "../../atom";
+import { funcionarioService } from "../../../../services/funcionarioService";
 
-const MOCK_EMPLOYEES = [
-  { id: "1", nome: "Ana Beatriz Silva", especialidade: "Terapia Cognitivo-Comportamental",
-    email: "ana.b@email.com", dataAdmissao: "15/03/2024", crp: "06/123456", status: "ativo" },
-  { id: "2", nome: "Carlos Oliveira", especialidade: "Psicanálise",
-    email: "carlos.o@email.com", dataAdmissao: "01/11/2023", crp: "06/98543", status: "ativo" },
-  { id: "3", nome: "Marcos Vinicius", especialidade: "Neuropsicologia",
-    email: "marcos.v@email.com", dataAdmissao: "22/07/2024", crp: "06/175321", status: "ativo" },
-  { id: "4", nome: "Julia Pereira", especialidade: "Terapia de Casal",
-    email: "julia.p@email.com", dataAdmissao: "10/01/2023", crp: "06/112987", status: "ativo" },
-  { id: "5", nome: "Douglas da Costa Alves", especialidade: "Neuropsicologia",
-    email: "douglas.c@email.com", dataAdmissao: "06/06/2022", crp: "06/205468", status: "inativo" },
-];
+function formatarData(iso) {
+  if (!iso) return "—";
+  const [ano, mes, dia] = String(iso).split("-");
+  return `${dia}/${mes}/${ano}`;
+}
 
 const EditIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -31,25 +25,46 @@ const ToggleIcon = () => (
   </svg>
 );
 
-export function EmployeeTable({ onEditar }) {
-  const [employees, setEmployees] = useState(MOCK_EMPLOYEES);
-  const [page, setPage] = useState(1);
+export function EmployeeTable({ onEditar, refreshKey }) {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Pra implementar o back-end aí:
-  // useEffect(() => {
-  //   fetch("/api/employees").then(res => res.json()).then(setEmployees);
-  // }, []);
+  const fetchEmployees = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await funcionarioService.listar();
+      setEmployees(data);
+    } catch (err) {
+      console.error("Erro ao carregar funcionários:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const handleDesativar = (id) => {
-    setEmployees((prev) =>
-      prev.map((emp) => emp.id === id ? { ...emp, status: "inativo" } : emp)
-    );
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees, refreshKey]);
+
+  const handleDesativar = async (id) => {
+    try {
+      await funcionarioService.desativar(id);
+      setEmployees((prev) =>
+        prev.map((emp) => emp.idFuncionario === id ? { ...emp, ativo: false } : emp)
+      );
+    } catch (err) {
+      console.error("Erro ao desativar:", err);
+    }
   };
 
-  const handleAtivar = (id) => {
-    setEmployees((prev) =>
-      prev.map((emp) => emp.id === id ? { ...emp, status: "ativo" } : emp)
-    );
+  const handleAtivar = async (id) => {
+    try {
+      await funcionarioService.ativar(id);
+      setEmployees((prev) =>
+        prev.map((emp) => emp.idFuncionario === id ? { ...emp, ativo: true } : emp)
+      );
+    } catch (err) {
+      console.error("Erro ao ativar:", err);
+    }
   };
 
   return (
@@ -67,54 +82,58 @@ export function EmployeeTable({ onEditar }) {
           </tr>
         </thead>
         <tbody>
-          {employees.map((emp) => (
-            <tr key={emp.id}>
-              <td className={styles.nome}>{emp.nome}</td>
-              <td className={styles.especialidade}>{emp.especialidade}</td>
-              <td className={styles.email}><strong>{emp.email}</strong></td>
-              <td>{emp.dataAdmissao}</td>
-              <td>{emp.crp}</td>
-              <td>
-                <Badge
-                  text={emp.status === "ativo" ? "Ativo" : "Inativo"}
-                  status={emp.status === "ativo" ? "active" : "inactive"}
-                />
-              </td>
-              <td className={styles.acoes}>
-                <ButtonTextIcon
+          {loading ? (
+            <tr><td colSpan={7} style={{ textAlign: "center", padding: "24px" }}>Carregando...</td></tr>
+          ) : employees.length === 0 ? (
+            <tr><td colSpan={7} style={{ textAlign: "center", padding: "24px" }}>Nenhum funcionário cadastrado</td></tr>
+          ) : (
+            employees.map((emp) => (
+              <tr key={emp.idFuncionario}>
+                <td className={styles.nome}>{emp.nomeUsuario}</td>
+                <td className={styles.especialidade}>
+                  {emp.especialidades?.[0]?.nome ?? "—"}
+                </td>
+                <td className={styles.email}><strong>{emp.emailUsuario}</strong></td>
+                <td>{formatarData(emp.dtAdmissao)}</td>
+                <td>{emp.crp}</td>
+                <td>
+                  <Badge
+                    text={emp.ativo ? "Ativo" : "Inativo"}
+                    status={emp.ativo ? "active" : "inactive"}
+                  />
+                </td>
+                <td className={styles.acoes}>
+                  <ButtonTextIcon
                     text="Editar"
                     Icon={EditIcon}
                     onClick={() => onEditar?.(emp)}
-                />
-                {emp.status === "ativo" ? (
-                  <ButtonTextIcon
-                    text="Desativar"
-                    Icon={ToggleIcon}
-                    onClick={() => handleDesativar(emp.id)}
-                    className={styles.desativar}
                   />
-                ) : (
-                  <ButtonTextIcon
-                    text="Ativar"
-                    Icon={ToggleIcon}
-                    onClick={() => handleAtivar(emp.id)}
-                    className={styles.ativar}
-                  />
-                )}
-              </td>
-            </tr>
-          ))}
+                  {emp.ativo ? (
+                    <ButtonTextIcon
+                      text="Desativar"
+                      Icon={ToggleIcon}
+                      onClick={() => handleDesativar(emp.idFuncionario)}
+                      className={styles.desativar}
+                    />
+                  ) : (
+                    <ButtonTextIcon
+                      text="Ativar"
+                      Icon={ToggleIcon}
+                      onClick={() => handleAtivar(emp.idFuncionario)}
+                      className={styles.ativar}
+                    />
+                  )}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       <div className={styles.footer}>
         <span className={styles.exibindo}>
-          Exibindo {employees.length} de {employees.length} funcionários
+          Exibindo {employees.length} funcionário{employees.length !== 1 ? "s" : ""}
         </span>
-        <div className={styles.paginacao}>
-          <Button variant="voltar" text="Anterior" onClick={() => setPage((p) => Math.max(1, p - 1))} />
-          <Button variant="ok" text="Próxima" onClick={() => setPage((p) => p + 1)} />
-        </div>
       </div>
     </div>
   );

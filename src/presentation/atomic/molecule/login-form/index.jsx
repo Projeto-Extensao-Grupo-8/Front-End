@@ -5,11 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../../services/api";
 
 const REDIRECT_BY_ROLE = {
-  ADMIN: "/admin/dashboard",
-  FUNCIONARIO: "/psicologo/pacientes",
-  PSICOLOGO: "/psicologo/pacientes",
-  PACIENTE: "/paciente/perfil",
-  USUARIO: "/paciente/perfil",
+  "4": "/admin/dashboard",
+  "3": "/psicologo/pacientes",
+  "2": "/paciente/perfil",
+  "1": "/paciente/perfil",
 };
 
 export const LoginForm = () => {

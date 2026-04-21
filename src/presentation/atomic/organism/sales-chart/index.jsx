@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
+const DEFAULT_DATA = [
   { month: "Jan", value: 52 },
   { month: "Fev", value: 30 },
   { month: "Mar", value: 54 },
@@ -45,7 +45,8 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export function SalesChart() {
+export function SalesChart({ data: dataProp }) {
+  const data = dataProp && dataProp.length > 0 ? dataProp : DEFAULT_DATA;
   const gradientId = useId();
   const [primaryColor, setPrimaryColor] = useState("");
   const [primaryTransparent, setPrimaryTransparent] = useState("");

@@ -1,7 +1,7 @@
-// TestModal/index.jsx
 import { useState } from "react";
 import styles from "./styles.module.css";
 import { Button } from "../../atom";
+import { testeService } from "../../../../services/testeService";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -59,7 +59,7 @@ function StepDadosBasicos({ data, onChange }) {
           <FieldIcon d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
           <input
             className={styles.input}
-            placeholder="Digitar nome"
+            placeholder="Nome do teste"
             value={data.nome}
             onChange={(e) => onChange("nome", e.target.value)}
           />
@@ -69,7 +69,7 @@ function StepDadosBasicos({ data, onChange }) {
           <FieldIcon d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <input
             className={styles.input}
-            placeholder="Digitar código"
+            placeholder="Código (ex: WISC-V)"
             value={data.codigo}
             onChange={(e) => onChange("codigo", e.target.value)}
           />
@@ -83,23 +83,36 @@ function StepDadosBasicos({ data, onChange }) {
             onChange={(e) => onChange("categoria", e.target.value)}
           >
             <option value="">Selecionar Categoria</option>
-            <option value="hemograma">Hemograma</option>
-            <option value="bioquimica">Bioquímica</option>
-            <option value="hormonio">Hormônio</option>
+            <option value="Inteligência">Inteligência</option>
+            <option value="Personalidade">Personalidade</option>
+            <option value="Atenção">Atenção</option>
+            <option value="Memória">Memória</option>
+            <option value="Neuropsicológico">Neuropsicológico</option>
+            <option value="Desenvolvimento">Desenvolvimento</option>
+            <option value="Outros">Outros</option>
           </select>
         </div>
 
         <div className={styles.fieldRow}>
           <FieldIcon d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          <input
+            className={styles.input}
+            placeholder="Subcategoria (ex: Inteligência Fluida)"
+            value={data.subCategoria}
+            onChange={(e) => onChange("subCategoria", e.target.value)}
+          />
+        </div>
+
+        <div className={styles.fieldRow}>
+          <FieldIcon d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
           <select
             className={styles.select}
             value={data.tipo}
             onChange={(e) => onChange("tipo", e.target.value)}
           >
             <option value="">Selecionar Tipo</option>
-            <option value="Bipolaridade">Bipolaridade</option>
-            <option value="TDAH">TDAH</option>
-            <option value="Autismo">Autismo</option>
+            <option value="Digital">Digital</option>
+            <option value="Fisico">Físico</option>
           </select>
         </div>
 
@@ -107,7 +120,7 @@ function StepDadosBasicos({ data, onChange }) {
           <FieldIcon d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
           <input
             className={styles.input}
-            placeholder="Digitar Editora"
+            placeholder="Editora (ex: Vetor Editora)"
             value={data.editora}
             onChange={(e) => onChange("editora", e.target.value)}
           />
@@ -119,7 +132,7 @@ function StepDadosBasicos({ data, onChange }) {
 
 // ─── Step 2 — Preço / Validade ────────────────────────────────────────────────
 
-function StepPrecoValidade({ data, onChange, jaEmEstoque }) {
+function StepPrecoValidade({ data, onChange }) {
   return (
     <div className={styles.stepContent}>
       <div className={styles.imagePreview}>
@@ -132,7 +145,10 @@ function StepPrecoValidade({ data, onChange, jaEmEstoque }) {
           <FieldIcon d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           <input
             className={styles.input}
-            placeholder="Digitar Preço"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Preço (ex: 150.75)"
             value={data.preco}
             onChange={(e) => onChange("preco", e.target.value)}
           />
@@ -140,23 +156,21 @@ function StepPrecoValidade({ data, onChange, jaEmEstoque }) {
 
         <div className={styles.fieldRow}>
           <FieldIcon d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-          <select
-            className={styles.select}
+          <input
+            className={styles.input}
+            type="date"
             value={data.validade}
             onChange={(e) => onChange("validade", e.target.value)}
-          >
-            <option value="">Selecionar Validade</option>
-            <option value="30">30 dias</option>
-            <option value="60">60 dias</option>
-            <option value="90">90 dias</option>
-          </select>
+          />
         </div>
 
         <div className={styles.fieldRow}>
           <FieldIcon d="M3 3h18v18H3zM3 9h18M9 21V9" />
           <input
             className={styles.input}
-            placeholder="Digitar estoque-mínimo"
+            type="number"
+            min="0"
+            placeholder="Estoque mínimo"
             value={data.estoqueMinimo}
             onChange={(e) => onChange("estoqueMinimo", e.target.value)}
           />
@@ -170,7 +184,7 @@ function StepPrecoValidade({ data, onChange, jaEmEstoque }) {
             onChange={(e) => onChange("quantidade", e.target.value)}
           >
             <option value="">Selecionar Quantidade</option>
-            {[1,5,10,20,50,100].map(n => (
+            {[1, 5, 10, 20, 50, 100].map((n) => (
               <option key={n} value={n}>{n} unidades</option>
             ))}
           </select>
@@ -187,7 +201,7 @@ function StepSucesso({ nomeTeste, jaEmEstoque, onClose }) {
     <div className={styles.stepSucesso}>
       <BoxIcon />
       <p className={styles.sucessoTexto}>
-        Teste {nomeTeste} foi {jaEmEstoque ? "atualizado" : "cadastrado"} com Sucesso!
+        Teste {nomeTeste} foi {jaEmEstoque ? "atualizado" : "cadastrado"} com sucesso!
       </p>
       <Button variant="ok" text="Ok!" onClick={onClose} />
     </div>
@@ -196,7 +210,7 @@ function StepSucesso({ nomeTeste, jaEmEstoque, onClose }) {
 
 // ─── Stepper ──────────────────────────────────────────────────────────────────
 
-function Stepper({ total, current, onNext, onBack, onSubmit }) {
+function Stepper({ total, current, onNext, onBack, onSubmit, loading }) {
   const isFirst = current === 0;
   const isLast = current === total - 1;
 
@@ -210,7 +224,7 @@ function Stepper({ total, current, onNext, onBack, onSubmit }) {
       <div className={styles.stepperActions}>
         {!isFirst && <Button variant="voltar" text="Voltar" onClick={onBack} />}
         {isLast
-          ? <Button variant="ok" text="Cadastrar" onClick={onSubmit} />
+          ? <Button variant="ok" text={loading ? "Cadastrando..." : "Cadastrar"} onClick={onSubmit} />
           : <Button variant="ok" text="Avançar" onClick={onNext} />
         }
       </div>
@@ -221,15 +235,19 @@ function Stepper({ total, current, onNext, onBack, onSubmit }) {
 // ─── Modal Principal ──────────────────────────────────────────────────────────
 
 const INITIAL_DATA = {
-  nome: "", codigo: "", categoria: "", tipo: "", editora: "",
+  nome: "", codigo: "", categoria: "", subCategoria: "", tipo: "", editora: "",
   preco: "", validade: "", estoqueMinimo: "", quantidade: "",
 };
 
-export function TestModal({ onClose }) {
-  const [fase, setFase] = useState("confirmacao"); // "confirmacao" | "formulario" | "sucesso"
+export function TestModal({ onClose, onSuccess }) {
+  const handleSuccess = onSuccess || onClose;
+
+  const [fase, setFase] = useState("confirmacao");
   const [jaEmEstoque, setJaEmEstoque] = useState(false);
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState(INITIAL_DATA);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -240,10 +258,33 @@ export function TestModal({ onClose }) {
     setFase("formulario");
   };
 
-  const handleSubmit = () => {
-    // Futuramente: POST /api/tests ou PUT /api/tests/:id
-    console.log("Submit", { jaEmEstoque, ...formData });
-    setFase("sucesso");
+  const handleSubmit = async () => {
+    setError(null);
+    setSubmitting(true);
+    try {
+      const body = {
+        codigo: formData.codigo,
+        nome: formData.nome,
+        categoria: formData.categoria,
+        subCategoria: formData.subCategoria,
+        editora: formData.editora,
+        tipo: formData.tipo,
+        preco: parseFloat(formData.preco) || 0,
+        estoqueMinimo: parseInt(formData.estoqueMinimo) || 0,
+        validade: formData.validade,
+        qtd: parseInt(formData.quantidade) || 0,
+      };
+      await testeService.cadastrar(body);
+      setFase("sucesso");
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setError("Este teste já está cadastrado (código duplicado).");
+      } else {
+        setError("Erro ao cadastrar teste. Verifique os campos e tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const STEPS = [
@@ -276,12 +317,18 @@ export function TestModal({ onClose }) {
         {fase === "formulario" && (
           <>
             {STEPS[step]}
+            {error && (
+              <p style={{ color: "#e85d7a", fontSize: "13px", margin: "8px 0 0", textAlign: "center" }}>
+                {error}
+              </p>
+            )}
             <Stepper
               total={STEPS.length}
               current={step}
               onBack={() => setStep(s => s - 1)}
               onNext={() => setStep(s => s + 1)}
               onSubmit={handleSubmit}
+              loading={submitting}
             />
           </>
         )}
@@ -290,7 +337,7 @@ export function TestModal({ onClose }) {
           <StepSucesso
             nomeTeste={formData.nome}
             jaEmEstoque={jaEmEstoque}
-            onClose={onClose}
+            onClose={handleSuccess}
           />
         )}
       </div>

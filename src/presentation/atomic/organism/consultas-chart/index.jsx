@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
+const DEFAULT_DATA = [
   { month: "Jan", value: 28 },
   { month: "Fev", value: 18 },
   { month: "Mar", value: 40 },
@@ -24,7 +24,8 @@ const data = [
   { month: "Dez", value: 45 },
 ];
 
-export function ConsultasChart() {
+export function ConsultasChart({ data: dataProp }) {
+  const data = dataProp && dataProp.length > 0 ? dataProp : DEFAULT_DATA;
   const gradientId = useId();
   const [primaryColor, setPrimaryColor] = useState("");
 

@@ -21,3 +21,5 @@ export * from "./stock-table";
 export * from "./testimonial-card";
 export * from "./testimonials-section";
 export * from "./why-choose-section";
+export * from "./faturamento-chart";
+export * from "./billing-chart-financeiro";

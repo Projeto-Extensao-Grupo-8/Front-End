@@ -1,85 +1,111 @@
+import { useEffect, useState } from "react";
+import { administrativaInicialService } from "../../../../../services/administrativaInicialService";
 import { AdminTemplate } from "../../../../atomic/template";
-import { AdministrativeDataCard, AdministrativeDoctorCard, StockAlert } from "../../../../atomic/molecule";
+import { AdministrativeDataCard, AdministrativeDoctorCard } from "../../../../atomic/molecule";
 import { Badge, FilterSelect, LinkText } from "../../../../atomic/atom";
-import { ResumeChart } from "../../../../atomic/organism";
+import { StockAlertNew } from "../../../../atomic/molecule/stock-alert-initial";
+import { ResumoFinanceiroNew } from "../../../../atomic/organism/resume-chart-initial";
+
+const formatBRL = (v) =>
+  (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 export default function Home() {
+  const [qtdConsultasHoje, setQtdConsultasHoje]     = useState(null);
+  const [pacientesAtivos, setPacientesAtivos]        = useState(null);
+  const [faturamentoMes, setFaturamentoMes]          = useState(null);
+  const [consultasDetalhadas, setConsultasDetalhadas] = useState([]);
+  const [alertasEstoque, setAlertasEstoque]          = useState([]);
+  const [resumoFinanceiro, setResumoFinanceiro]      = useState(null);
+  const [filtroFuncionario, setFiltroFuncionario]    = useState("all");
 
-    const produtos = [
-        { nome: "Teste HTP",     quantidade: 8, minimo: 10 },
-        { nome: "Teste WISC IV", quantidade: 4, minimo: 5  },
-        { nome: "Teste CAT",     quantidade: 3, minimo: 5  },
-    ];
+  useEffect(() => {
+    administrativaInicialService.getConsultasHoje().then(setQtdConsultasHoje);
+    administrativaInicialService.getPacientesAtivos().then(setPacientesAtivos);
+    administrativaInicialService.getFaturamentoMes().then(setFaturamentoMes);
+    administrativaInicialService.getConsultasHojeDetalhadas().then(setConsultasDetalhadas);
+    administrativaInicialService.getAlertasEstoque().then(setAlertasEstoque);
+    administrativaInicialService.getResumoFinanceiro().then(setResumoFinanceiro);
+  }, []);
 
-    return (
-        <AdminTemplate>
-            <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "30px", padding: "32px"}}>
+  // Agrupa consultas por funcionário
+  const consultasPorFuncionario = consultasDetalhadas.reduce((acc, consulta) => {
+    const nome = consulta.nomeFuncionario;
+    if (!acc[nome]) acc[nome] = [];
+    acc[nome].push(consulta);
+    return acc;
+  }, {});
 
-                <div style={{ display: "flex", width: "100%", alignItems: "start", justifyContent: "center", flexDirection: "column", borderBottom: "1px solid #e0e0e0", paddingBottom: "16px" }}>
-                    <h2>Bem-vinda de volta, Dra. Ana! <span>👋</span></h2>
-                    <p>Aqui está um resumo das atividades de hoje, Segunda-feira, 05 de Janeiro de 2026</p>
-                </div>
+  const funcionarios = Object.entries(consultasPorFuncionario);
 
-                <div style={{ display: "flex", width: "100%", gap: "var(--gap-xl)" }}>
-                    <div style={{ flex: 1 }}><AdministrativeDataCard title="Consultas de hoje" value="27" subtitle="12" variant="positivo" /></div>
-                    <div style={{ flex: 1 }}><AdministrativeDataCard title="Pacientes ativos" value="84"/></div>
-                    <div style={{ flex: 1 }}><AdministrativeDataCard title="Faturamento(mês)" value="R$15.400" subtitle="10.5" variant="positivo" /></div>
-                </div>
+  const funcionariosFiltrados =
+    filtroFuncionario === "all"
+      ? funcionarios
+      : funcionarios.filter(([nome]) => nome === filtroFuncionario);
 
-                <div style={{ display: "flex", alignItems: "center", gap: "8rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <h2 style={{ whiteSpace: "nowrap" }}>Agenda do dia</h2>
-                        <div style={{ marginTop: "1px" }}>
-                            <Badge text="2024-11-24" status="information" />
-                        </div>
-                    </div>
-                    <div style={{ width: "240px" }}>
-                        <FilterSelect options={[
-                            { label: "Todos os psicólogos", value: "all" },
-                            { label: "Psicólogos ativos", value: "active" },
-                        ]} />
-                    </div>
-                </div>
+  const opcoesFuncionarios = [
+    { label: "Todos os psicólogos", value: "all" },
+    ...funcionarios.map(([nome]) => ({ label: nome, value: nome })),
+  ];
 
-                <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+  return (
+    <AdminTemplate>
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "30px", padding: "32px" }}>
 
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
-                        <AdministrativeDoctorCard
-                            doctorName="Dra. Joana Almeida"
-                            specialty="Terapia Cognitivo-Comportamental"
-                            appointments={[
-                                { startTime: "10:00", endTime: "11:00", patientName: "Junior das Neves",  action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "11:30", endTime: "12:30", patientName: "Matheus Torres",    action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "14:00", endTime: "15:00", patientName: "Ana Paula Silva",   action: <LinkText isActive={true} text="Ver perfil" /> },
-                            ]}
-                        />
-                        <AdministrativeDoctorCard
-                            doctorName="Dr. Cleber da Silva"
-                            specialty="Psicologia Infantil"
-                            appointments={[
-                                { startTime: "10:00", endTime: "11:00", patientName: "Junior das Neves",  action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "11:30", endTime: "12:30", patientName: "Matheus Torres",    action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "14:00", endTime: "15:00", patientName: "Ana Paula Silva",   action: <LinkText isActive={true} text="Ver perfil" /> },
-                            ]}
-                        />
-                        <AdministrativeDoctorCard
-                            doctorName="Dra. Caroline Lima"
-                            specialty="Terapia de Casal"
-                            appointments={[
-                                { startTime: "10:00", endTime: "11:00", patientName: "Junior das Neves",  action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "11:30", endTime: "12:30", patientName: "Matheus Torres",    action: <LinkText isActive={true} text="Ver perfil" /> },
-                                { startTime: "14:00", endTime: "15:00", patientName: "Ana Paula Silva",   action: <LinkText isActive={true} text="Ver perfil" /> },
-                            ]}
-                        />
-                    </div>
+        <div style={{ display: "flex", width: "100%", alignItems: "start", justifyContent: "center", flexDirection: "column", borderBottom: "1px solid #e0e0e0", paddingBottom: "16px" }}>
+          <h2>Bem-vinda de volta! <span>👋</span></h2>
+          <p>Aqui está um resumo das atividades de hoje</p>
+        </div>
 
-                    <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-                        <StockAlert items={produtos} />
-                        <ResumeChart />
-                    </div>
+        <div style={{ display: "flex", width: "100%", gap: "var(--gap-xl)" }}>
+          <div style={{ flex: 1 }}>
+            <AdministrativeDataCard title="Consultas de hoje" value={qtdConsultasHoje ?? "..."} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <AdministrativeDataCard title="Pacientes ativos" value={pacientesAtivos ?? "..."} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <AdministrativeDataCard title="Faturamento (mês)" value={faturamentoMes != null ? formatBRL(faturamentoMes) : "..."} />
+          </div>
+        </div>
 
-                </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <h2 style={{ whiteSpace: "nowrap" }}>Agenda do dia</h2>
+            <div style={{ marginTop: "1px" }}>
+              <Badge text={new Date().toLocaleDateString("pt-BR")} status="information" />
             </div>
-        </AdminTemplate>
-    );
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+            {funcionariosFiltrados.length === 0 ? (
+              <p style={{ color: "#888" }}>Nenhuma consulta encontrada para hoje.</p>
+            ) : (
+              funcionariosFiltrados.map(([nomeFuncionario, consultas]) => (
+                <AdministrativeDoctorCard
+                  key={nomeFuncionario}
+                  doctorName={nomeFuncionario}
+                  specialty={consultas[0]?.especialidade ?? ""}
+                  appointments={consultas.map((c) => ({
+                    startTime: new Date(c.dataConsulta).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                    endTime: new Date(new Date(c.dataConsulta).getTime() + 60 * 60 * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                    patientName: c.nomePaciente,
+                    action: <LinkText isActive={true} text="" />,
+                  }))}
+                />
+              ))
+            )}
+          </div>
+
+          <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+            <StockAlertNew items={alertasEstoque} />
+            <ResumoFinanceiroNew resumo={resumoFinanceiro} />
+          </div>
+
+        </div>
+      </div>
+    </AdminTemplate>
+  );
 }

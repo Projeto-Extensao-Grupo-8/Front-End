@@ -19,7 +19,7 @@ const ToggleIcon = () => (
   </svg>
 );
 
-export function EmployeeTable({ onEditar, searchTerm, status }) {
+export function EmployeeTable({ onEditar, searchTerm, status, refreshTrigger, onStatusChange }) {
   const [employees, setEmployees] = useState([]);
   const [allResults, setAllResults] = useState([]);
   const [page, setPage] = useState(1);
@@ -37,7 +37,7 @@ export function EmployeeTable({ onEditar, searchTerm, status }) {
     } else {
       fetchEmployees(1);
     }
-  }, [searchTerm, status]);
+  }, [searchTerm, status, refreshTrigger]);
 
   useEffect(() => {
     if (allResults.length > 0) {
@@ -141,16 +141,29 @@ export function EmployeeTable({ onEditar, searchTerm, status }) {
     }
   };
 
+  const toggleStatus = async (id, currentStatus) => {
+    const endpoint = currentStatus === 'ativo' ? 'desativar' : 'ativar';
+    try {
+      await api.patch(`/funcionarios/${endpoint}/${id}`, {});
+      // Atualiza o estado local após sucesso da API
+      setAllResults((prev) =>
+        prev.map((emp) => emp.id === id ? { ...emp, status: currentStatus === 'ativo' ? 'inativo' : 'ativo' } : emp)
+      );
+      setEmployees((prev) =>
+        prev.map((emp) => emp.id === id ? { ...emp, status: currentStatus === 'ativo' ? 'inativo' : 'ativo' } : emp)
+      );
+      onStatusChange?.();
+    } catch (error) {
+      console.error(`Erro ao ${endpoint} funcionário:`, error);
+    }
+  };
+
   const handleDesativar = (id) => {
-    setEmployees((prev) =>
-      prev.map((emp) => emp.id === id ? { ...emp, status: "inativo" } : emp)
-    );
+    toggleStatus(id, 'ativo');
   };
 
   const handleAtivar = (id) => {
-    setEmployees((prev) =>
-      prev.map((emp) => emp.id === id ? { ...emp, status: "ativo" } : emp)
-    );
+    toggleStatus(id, 'inativo');
   };
 
   const maxPage = Math.ceil(total / pageSize);

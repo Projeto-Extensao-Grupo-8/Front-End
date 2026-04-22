@@ -220,7 +220,7 @@ export default function Employee() {
                                         logradouro: data.logradouro,
                                         complemento: data.complemento,
                                         numero: data.numero,
-                                        especialidade: data.especialidade.map(nome => ({ nome }))
+                                        especialidades: data.especialidade.map(nome => ({ nome }))
                                     };
                                  
                                     await api.post("/funcionarios", userData);

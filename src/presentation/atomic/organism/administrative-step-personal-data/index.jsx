@@ -44,7 +44,7 @@ function StepProfissional({ data, onChange, especialidades }) {
     <div className={styles.stepContent}>
       <h3 className={styles.stepTitle}>Dados profissionais</h3>
       <div className={styles.fieldFull}>
-        <label>CRP</label>
+        <label>crp</label>
         <Input value={data.crp || ""} onChange={(e) => onChange("crp", e.target.value)} />
       </div>
       {/* <div className={styles.fieldFull}>
@@ -108,7 +108,7 @@ function StepProfissional({ data, onChange, especialidades }) {
 
 const INITIAL_DATA = {
   nome: "", dataNascimento: "",
-  telefone: "", CRP: "", especialidade: [],
+  telefone: "", crp: "", especialidade: [],
   cep: "", estado: "", cidade: "", bairro: "",
   logradouro: "", complemento: "", numero: "",
   email: "", senha: "", confirmarSenha: "",

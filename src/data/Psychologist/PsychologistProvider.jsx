@@ -28,18 +28,28 @@ export const PsychologistProvider = ({ children }) => {
 
   const createPsychologist = async (data) => {
     try {
-      await api.post("/pacientes", data)
+      await api.post("/funcionarios", data)
       // Dá para já deixar exibível se deu certo por aqui
     } catch (error) {
       console.error(error);
     }
   }
   
+  const updatePsychologist = async (data) => {
+    try {
+      return await api.patch("/funcionarios", data);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   return (
     <PsychologistContext.Provider value={{
       getPsychologist,
       getPsychologistById,
       createPsychologist,
+      updatePsychologist,
       psychologists,
       psychologistById
     }}>

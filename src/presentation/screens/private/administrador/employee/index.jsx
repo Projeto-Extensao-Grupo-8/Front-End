@@ -1,29 +1,63 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, FilterSelect, SearchInput } from "../../../../atomic/atom";
 import { AdministrativeEmployeeCards, EmployeeTable, EmployeeModal } from "../../../../atomic/organism";
 import { AdminTemplate } from "../../../../atomic/template";
-import { funcionarioService } from "../../../../../services/funcionarioService";
+import { api } from "../../../../../services/api";
+
 
 export default function Employee() {
     const [status, setStatus] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("cadastrar");
     const [selectedEmployee, setSelectedEmployee] = useState(null);
-    const [toast, setToast] = useState(null);
-    const [refreshKey, setRefreshKey] = useState(0);
-    const [kpis, setKpis] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [refreshTable, setRefreshTable] = useState(false);
+
+    const [funcionarios, setFuncionarios] = useState();
+
+    const [dadosKpis, setDadosKpis] = useState([]);
+
+    const formatDateForAPI = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    };
+
+    const formatDateForDisplay = (dateStr) => {
+        if (!dateStr) return "";
+        const [year, month, day] = dateStr.split('-');
+        return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+    };
+
+    const permissionMap = { "admin": "1", "funcionario": "2" };
+    const reversePermissionMap = { "1": "admin", "2": "funcionario" };
+
+ const buscarDadosKpis = async () => {
+    try {
+      const response = await api.get("/funcionarios/kpisGestaoFuncionarios");
+      setDadosKpis(response.data);
+    } catch (error) {
+      console.error("Nao foi possivel listar os dados da KPIS", error);
+    }
+  };
+
+   useEffect(() => {
+      buscarDadosKpis();
+    }, []);
 
     useEffect(() => {
-        if (!toast) return;
-        const t = setTimeout(() => setToast(null), 3500);
-        return () => clearTimeout(t);
-    }, [toast]);
+      buscarDadosKpis();
+    }, [refreshTable]);
 
     useEffect(() => {
-        funcionarioService.getKpis()
-            .then(setKpis)
-            .catch((err) => console.error("Erro ao carregar KPIs:", err));
-    }, [refreshKey]);
+      if (!modalOpen) {
+        buscarDadosKpis();
+      }
+    }, [modalOpen]);
+
+    const handleSearch = async (termo) => {
+      setSearchTerm(termo);
+    };
 
     return (
         <AdminTemplate>
@@ -53,10 +87,10 @@ export default function Employee() {
                 </div>
 
                 <AdministrativeEmployeeCards
-                    totalFuncionarios={kpis?.totaisFuncionarios ?? "..."}
-                    ativos={kpis?.totaisFuncionariosAtivos ?? "..."}
-                    inativos={kpis?.totalFuncionariosDesativados ?? "..."}
-                    especialidades={kpis?.totalEspecialidades ?? "..."}
+                    totalFuncionarios={dadosKpis.totaisFuncionarios}
+                    ativos={dadosKpis.totaisFuncionariosAtivos || 0}
+                    inativos={dadosKpis.totalFuncionariosDesativados || 0}
+                    especialidades={dadosKpis.totalEspecialidades || 0}
                 />
 
                 <div style={{
@@ -70,7 +104,7 @@ export default function Employee() {
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <SearchInput
                             placeholder="Buscar por nome, email ou CRP..."
-                            onSearch={(value) => console.log(value)}
+                            onSearch={handleSearch}
                         />
                         <FilterSelect
                             value={status}
@@ -90,24 +124,123 @@ export default function Employee() {
                 </div>
 
                 <EmployeeTable
-                    refreshKey={refreshKey}
-                    onEditar={(emp) => {
-                        setSelectedEmployee(emp);
-                        setModalMode("editar");
-                        setModalOpen(true);
+                    searchTerm={searchTerm}
+                    status={status}
+                    refreshTrigger={refreshTable}
+                    onStatusChange={() => setRefreshTable((prev) => !prev)}
+                    onEditar={async (emp) => {
+                        try {
+                            const response = await api.get(`/funcionarios/${emp.id}`);
+                            if (!response.data) {
+                                
+                                return;
+                            }
+                            const responseUser = await api.get(`/usuarios/${response.data.idUsuario}`);
+                            if (!responseUser.data) {
+                                console.error("No data in response for usuario");
+                                return;
+                            }
+                            console.log("Resposta do funcionário:", responseUser.data);
+                            const fullData = response.data;
+                            setSelectedEmployee({
+                                id: emp.id,
+                                nome: response.data.nomeUsuario,
+                                dataNascimento: formatDateForDisplay(responseUser.data.dataNascimento) || "",
+                                telefone: responseUser.data.telefone || "",
+                                CRP: response.data.crp || "",
+                                permissao: reversePermissionMap[responseUser.data.nivelPermissao] || responseUser.data.nivelPermissao,
+                                especialidade: response.data.especialidades ? response.data.especialidades.map(e => e.nome) : [],
+                                cep: responseUser.data.endereco?.cep || "",
+                                estado: responseUser.data.endereco?.estado || "",
+                                cidade: responseUser.data.endereco?.cidade || "",
+                                bairro: responseUser.data.endereco?.bairro || "",
+                                logradouro: responseUser.data.endereco?.logradouro || "",
+                                complemento: responseUser.data.endereco?.complemento || "",
+                                numero: responseUser.data.endereco?.numero || "",
+                                idEndereco: responseUser.data.endereco?.idEndereco || "",
+                                email: response.data.emailUsuario || "",
+                                senha: '',
+                                confirmarSenha: '',
+                                idFuncionario: response.data.idFuncionario,
+                                idUsuario: response.data.idUsuario,
+                            });
+                            setModalMode("editar");
+                            setModalOpen(true);
+                        } catch (error) {
+                            console.error("Erro ao buscar detalhes do funcionário:", error);
+                        }
                     }}
                 />
 
                 {modalOpen && (
+                    console.log("Dados para modal:", selectedEmployee),
                     <EmployeeModal
+                        key={modalMode + (selectedEmployee?.idFuncionario || 'new')}
                         mode={modalMode}
                         initialData={selectedEmployee ?? {}}
                         onClose={() => { setModalOpen(false); setSelectedEmployee(null); }}
-                        onSuccess={() => {
-                            setModalOpen(false);
-                            setSelectedEmployee(null);
-                            setRefreshKey((k) => k + 1);
-                            setToast("Funcionário cadastrado com sucesso!");
+                        onSubmit={async (data) => {
+                            try {
+                                if (modalMode === "editar" && selectedEmployee?.idFuncionario) {
+                
+                                    const userData = {
+                                        nomeUsuario: data.nome,
+                                        emailUsuario: data.email,
+                                        telefone: data.telefone,
+                                        dataNascimento: formatDateForAPI(data.dataNascimento),
+                                        nivelPermissao: permissionMap[data.permissao] || data.permissao,
+                                        fkEndereco: {
+                                            idEndereco: data.idEndereco,
+                                            cep: data.cep,
+                                            estado: data.estado,
+                                            cidade: data.cidade,
+                                            bairro: data.bairro,
+                                            logradouro: data.logradouro,
+                                            complemento: data.complemento,
+                                            numero: data.numero
+                                        }
+                                    };
+                                    console.log("Sending userData:", userData);
+                                    const userResponse = await api.patch(`/usuarios/${selectedEmployee.idUsuario}`, userData);
+                                    console.log("User update response:", userResponse);
+
+                                    const employeeData = {
+                                        crp: data.CRP,
+                                        especialidades: data.especialidade.map(nome => ({ nome })),
+                
+                                    };
+                                    const empResponse = await api.patch(`/funcionarios/${selectedEmployee.idFuncionario}`, employeeData);
+                                    console.log("Employee update response:", empResponse);
+                                    console.log(selectedEmployee);
+                                } else {
+                                    // cadastro de funcionário
+                                
+                                    const userData = {
+                                        crp: data.crp,
+                                        nome: data.nome,
+                                        email: data.email,
+                                        senha: data.senha,
+                                        telefone: data.telefone,
+                                        dataNascimento: formatDateForAPI(data.dataNascimento),
+                                        cpf: data.cpf,
+                                        cep: data.cep,
+                                        estado: data.estado,
+                                        cidade: data.cidade,
+                                        bairro: data.bairro,
+                                        logradouro: data.logradouro,
+                                        complemento: data.complemento,
+                                        numero: data.numero,
+                                        especialidades: data.especialidade.map(nome => ({ nome }))
+                                    };
+                                 
+                                    await api.post("/funcionarios", userData);
+                                }
+                                setModalOpen(false);
+                                setSelectedEmployee(null);
+                                setRefreshTable((prev) => !prev); // Força o recarregamento da tabela
+                            } catch (error) {
+                                console.error(`Erro ao ${modalMode} funcionário:`, error);
+                            }
                         }}
                     />
                 )}

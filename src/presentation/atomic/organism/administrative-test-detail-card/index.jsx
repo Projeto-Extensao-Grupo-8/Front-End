@@ -1,6 +1,7 @@
 // administrative-test-detail-card/index.jsx
 import { useState } from "react";
 import styles from "./styles.module.css";
+import { testeService } from "../../../../services/testeService";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +44,11 @@ function ViewMode({ teste }) {
   const estoquePercent = Math.min((teste.quantidade / (teste.estoqueMinimo * 5)) * 100, 100);
   const estoqueCritico = teste.quantidade <= teste.estoqueMinimo;
 
+  const formatarPreco = (valor) => {
+    if (valor == null) return "—";
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
+  };
+
   return (
     <div className={styles.viewContent}>
       <div className={styles.imageArea}>
@@ -71,28 +77,21 @@ function ViewMode({ teste }) {
           <FieldIcon d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
           <div>
             <span className={styles.infoLabel}>Categoria / Subcategoria</span>
-            <span className={styles.infoValue}>{teste.categoria} / {teste.subcategoria ?? "Infantil"}</span>
-          </div>
-        </div>
-        <div className={styles.infoItem}>
-          <FieldIcon d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-          <div>
-            <span className={styles.infoLabel}>Categoria / Subcategoria</span>
-            <span className={styles.infoValue}>{teste.categoria} / {teste.subcategoria ?? "Infantil"}</span>
+            <span className={styles.infoValue}>{teste.categoria} / {teste.subCategoria ?? "—"}</span>
           </div>
         </div>
         <div className={styles.infoItem}>
           <FieldIcon d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
           <div>
             <span className={styles.infoLabel}>Editora</span>
-            <span className={styles.infoValue}>{teste.editora ?? "Pearson"}</span>
+            <span className={styles.infoValue}>{teste.editora ?? "—"}</span>
           </div>
         </div>
         <div className={styles.infoItem}>
           <FieldIcon d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           <div>
             <span className={styles.infoLabel}>Preço</span>
-            <span className={styles.infoValue}>R$ {teste.preco ?? "460,00"}</span>
+            <span className={styles.infoValue}>{formatarPreco(teste.preco)}</span>
           </div>
         </div>
         <div className={styles.infoItem}>
@@ -196,8 +195,8 @@ function EditMode({ data, onChange }) {
             <FieldIcon d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
             <div className={styles.editFieldInner}>
               <span className={styles.editLabel}>Validade</span>
-              <input className={styles.editInput} type="date" value={data.validade}
-                onChange={(e) => onChange("validade", e.target.value)} />
+              <input className={styles.editInput} type="date" value={data.validadeISO ?? data.validade}
+                onChange={(e) => onChange("validadeISO", e.target.value)} />
             </div>
           </div>
 
@@ -229,30 +228,60 @@ function EditMode({ data, onChange }) {
 export function TestDetailCard({ teste, onClose, onSave }) {
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({ ...teste });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    // Futuramente: PUT /api/tests/:id
-    console.log("Salvar", formData);
-    onSave?.(formData);
-    setEditing(false);
+  const handleSave = async () => {
+    setError(null);
+    setSaving(true);
+    try {
+      const body = {
+        codigo: formData.codigo,
+        nome: formData.nome,
+        categoria: formData.categoria,
+        subCategoria: formData.subCategoria,
+        editora: formData.editora,
+        tipo: formData.tipo,
+        preco: parseFloat(formData.preco) || null,
+        estoqueMinimo: parseInt(formData.estoqueMinimo) || null,
+        validade: formData.validadeISO || null,
+        qtd: parseInt(formData.quantidade) || null,
+      };
+      await testeService.atualizar(teste.idTeste, body);
+      onSave?.(formData);
+      setEditing(false);
+    } catch (err) {
+      setError("Erro ao salvar. Tente novamente.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose?.()}>
       <div className={styles.modal}>
         {/* Header */}
         <div className={styles.header}>
           <span className={styles.headerNome}>{teste.nome}</span>
-          <button
-            className={`${styles.editBtn} ${editing ? styles.editBtnActive : ""}`}
-            onClick={() => setEditing((e) => !e)}
-          >
-            {editing ? "Cancelar" : "Editar"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <button
+              className={`${styles.editBtn} ${editing ? styles.editBtnActive : ""}`}
+              onClick={() => setEditing((e) => !e)}
+            >
+              {editing ? "Cancelar" : "Editar"}
+            </button>
+            <button
+              onClick={onClose}
+              style={{ background: "none", border: "none", color: "#fff", fontSize: "16px", cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}
+              title="Fechar"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Conteúdo */}
@@ -262,10 +291,13 @@ export function TestDetailCard({ teste, onClose, onSave }) {
         }
 
         {/* Footer */}
+        {error && (
+          <p style={{ color: "#e85d7a", fontSize: "13px", textAlign: "center", margin: "0 0 8px" }}>{error}</p>
+        )}
         <div className={styles.footer}>
           {editing ? (
-            <button className={styles.saveBtn} onClick={handleSave}>
-              <SaveIcon /> Salvar
+            <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>
+              <SaveIcon /> {saving ? "Salvando..." : "Salvar"}
             </button>
           ) : (
             <button className={styles.saveBtn} onClick={() => setEditing(true)}>

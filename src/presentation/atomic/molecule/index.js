@@ -13,3 +13,4 @@ export { default as StepIndicator } from "./step-indicator";
 export { default as StockAlert } from "./stock-alert";
 export * from "./stock-resume";
 export * from "./title-card";
+export * from "./stock-alert-initial";

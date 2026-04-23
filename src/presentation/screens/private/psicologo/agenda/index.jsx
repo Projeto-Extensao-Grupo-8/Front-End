@@ -133,8 +133,6 @@ const MinhaAgenda = () => {
     historicConsultations 
   } = useConsultation();
 
-  console.log(patientHistoricConsultations)
-
   const [expandido, setExpandido] = useState(false);
   const [sessoes, setSessoes] = useState([]);
   const [selectId, setSelectId] = useState(0);
@@ -142,9 +140,12 @@ const MinhaAgenda = () => {
   // const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
   const fileInputRef = useRef(null);
 
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const idFuncionario = usuario?.idFuncionario;
+
   useEffect(() => {
-    getNextsConsultations(1);
-    getHistoricConsultations(1);
+    getNextsConsultations(idFuncionario);
+    getHistoricConsultations(idFuncionario);
   }, []);
 
   const pacientesUnicos = historicConsultations.reduce((acc, consulta) => {
@@ -210,7 +211,7 @@ const MinhaAgenda = () => {
     <PsicologoTemplate>
       <div className={styles.page}>
         {/* Greeting */}
-        <h1 className={styles.greeting}>Saudações, Dra. Ana Souza! 👋</h1>
+        <h1 className={styles.greeting}>Saudações, {usuario?.nome}! 👋</h1>
         <p className={styles.subtitle}>Esta é sua agenda de atendimentos</p>
 
         {/* Próximas sessões */}

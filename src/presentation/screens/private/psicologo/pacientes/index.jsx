@@ -320,15 +320,15 @@ const ModalPaciente = ({ paciente, onClose }) => {
 };
 
 const Pacientes = () => {
+  
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const idFuncionario = usuario?.idFuncionario;
 
-  // const user = JSON.parse(localStorage.getItem("usuario"))
-
-  const { data, fetchNextPage, hasNextPage } =
-    useInfiniteScroll({
-      route: `/pacientes/funcionario/${1}`,
-      queryName: 'pacientes',
-      limit: 20,
-    });
+  const { data, fetchNextPage, hasNextPage } = useInfiniteScroll({
+    route: `/pacientes/funcionario/${idFuncionario}`,
+    queryName: 'pacientes',
+    limit: 20,
+  });
 
   const sentinelRef = useRef(null);
 

@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
+ 
 const DEFAULT_DATA = [
   { month: "Jan", value: 52 },
   { month: "Fev", value: 30 },
@@ -23,7 +23,7 @@ const DEFAULT_DATA = [
   { month: "Nov", value: 65 },
   { month: "Dez", value: 55 },
 ];
-
+ 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
@@ -36,30 +36,29 @@ const CustomTooltip = ({ active, payload }) => {
           fontSize: 14,
         }}
       >
-        <strong>{payload[0].value}%</strong>
-        <div style={{ color: "green", fontSize: 12 }}>↑ 100</div>
+        <strong>R$ {payload[0].value.toLocaleString("pt-BR")}</strong>
       </div>
     );
   }
-
+ 
   return null;
 };
-
-export function SalesChart({ data: dataProp }) {
+ 
+export function FaturamentoChart({ data: dataProp }) {
   const data = dataProp && dataProp.length > 0 ? dataProp : DEFAULT_DATA;
   const gradientId = useId();
   const [primaryColor, setPrimaryColor] = useState("");
   const [primaryTransparent, setPrimaryTransparent] = useState("");
-
+ 
   useEffect(() => {
     const styles = getComputedStyle(document.documentElement);
-
+ 
     setPrimaryColor(styles.getPropertyValue("--primary").trim());
     setPrimaryTransparent(
       styles.getPropertyValue("--primary-transparent").trim()
     );
   }, []);
-
+ 
   return (
     <div style={{ width: "100%", height: 350 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -74,13 +73,13 @@ export function SalesChart({ data: dataProp }) {
               />
             </linearGradient>
           </defs>
-
+ 
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="month"  interval={0}/>
-          <YAxis domain={[0, 100]} />
-
+          <XAxis dataKey="month" interval={0} />
+          <YAxis />
+ 
           <Tooltip content={<CustomTooltip />} />
-
+ 
           <Area
             type="monotone"
             dataKey="value"

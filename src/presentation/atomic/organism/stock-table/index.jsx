@@ -3,7 +3,7 @@ import { Badge, SearchInput, FilterSelect, BaseCard } from "../../atom";
 import { TestDetailCard } from "../../organism";
 import styles from "./styles.module.css";
 
-export const StockTable = ({ variant = "digital", testes = [] }) => {
+export const StockTable = ({ variant = "digital", testes = [], onSave }) => {
     const [search, setSearch] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
     const [selectedTeste, setSelectedTeste] = useState(null); // ← novo
@@ -49,11 +49,17 @@ export const StockTable = ({ variant = "digital", testes = [] }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtrados.map((teste, index) => (
+                        {filtrados.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} style={{ textAlign: "center", padding: "24px", color: "#888", fontSize: "13px" }}>
+                                    Nenhum teste encontrado
+                                </td>
+                            </tr>
+                        ) : filtrados.map((teste) => (
                             <tr
-                                key={index}
-                                onClick={() => setSelectedTeste(teste)} // ← novo
-                                style={{ cursor: "pointer" }}           // ← novo
+                                key={teste.idTeste}
+                                onClick={() => setSelectedTeste(teste)}
+                                style={{ cursor: "pointer" }}
                             >
                                 <td style={{ padding: "12px", borderBottom: "1px solid #f9f9f9", textAlign: "left" }}>
                                     <div className={styles.nomeCell}>
@@ -80,14 +86,13 @@ export const StockTable = ({ variant = "digital", testes = [] }) => {
                 </p>
             </BaseCard>
 
-            {/* Modal abre ao clicar na linha */}
             {selectedTeste && (
                 <TestDetailCard
                     teste={selectedTeste}
                     onClose={() => setSelectedTeste(null)}
-                    onSave={(data) => {
-                        console.log("Salvo", data);
+                    onSave={() => {
                         setSelectedTeste(null);
+                        onSave?.();
                     }}
                 />
             )}

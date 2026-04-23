@@ -63,9 +63,7 @@
 }
 
 .field input,
-.field select,
-.fieldFull input,
-.fieldFull select {
+.fieldFull input {
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   padding: 8px 10px;
@@ -74,13 +72,10 @@
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fff;
 }
 
 .field input:focus,
-.field select:focus,
-.fieldFull input:focus,
-.fieldFull select:focus {
+.fieldFull input:focus {
   border-color: #e85d7a;
   box-shadow: 0 0 0 3px rgba(232, 93, 122, 0.12);
 }

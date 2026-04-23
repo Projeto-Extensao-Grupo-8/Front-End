@@ -61,16 +61,6 @@ export default function Employee() {
 
     return (
         <AdminTemplate>
-            {toast && (
-                <div style={{
-                    position: "fixed", top: "24px", right: "24px", zIndex: 9999,
-                    background: "#22c55e", color: "#fff", padding: "12px 20px",
-                    borderRadius: "8px", fontSize: "14px", fontWeight: "500",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                }}>
-                    {toast}
-                </div>
-            )}
            <div>
                 <div style={{ marginBottom: "24px" }}>
                     <h1 style={{

@@ -1,20 +1,7 @@
-<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import { Badge, Button, ButtonTextIcon } from "../../atom";
 import { api } from "../../../../services/api";
-=======
-import { useState, useEffect, useCallback } from "react";
-import styles from "./styles.module.css";
-import { Badge, Button, ButtonTextIcon } from "../../atom";
-import { funcionarioService } from "../../../../services/funcionarioService";
-
-function formatarData(iso) {
-  if (!iso) return "—";
-  const [ano, mes, dia] = String(iso).split("-");
-  return `${dia}/${mes}/${ano}`;
-}
->>>>>>> main
 
 const EditIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -197,51 +184,43 @@ export function EmployeeTable({ onEditar, searchTerm, status, refreshTrigger, on
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr><td colSpan={7} style={{ textAlign: "center", padding: "24px" }}>Carregando...</td></tr>
-          ) : employees.length === 0 ? (
-            <tr><td colSpan={7} style={{ textAlign: "center", padding: "24px" }}>Nenhum funcionário cadastrado</td></tr>
-          ) : (
-            employees.map((emp) => (
-              <tr key={emp.idFuncionario}>
-                <td className={styles.nome}>{emp.nomeUsuario}</td>
-                <td className={styles.especialidade}>
-                  {emp.especialidades?.[0]?.nome ?? "—"}
-                </td>
-                <td className={styles.email}><strong>{emp.emailUsuario}</strong></td>
-                <td>{formatarData(emp.dtAdmissao)}</td>
-                <td>{emp.crp}</td>
-                <td>
-                  <Badge
-                    text={emp.ativo ? "Ativo" : "Inativo"}
-                    status={emp.ativo ? "active" : "inactive"}
-                  />
-                </td>
-                <td className={styles.acoes}>
-                  <ButtonTextIcon
+          {employees.map((emp) => (
+            <tr key={emp.id}>
+              <td className={styles.nome}>{emp.nome}</td>
+              <td className={styles.especialidade}>{emp.especialidade}</td>
+              <td className={styles.email}><strong>{emp.email}</strong></td>
+              <td>{emp.dataAdmissao}</td>
+              <td>{emp.crp}</td>
+              <td>
+                <Badge
+                  text={emp.status === "ativo" ? "Ativo" : "Inativo"}
+                  status={emp.status === "ativo" ? "active" : "inactive"}
+                />
+              </td>
+              <td className={styles.acoes}>
+                <ButtonTextIcon
                     text="Editar"
                     Icon={EditIcon}
                     onClick={() => onEditar?.(emp)}
+                />
+                {emp.status === "ativo" ? (
+                  <ButtonTextIcon
+                    text="Desativar"
+                    Icon={ToggleIcon}
+                    onClick={() => handleDesativar(emp.id)}
+                    className={styles.desativar}
                   />
-                  {emp.ativo ? (
-                    <ButtonTextIcon
-                      text="Desativar"
-                      Icon={ToggleIcon}
-                      onClick={() => handleDesativar(emp.idFuncionario)}
-                      className={styles.desativar}
-                    />
-                  ) : (
-                    <ButtonTextIcon
-                      text="Ativar"
-                      Icon={ToggleIcon}
-                      onClick={() => handleAtivar(emp.idFuncionario)}
-                      className={styles.ativar}
-                    />
-                  )}
-                </td>
-              </tr>
-            ))
-          )}
+                ) : (
+                  <ButtonTextIcon
+                    text="Ativar"
+                    Icon={ToggleIcon}
+                    onClick={() => handleAtivar(emp.id)}
+                    className={styles.ativar}
+                  />
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

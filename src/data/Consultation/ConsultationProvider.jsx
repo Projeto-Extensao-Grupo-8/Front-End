@@ -31,6 +31,7 @@ export const ConsultationProvider = ({ children }) => {
 
         return {
           id: consulta.idConsulta,
+          idPaciente: consulta.idPaciente,
           data,
           horario: `${horaInicio} - ${horaFim}`,
           paciente: consulta.nomePaciente,

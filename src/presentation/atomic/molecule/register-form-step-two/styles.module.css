@@ -43,3 +43,9 @@ p {
   cursor: pointer;
   flex-shrink: 0;
 }
+
+.fieldError {
+  font-size: 11px;
+  color: #e53e3e;
+  line-height: 1.4;
+}

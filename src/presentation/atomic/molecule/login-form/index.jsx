@@ -36,9 +36,8 @@ export const LoginForm = () => {
 
       const destino = REDIRECT_BY_ROLE[data.nivelPermissao] ?? "/paciente/perfil";
       navigate(destino);
-    } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data;
-      setError(typeof msg === "string" ? msg : "E-mail ou senha inválidos.");
+    } catch {
+      setError("E-mail ou senha inválidos.");
     } finally {
       setLoading(false);
     }

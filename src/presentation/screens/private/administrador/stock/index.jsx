@@ -59,11 +59,6 @@ export default function Stock() {
       t.tipo?.toLowerCase().includes("físic")
   );
 
-  const formatarMoeda = (valor) => {
-    if (valor == null) return "0,00";
-    return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(valor);
-  };
-
   return (
     <AdminTemplate>
       <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -112,7 +107,7 @@ export default function Stock() {
         </div>
 
         <StockResume
-          valorTotal={loading ? "..." : formatarMoeda(kpisResumo?.buscarValorTotalEstoque)}
+          valorTotal={loading ? null : kpisResumo?.buscarValorTotalEstoque}
           totalUnidades={loading ? "..." : (kpisResumo?.buscarTotalUnidadesAoTodo ?? "—")}
           tiposTestes={loading ? "..." : (kpisResumo?.buscarTotalTiposTestes ?? "—")}
         />

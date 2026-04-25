@@ -71,14 +71,12 @@ export default function Cadastro() {
     } catch (err) {
       localStorage.removeItem("token");
       if (!err.response) {
-        setError("Erro de conexão com o servidor. Verifique se o backend está rodando na porta 8080.");
-      } else {
-        const data = err.response.data;
-        const msg =
-          (typeof data === "string" ? data : data?.message ?? data?.error) ||
-          `Erro ${err.response.status}: Tente novamente.`;
-        setError(msg);
+        setError("Erro de conexão com o servidor. Verifique se o backend está rodando.");
+        return;
       }
+      const body = err.response.data;
+      const backendMsg = typeof body === "string" ? body : (body?.message ?? body?.error ?? "");
+      if (backendMsg) setError(backendMsg);
     } finally {
       setLoading(false);
     }

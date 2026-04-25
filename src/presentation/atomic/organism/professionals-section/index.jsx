@@ -48,7 +48,7 @@ export const ProfessionalsSection = () => {
                     image={p.imagem || p.foto || null}
                     name={p.nomeUsuario}
                     clinic={p.modalidade}
-                    specialties={p.especialidades}
+                    specialties={p.especialidades.nome}
                     onViewMore={() => handleViewMore(p.idFuncionario)}
                   />
                 ))}

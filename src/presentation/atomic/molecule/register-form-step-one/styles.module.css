@@ -32,3 +32,9 @@ p {
   color: #aaa;
   line-height: 1.4;
 }
+
+.fieldError {
+  font-size: 11px;
+  color: #e53e3e;
+  line-height: 1.4;
+}

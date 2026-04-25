@@ -29,4 +29,9 @@ export const testeService = {
     const { data } = await api.patch(`/testes/${id}`, body);
     return data;
   },
+
+  async buscarPorCodigo(codigo) {
+    const { data } = await api.get(`/testes/buscarPorCodigo/${encodeURIComponent(codigo)}`);
+    return data;
+  },
 };

@@ -13,6 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { inovacaoService } from "../../../../../services/inovacaoService";
 
 const STATUS_OPTIONS = ["Confirmada", "Realizada", "Pendente", "Cancelada"];
 
@@ -123,17 +124,15 @@ const statusHistoricoClass = (status) => {
 
 const MinhaAgenda = () => {
 
-  const { 
-    getNextsConsultations, 
-    nextConsultations, 
-    updateConsultationStatus, 
-    getHistoricConsultations, 
+  const {
+    getNextsConsultations,
+    nextConsultations,
+    updateConsultationStatus,
+    getHistoricConsultations,
     getPatientHistoricConsultations,
     patientHistoricConsultations,
-    historicConsultations 
+    historicConsultations
   } = useConsultation();
-
-  console.log(patientHistoricConsultations)
 
   const [expandido, setExpandido] = useState(false);
   const [sessoes, setSessoes] = useState([]);
@@ -142,9 +141,12 @@ const MinhaAgenda = () => {
   // const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
   const fileInputRef = useRef(null);
 
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const idFuncionario = usuario?.idFuncionario;
+
   useEffect(() => {
-    getNextsConsultations(1);
-    getHistoricConsultations(1);
+    getNextsConsultations(idFuncionario);
+    getHistoricConsultations(idFuncionario);
   }, []);
 
   const pacientesUnicos = historicConsultations.reduce((acc, consulta) => {
@@ -174,23 +176,40 @@ const MinhaAgenda = () => {
     if (selectId != 0) {
       getPatientHistoricConsultations(selectId);
     }
-  },[selectId])
+  }, [selectId])
 
   useEffect(() => {
     if (nextConsultations.length > 0) {
       setSessoes(nextConsultations);
-    } 
+    }
   }, [nextConsultations]);
 
   const handleStatusChange = async (id, novoStatus) => {
-    // Vc vai ter que alterar +/- aqui jão, pq o que ele faz, quando ele tenta mudar o estado para confirmada pelo select, daria para ele plotar o chamado do zap aqui e dps continuar a requisição normalmente (Ele espera a API do back-end confirmar que realmente mudou)
-    const statusAnterior = sessoes.find((s) => s.id === id)?.status;
+    const sessao = sessoes.find((s) => s.id === id);
+    const statusAnterior = sessao?.status;
 
     setSessoes((prev) => prev.map((s) => s.id === id ? { ...s, status: novoStatus } : s));
 
     try {
+      if (novoStatus === "Confirmada" || novoStatus === "Cancelada" || novoStatus === "Realizada") {
+
+        // data e horario já vêm formatados do hook, usa direto
+        const dataFormatada = sessao.data;
+        const horarioFormatado = sessao.horario.split(" - ")[0]; // pega só "23:00"
+
+        const link = await inovacaoService.gerarLinkWhatsapp({
+          data: dataFormatada,
+          horario: horarioFormatado,
+          status: novoStatus,
+          idPaciente: sessao.idPaciente, // ainda undefined, precisa do hook
+        });
+
+        window.open(link, "_blank");
+      }
+
       await updateConsultationStatus(id, novoStatus);
-    } catch {
+    } catch (err) {
+      console.error("Erro:", err);
       setSessoes((prev) => prev.map((s) => s.id === id ? { ...s, status: statusAnterior } : s));
     }
   };
@@ -210,7 +229,7 @@ const MinhaAgenda = () => {
     <PsicologoTemplate>
       <div className={styles.page}>
         {/* Greeting */}
-        <h1 className={styles.greeting}>Saudações, Dra. Ana Souza! 👋</h1>
+        <h1 className={styles.greeting}>Saudações, {usuario?.nome}! 👋</h1>
         <p className={styles.subtitle}>Esta é sua agenda de atendimentos</p>
 
         {/* Próximas sessões */}
@@ -288,7 +307,7 @@ const MinhaAgenda = () => {
                       <p className={styles.pacienteNome}>{patientHistoricConsultations[0]?.paciente}</p>
                       <span className={styles.badgeAtivo}>{patientHistoricConsultations?.status}</span>
                     </div>
-    
+
                     <div className={styles.fieldGroup}>
                       <label className={styles.fieldLabel}>Email</label>
                       <div className={styles.fieldInput}>
@@ -296,7 +315,7 @@ const MinhaAgenda = () => {
                         <span>{patientHistoricConsultations[0]?.email}</span>
                       </div>
                     </div>
-    
+
                     <div className={styles.fieldGroup}>
                       <label className={styles.fieldLabel}>Telefone</label>
                       <div className={styles.fieldInput}>
@@ -306,7 +325,7 @@ const MinhaAgenda = () => {
                     </div>
                   </div>
                   <div className={styles.card}>
-                  <h3 className={styles.cardTitle}>Observações</h3>
+                    <h3 className={styles.cardTitle}>Observações</h3>
                     <div className={styles.arquivosList}>
                       {/* {arquivos.map((arq, idx) => (
                         <div key={idx} className={styles.arquivoItem}>
@@ -356,7 +375,7 @@ const MinhaAgenda = () => {
                     <span className={styles.historicoPsicologa}>{h.psicologa}</span>
                     <span className={statusHistoricoClass(h.status)}>{h.status}</span>
                   </div>
-                )): historicConsultations.map((h, idx) => (
+                )) : historicConsultations.map((h, idx) => (
                   <div key={idx} className={styles.historicoRow}>
                     <div className={styles.historicoBadgeData}>
                       <CalendarTodayIcon fontSize="inherit" />
@@ -365,7 +384,7 @@ const MinhaAgenda = () => {
                     <span className={styles.historicoPsicologa}>{h.psicologa}</span>
                     <span className={statusHistoricoClass(h.status)}>{h.status}</span>
                   </div>))
-                  }
+                }
                 {selectId != 0 ? patientHistoricConsultations.length === 0 && (
                   <p className={styles.emptyText}>Nenhuma consulta registrada.</p>
                 ) : historicConsultations.lenght === 0 && (
@@ -375,7 +394,7 @@ const MinhaAgenda = () => {
             </div>
             {
               selectId != 0 && (
-                <>               
+                <>
                   <div className={styles.card}>
                     <h3 className={styles.cardTitle}>Testes Aplicados</h3>
                     <div className={styles.testesList}>

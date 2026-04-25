@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Badge, SearchInput, FilterSelect, BaseCard } from "../../atom";
 import { TestDetailCard } from "../../organism";
+import { testeService } from "../../../../services/testeService";
 import styles from "./styles.module.css";
 
 export const StockTable = ({ variant = "digital", testes = [], onSave }) => {
     const [search, setSearch] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
-    const [selectedTeste, setSelectedTeste] = useState(null); // ← novo
+    const [selectedTeste, setSelectedTeste] = useState(null);
+    const [deletandoId, setDeletandoId] = useState(null);
 
     const titulo = variant === "digital" ? "Testes Digitais" : "Testes Físicos";
 
@@ -46,19 +48,20 @@ export const StockTable = ({ variant = "digital", testes = [], onSave }) => {
                             <th style={{ textAlign: "left", fontWeight: "500", color: "#888", fontSize: "13px", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}>Quantidade</th>
                             <th style={{ textAlign: "left", fontWeight: "500", color: "#888", fontSize: "13px", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}>Status</th>
                             <th style={{ textAlign: "left", fontWeight: "500", color: "#888", fontSize: "13px", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}>Validade</th>
+                            <th style={{ textAlign: "left", fontWeight: "500", color: "#888", fontSize: "13px", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {filtrados.length === 0 ? (
                             <tr>
-                                <td colSpan={5} style={{ textAlign: "center", padding: "24px", color: "#888", fontSize: "13px" }}>
+                                <td colSpan={6} style={{ textAlign: "center", padding: "24px", color: "#888", fontSize: "13px" }}>
                                     Nenhum teste encontrado
                                 </td>
                             </tr>
                         ) : filtrados.map((teste) => (
                             <tr
                                 key={teste.idTeste}
-                                onClick={() => setSelectedTeste(teste)}
+                                onClick={() => deletandoId !== teste.idTeste && setSelectedTeste(teste)}
                                 style={{ cursor: "pointer" }}
                             >
                                 <td style={{ padding: "12px", borderBottom: "1px solid #f9f9f9", textAlign: "left" }}>
@@ -76,6 +79,35 @@ export const StockTable = ({ variant = "digital", testes = [], onSave }) => {
                                     />
                                 </td>
                                 <td style={{ padding: "12px", borderBottom: "1px solid #f9f9f9", textAlign: "left" }}>{teste.validade}</td>
+                                <td style={{ padding: "12px", borderBottom: "1px solid #f9f9f9", textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
+                                    {deletandoId === teste.idTeste ? (
+                                        <div style={{ display: "flex", gap: "6px" }}>
+                                            <button
+                                                onClick={async () => {
+                                                    await testeService.deletar(teste.idTeste);
+                                                    setDeletandoId(null);
+                                                    onSave?.();
+                                                }}
+                                                style={{ fontSize: "12px", padding: "3px 8px", background: "#e85d7a", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                                            >
+                                                Confirmar
+                                            </button>
+                                            <button
+                                                onClick={() => setDeletandoId(null)}
+                                                style={{ fontSize: "12px", padding: "3px 8px", background: "#eee", color: "#555", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setDeletandoId(teste.idTeste)}
+                                            style={{ fontSize: "12px", padding: "3px 8px", background: "transparent", color: "#e85d7a", border: "1px solid #e85d7a", borderRadius: "4px", cursor: "pointer" }}
+                                        >
+                                            Excluir
+                                        </button>
+                                    )}
+                                </td>
                             </tr>
                         ))}
                     </tbody>

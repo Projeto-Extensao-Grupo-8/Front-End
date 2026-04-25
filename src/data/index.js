@@ -1,3 +1,5 @@
+export * from "./Appointments"
+export * from "./Consultation"
 export * from "./Patient"
 export * from "./Psychologist"
-export * from "./Consultation"
+export * from "./StockMovement"

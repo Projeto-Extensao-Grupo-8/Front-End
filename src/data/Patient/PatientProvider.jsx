@@ -6,11 +6,30 @@ export const PatientProvider = ({ children }) => {
   
   const [patients, setPatients] = useState([])
   const [patientById, setPatientById] = useState([])
+  const [activePatientsByPsychologist, setActivePatientsByPsychologist] = useState([])
+
+  const getPatients = async () => {
+    try {
+      const {data} = await api.get(`/pacientes`)
+      setPatients(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const getPatientById = async (id) => {
     try {
       const {data} = await api.get(`/pacientes/${id}`)
       setPatientById(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getActivePatientsByPsychologist = async (id) => {
+    try {
+      const {data} = await api.get(`/pacientes/funcionario/listarAtivos/${id}`)
+      setActivePatientsByPsychologist(data);
     } catch (error) {
       console.error(error);
     }
@@ -27,10 +46,13 @@ export const PatientProvider = ({ children }) => {
   
   return (
     <PatientContext.Provider value={{
+      getPatients,
       getPatientById,
+      getActivePatientsByPsychologist,
       createPatient,
       patients,
-      patientById
+      patientById,
+      activePatientsByPsychologist
     }}>
       {children}
     </PatientContext.Provider>

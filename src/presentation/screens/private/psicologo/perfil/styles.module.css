@@ -559,3 +559,10 @@
   padding: 3px 10px;
   white-space: nowrap;
 }
+
+.emptyState {
+  text-align: center;
+  padding: 24px;
+  color: #aaa;
+  font-size: 14px;
+}

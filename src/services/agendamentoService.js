@@ -1,6 +1,7 @@
 import { api } from "./api";
 
 export const agendamentoService = {
+
   async getKpis() {
     const { data } = await api.get("/consultas/kpisDashboardAgendamentos");
     return data;
@@ -9,7 +10,7 @@ export const agendamentoService = {
   async getGraficoDesempenhoSemanal() {
     const { data } = await api.get("/consultas/graficoDesempenhoSemanal");
 
-    return data.map((item) => ({
+    return (data || []).map((item) => ({
       label: item.status ?? "N/A",
       value: Number(item.quantidade ?? 0),
     }));
@@ -18,17 +19,17 @@ export const agendamentoService = {
   async getGraficoDistribuicaoHorario() {
     const { data } = await api.get("/consultas/graficoPeriodo");
 
-    return data.map((item) => ({
+    return (data || []).map((item) => ({
       month: item.periodo ?? "N/A",
       value: Number(item.quantidade ?? 0),
     }));
   },
 
   async getGraficoAvaliacaoFuncionarios() {
-    const { data } = await api.get("/consultas/graficoPorFuncionario");
+    const { data } = await api.get("/avaliacoes/graficoPorFuncionario");
 
-    return data.map((item) => ({
-      name: item.nome,
+    return (data || []).map((item) => ({
+      name: item.nome ?? "Sem nome",
       cinco: Number(item.cincoEstrelas ?? 0),
       quatro: Number(item.quatroEstrelas ?? 0),
       tres: Number(item.tresEstrelas ?? 0),
@@ -39,10 +40,10 @@ export const agendamentoService = {
   },
 
   async getGraficoAvaliacaoConsultas() {
-    const { data } = await api.get("/consultas/graficoPorConsulta");
+    const { data } = await api.get("/avaliacoes/graficoPorConsulta");
 
-    return data.map((item) => ({
-      name: item.nome,
+    return (data || []).map((item) => ({
+      name: item.nome ?? item.descricao ?? "Consulta",
       cinco: Number(item.cincoEstrelas ?? 0),
       quatro: Number(item.quatroEstrelas ?? 0),
       tres: Number(item.tresEstrelas ?? 0),
@@ -50,5 +51,5 @@ export const agendamentoService = {
       uma: Number(item.umaEstrela ?? 0),
       zero: Number(item.zeroEstrelas ?? 0),
     }));
-  }
+  },
 };

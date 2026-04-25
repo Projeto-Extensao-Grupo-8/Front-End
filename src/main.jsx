@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConsultationProvider, PatientProvider, PsychologistProvider } from "./data";
+import { AppointmentsProvider, ConsultationProvider, PatientProvider, PsychologistProvider } from "./data";
 
 import {
   Login,
@@ -23,6 +23,7 @@ import Perfil from "./presentation/screens/private/paciente/perfil";
 import { ClientTemplate, PsicologoTemplate } from "./presentation/atomic/template";
 
 import "./index.css";
+import { StockMovementProvider } from "./data/StockMovement/StockMovementProvider";
 
 const router = createBrowserRouter([
   {
@@ -100,13 +101,17 @@ const queryClient = new QueryClient()
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <PatientProvider>
-        <ConsultationProvider>
-          <PsychologistProvider>
-            <RouterProvider router={router}/>
-          </PsychologistProvider>
-        </ConsultationProvider>
-      </PatientProvider>
+      <StockMovementProvider>
+        <AppointmentsProvider>
+          <PatientProvider>
+            <ConsultationProvider>
+              <PsychologistProvider>
+                <RouterProvider router={router}/>
+              </PsychologistProvider>
+            </ConsultationProvider>
+          </PatientProvider>
+        </AppointmentsProvider>
+      </StockMovementProvider>
     </QueryClientProvider>
   </StrictMode>
 );

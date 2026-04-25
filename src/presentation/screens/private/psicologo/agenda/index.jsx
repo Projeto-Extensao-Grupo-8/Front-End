@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useConsultation } from '../../../../../data';
+import { useConsultation, usePatient, useStockMovement } from '../../../../../data';
 import { PsicologoTemplate } from "../../../../atomic/template";
 import styles from "./styles.module.css";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -134,10 +134,15 @@ const MinhaAgenda = () => {
     historicConsultations
   } = useConsultation();
 
+  const { getPatientById, patientById } = usePatient();
+
+  const { getStockMovementByPsychologistId, stockMovementByPsychologistId} = useStockMovement();
+
   const [expandido, setExpandido] = useState(false);
   const [sessoes, setSessoes] = useState([]);
   const [selectId, setSelectId] = useState(0);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(pacientes[0]);
+  const [testesSelecionados, setTestesSelecionados] = useState([])
   // const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
   const fileInputRef = useRef(null);
 
@@ -147,6 +152,7 @@ const MinhaAgenda = () => {
   useEffect(() => {
     getNextsConsultations(idFuncionario);
     getHistoricConsultations(idFuncionario);
+    getStockMovementByPsychologistId(idFuncionario);
   }, []);
 
   const pacientesUnicos = historicConsultations.reduce((acc, consulta) => {
@@ -164,17 +170,28 @@ const MinhaAgenda = () => {
       setPacienteSelecionado(null);
       return;
     }
+
     setSelectId(id);
+
+    const testesFiltrados = stockMovementByPsychologistId.length != 0 ? stockMovementByPsychologistId.filter((p) => {
+      const matchBusca =
+        p.idPaciente == id;
+      return matchBusca;
+    }) : []; 
+    console.log(testesFiltrados);
+    setTestesSelecionados(testesFiltrados);
+    
     const p = pacientesUnicos.find((p) => p.id === id);
     if (p) {
       setPacienteSelecionado(p);
       // setArquivos([]);
     }
   };
-
+  
   useEffect(() => {
     if (selectId != 0) {
       getPatientHistoricConsultations(selectId);
+      getPatientById(selectId)
     }
   }, [selectId])
 
@@ -305,14 +322,14 @@ const MinhaAgenda = () => {
                         )}
                       </div>
                       <p className={styles.pacienteNome}>{patientHistoricConsultations[0]?.paciente}</p>
-                      <span className={styles.badgeAtivo}>{patientHistoricConsultations?.status}</span>
+                      <span className={patientById.ativo ? styles.badgeAtivo : styles.badgeDesativado}>{patientById.ativo}</span>
                     </div>
 
                     <div className={styles.fieldGroup}>
                       <label className={styles.fieldLabel}>Email</label>
                       <div className={styles.fieldInput}>
                         <EmailIcon fontSize="small" className={styles.fieldIcon} />
-                        <span>{patientHistoricConsultations[0]?.email}</span>
+                        <span>{patientById?.emailUsuario}</span>
                       </div>
                     </div>
 
@@ -320,7 +337,7 @@ const MinhaAgenda = () => {
                       <label className={styles.fieldLabel}>Telefone</label>
                       <div className={styles.fieldInput}>
                         <PhoneIcon fontSize="small" className={styles.fieldIcon} />
-                        <span>{patientHistoricConsultations[0]?.telefone}</span>
+                        <span>{patientById?.telefoneUsuario}</span>
                       </div>
                     </div>
                   </div>
@@ -398,7 +415,7 @@ const MinhaAgenda = () => {
                   <div className={styles.card}>
                     <h3 className={styles.cardTitle}>Testes Aplicados</h3>
                     <div className={styles.testesList}>
-                      {/* {pacienteSelecionado.testes.map((t, idx) => (
+                      {testesSelecionados[0]?.infoTestes.map((t, idx) => (
                         <div key={idx} className={styles.testeRow}>
                           <div className={styles.testeInfo}>
                             <span className={styles.testeNome}>{t.nome}</span>
@@ -409,9 +426,9 @@ const MinhaAgenda = () => {
                           <span className={styles.badgeValido}>{t.status}</span>
                         </div>
                       ))}
-                      {pacienteSelecionado.testes.length === 0 && (
+                      {testesSelecionados?.length === 0 && (
                         <p className={styles.emptyText}>Nenhum teste aplicado.</p>
-                      )} */}
+                      )}
                     </div>
                   </div>
                 </>

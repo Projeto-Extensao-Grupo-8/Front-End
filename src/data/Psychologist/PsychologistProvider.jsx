@@ -19,7 +19,7 @@ export const PsychologistProvider = ({ children }) => {
 
   const getPsychologistById = async (id) => {
     try {
-      const {data} = await api.get(`/pacientes/${id}`)
+      const {data} = await api.get(`/funcionarios/${id}`)
       setPsychologistById(data);
     } catch (error) {
       console.error(error);

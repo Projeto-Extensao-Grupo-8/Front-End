@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.btnHorario {
+  background-color: #e75480;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.btnHorario:hover {
+  background-color: #c9446e;
+}
+
+.btnSalvar {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnSalvar:hover {
+  background-color: #388e3c;
+}

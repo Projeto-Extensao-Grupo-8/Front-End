@@ -8,6 +8,7 @@ export const ConsultationProvider = ({ children }) => {
   const [patientHistoricConsultations, setPatientHistoricConsultations] = useState([])
   const [historicConsultations, setHistoricConsultations] = useState([])
   const [consultationById, setConsultationById] = useState([])
+  const [monthQuantityConsultationsByPsychologist, setMonthQuantityConsultationsByPsychologist ] = useState([])
 
   const getNextsConsultations = async (id) => {
     try {
@@ -51,11 +52,14 @@ export const ConsultationProvider = ({ children }) => {
     try {
       const { data } = await api.get(`/consultas/paciente/${id}`);
 
+      const usuario = JSON.parse(localStorage.getItem("usuario"));
+      const idFuncionario = usuario?.idFuncionario;
+
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
 
       const formatted = data
-      .filter((consulta) => new Date(consulta.dataConsulta) <= hoje && consulta.idFuncionario === 1)
+      .filter((consulta) => new Date(consulta.dataConsulta) <= hoje && consulta.idFuncionario === idFuncionario)
       .sort((a, b) => new Date(b.dataConsulta) - new Date(a.dataConsulta))
       .map((consulta) => {
           const dataObj = new Date(consulta.dataConsulta);
@@ -113,8 +117,17 @@ export const ConsultationProvider = ({ children }) => {
 
   const getConsultationById = async (id) => {
     try {
-      const {data} = await api.get(`/pacientes/${id}`)
+      const {data} = await api.get(`/consultas/${id}`)
       setConsultationById(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }   
+
+    const getMonthQuantityConsultationsByPsychologist = async (id) => {
+    try {
+      const {data} = await api.get(`/consultas/funcionario/qtdConsultasMesAtual/${id}`)
+      setMonthQuantityConsultationsByPsychologist(data);
     } catch (error) {
       console.error(error);
     }
@@ -135,12 +148,14 @@ export const ConsultationProvider = ({ children }) => {
       getPatientHistoricConsultations,
       getHistoricConsultations,
       getConsultationById,
+      getMonthQuantityConsultationsByPsychologist,
       createConsultation,
       updateConsultationStatus,
       nextConsultations,
       patientHistoricConsultations,
       historicConsultations,
-      consultationById
+      consultationById,
+      monthQuantityConsultationsByPsychologist
     }}>
       {children}
     </ConsultationContext.Provider>

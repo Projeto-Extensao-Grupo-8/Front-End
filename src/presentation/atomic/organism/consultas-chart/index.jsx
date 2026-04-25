@@ -14,18 +14,14 @@ const DEFAULT_DATA = [
   { month: "Fev", value: 18 },
   { month: "Mar", value: 40 },
   { month: "Abr", value: 24 },
-  { month: "Mai", value: 33 },
-  { month: "Jun", value: 44 },
-  { month: "Jul", value: 12 },
-  { month: "Ago", value: 38 },
-  { month: "Set", value: 25 },
-  { month: "Out", value: 34 },
-  { month: "Nov", value: 46 },
-  { month: "Dez", value: 45 },
 ];
 
 export function ConsultasChart({ data: dataProp }) {
-  const data = dataProp && dataProp.length > 0 ? dataProp : DEFAULT_DATA;
+  const data =
+    Array.isArray(dataProp) && dataProp.length > 0
+      ? dataProp
+      : DEFAULT_DATA;
+
   const gradientId = useId();
   const [primaryColor, setPrimaryColor] = useState("");
 
@@ -34,7 +30,7 @@ export function ConsultasChart({ data: dataProp }) {
       .getPropertyValue("--primary")
       .trim();
 
-      setPrimaryColor(color);
+    setPrimaryColor(color || "#8884d8"); // fallback seguro
   }, []);
 
   return (
@@ -49,9 +45,17 @@ export function ConsultasChart({ data: dataProp }) {
           </defs>
 
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
           <XAxis dataKey="month" />
-          <YAxis domain={[0, 100]} />
-          <Tooltip />
+
+          {/* ❌ removido domain fixo */}
+          <YAxis />
+
+          <Tooltip
+            formatter={(value) =>
+              new Intl.NumberFormat("pt-BR").format(value)
+            }
+          />
 
           <Bar
             dataKey="value"

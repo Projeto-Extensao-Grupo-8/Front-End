@@ -1,69 +1,65 @@
+import { useEffect, useId, useState } from "react";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from "recharts";
 
-const data = [
-  { day: "Seg", agendadas: 5000,  canceladas: 12000, realizadas: 13500 },
-  { day: "Ter", agendadas: 16500, canceladas: 16500, realizadas: 11200 },
-  { day: "Qua", agendadas: 5000,  canceladas: 5200,  realizadas: 22000 },
-  { day: "Qui", agendadas: 15500, canceladas: 6000,  realizadas: 15800 },
-  { day: "Sex", agendadas: 11500, canceladas: 10800, realizadas: 11800 },
-  { day: "Sab", agendadas: 16500, canceladas: 13000, realizadas: 13200 },
+const DEFAULT_DATA = [
+  { label: "Agendadas", value: 40 },
+  { label: "Canceladas", value: 12 },
+  { label: "Realizadas", value: 28 },
 ];
 
-export function PerformanceChart() {
+export function PerformanceChart({ data: dataProp }) {
+  const data =
+    Array.isArray(dataProp) && dataProp.length > 0
+      ? dataProp
+      : DEFAULT_DATA;
+
+  const gradientId = useId();
+  const [primaryColor, setPrimaryColor] = useState("");
+
+  useEffect(() => {
+    const styles = getComputedStyle(document.documentElement);
+    const color = styles.getPropertyValue("--primary").trim();
+
+    setPrimaryColor(color || "#8884d8");
+  }, []);
+
   return (
     <div style={{ width: "100%", height: 350 }}>
-      <ResponsiveContainer>
-        <BarChart data={data} barGap={8}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} key={primaryColor}>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={primaryColor} />
+              <stop offset="100%" stopColor={primaryColor} stopOpacity={0.4} />
+            </linearGradient>
+          </defs>
+
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-          <XAxis dataKey="day" />
+          {/* 🔥 agora usa label */}
+          <XAxis dataKey="label" />
 
-          <YAxis
-            tickFormatter={(v) => `${v / 1000}k`}
-          />
+          <YAxis />
 
           <Tooltip
             formatter={(value) =>
-              new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(value)
+              new Intl.NumberFormat("pt-BR").format(value)
             }
           />
 
-          <Legend />
-
           <Bar
-            dataKey="agendadas"
-            name="Agendadas"
-            fill="#D390A3"
-            barSize={16}
-            radius={[6, 6, 0, 0]}
-          />
-
-          <Bar
-            dataKey="canceladas"
-            name="Canceladas"
-            fill="#BFC9E5"
-            barSize={16}
-            radius={[6, 6, 0, 0]}
-          />
-
-          <Bar
-            dataKey="realizadas"
-            name="Realizadas"
-            fill="#364153"
-            barSize={16}
-            radius={[6, 6, 0, 0]}
+            dataKey="value"
+            fill={`url(#${gradientId})`}
+            radius={[12, 12, 0, 0]}
+            barSize={40}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -1,65 +1,75 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Bar,
   BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
+  Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-const DEFAULT_DATA = [
-  { label: "Agendadas", value: 40 },
-  { label: "Canceladas", value: 12 },
-  { label: "Realizadas", value: 28 },
-];
+import { agendamentoService } from "../services/agendamentoService";
 
-export function PerformanceChart({ data: dataProp }) {
-  const data =
-    Array.isArray(dataProp) && dataProp.length > 0
-      ? dataProp
-      : DEFAULT_DATA;
-
-  const gradientId = useId();
-  const [primaryColor, setPrimaryColor] = useState("");
+export function PerformanceChart() {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    const styles = getComputedStyle(document.documentElement);
-    const color = styles.getPropertyValue("--primary").trim();
+    async function fetchData() {
+      try {
+        const result =
+          await agendamentoService.getGraficoDesempenhoSemanal();
 
-    setPrimaryColor(color || "#8884d8");
+        setData(result);
+      } catch (err) {
+        console.error("Erro ao carregar gráfico:", err);
+      }
+    }
+
+    fetchData();
   }, []);
+
+  if (!data || data.length === 0) {
+    return <p>Carregando gráfico...</p>;
+  }
 
   return (
     <div style={{ width: "100%", height: 350 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} key={primaryColor}>
-          <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={primaryColor} />
-              <stop offset="100%" stopColor={primaryColor} stopOpacity={0.4} />
-            </linearGradient>
-          </defs>
-
+      <ResponsiveContainer>
+        <BarChart data={data} barGap={8}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-          {/* 🔥 agora usa label */}
-          <XAxis dataKey="label" />
+          <XAxis dataKey="day" />
 
           <YAxis />
 
-          <Tooltip
-            formatter={(value) =>
-              new Intl.NumberFormat("pt-BR").format(value)
-            }
+          <Tooltip />
+
+          <Legend />
+
+          <Bar
+            dataKey="agendadas"
+            name="Agendadas"
+            fill="#D390A3"
+            barSize={16}
+            radius={[6, 6, 0, 0]}
           />
 
           <Bar
-            dataKey="value"
-            fill={`url(#${gradientId})`}
-            radius={[12, 12, 0, 0]}
-            barSize={40}
+            dataKey="canceladas"
+            name="Canceladas"
+            fill="#BFC9E5"
+            barSize={16}
+            radius={[6, 6, 0, 0]}
+          />
+
+          <Bar
+            dataKey="realizadas"
+            name="Realizadas"
+            fill="#364153"
+            barSize={16}
+            radius={[6, 6, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

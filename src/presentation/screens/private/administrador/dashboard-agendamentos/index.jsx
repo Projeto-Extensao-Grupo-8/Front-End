@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { DataCard, TitleCard } from "../../../../atomic/molecule";
 import { ConsultasChart, PerformanceChart } from "../../../../atomic/organism";
-import { AvaliacaoChart } from "../../../../atomic/organism/AvaliacaoChart";
+import { AvaliacaoChart } from "../../../../atomic/organism/avaliacao-chart";
 import { agendamentoService } from "../../../../../services/agendamentoService";
 
 export default function DashboardAgendamentos() {

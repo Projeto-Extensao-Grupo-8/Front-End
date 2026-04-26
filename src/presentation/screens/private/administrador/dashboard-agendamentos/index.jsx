@@ -72,11 +72,31 @@ export default function DashboardAgendamentos() {
 
         const safeArray = (arr) => (Array.isArray(arr) ? arr : []);
 
+        const avalFuncFormatado = safeArray(avalFunc).map((item) => ({
+          name: item.nome,
+          cinco: item.cincoEstrelas,
+          quatro: item.quatroEstrelas,
+          tres: item.tresEstrelas,
+          duas: item.duasEstrelas,
+          uma: item.umaEstrela,
+          zero: item.zeroEstrelas,
+        }));
+
+        const avalConsultaFormatado = safeArray(avalConsulta).map((item, i) => ({
+          name: `Consulta ${i + 1}`,
+          cinco: item.cincoEstrelas,
+          quatro: item.quatroEstrelas,
+          tres: item.tresEstrelas,
+          duas: item.duasEstrelas,
+          uma: item.umaEstrela,
+          zero: item.zeroEstrela,
+        }));
+
         setKpis(kpisData);
         setDesempenhoSemanal(desempenhoFormatado);
         setDistribuicaoHorario(distribuicaoFormatada);
-        setAvaliacaoFuncionarios(safeArray(avalFunc));
-        setAvaliacaoConsultas(safeArray(avalConsulta));
+        setAvaliacaoFuncionarios(avalFuncFormatado);
+        setAvaliacaoConsultas(avalConsultaFormatado);
       } catch (err) {
         console.error("Erro ao carregar dashboard:", err);
       }
@@ -85,7 +105,7 @@ export default function DashboardAgendamentos() {
     load();
   }, []);
 
-  const cancelamentos = kpis?.cancelamentos?.[0];
+  const cancelamentos = kpis?.kpiCancelamentos?.[0];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
@@ -98,15 +118,15 @@ export default function DashboardAgendamentos() {
       <div style={{ display: "flex", gap: "var(--gap-xl)" }}>
         <DataCard
           title="Agendamentos da semana"
-          value={kpis?.agendamentosSemana ?? 0}
+          value={kpis?.kpiAgendamentosSemana ?? 0}
         />
         <DataCard
           title="Taxa de comparecimento"
-          value={kpis?.taxaComparecimento ?? "0%"}
+          value={kpis?.kpiTaxaComparecimento ?? "0%"}
         />
         <DataCard
           title="Consultas realizadas"
-          value={kpis?.consultasRealizadas ?? 0}
+          value={kpis?.kpiConsultasRealizadas ?? 0}
         />
         <DataCard
           title="Cancelamentos"

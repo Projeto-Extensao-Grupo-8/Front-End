@@ -12,31 +12,71 @@ export default function DashboardAgendamentos() {
   const [avaliacaoConsultas, setAvaliacaoConsultas] = useState([]);
 
   useEffect(() => {
-    agendamentoService.getKpis().then(setKpis);
-    agendamentoService.getGraficoDesempenhoSemanal().then(setDesempenhoSemanal);
-    agendamentoService.getGraficoDistribuicaoHorario().then(setDistribuicaoHorario);
+    async function load() {
+      const [
+        kpisData,
+        desempenho,
+        distribuicao,
+        avalFunc,
+        avalConsulta,
+      ] = await Promise.all([
+        agendamentoService.getKpis(),
+        agendamentoService.getGraficoDesempenhoSemanal(),
+        agendamentoService.getGraficoDistribuicaoHorario(),
+        agendamentoService.getGraficoAvaliacaoFuncionarios(),
+        agendamentoService.getGraficoAvaliacaoConsultas(),
+      ]);
 
-    agendamentoService.getGraficoAvaliacaoFuncionarios().then(setAvaliacaoFuncionarios);
-    agendamentoService.getGraficoAvaliacaoConsultas().then(setAvaliacaoConsultas);
+      // 🔥 ADAPTER DESEMPENHO SEMANAL
+      const desempenhoFormatado = (desempenho || []).map((item) => ({
+        day: item.dia,
+        agendadas: (item.confirmadas || 0) + (item.pendentes || 0),
+        canceladas: item.canceladas || 0,
+        realizadas: item.realizadas || 0,
+      }));
+
+      // 🔥 ADAPTER DISTRIBUIÇÃO HORÁRIO
+      const distribuicaoFormatada = (distribuicao || []).map((item) => ({
+        month: item.periodo,
+        value: item.quantidade,
+      }));
+
+      // 🔥 (opcional) fallback segurança avaliações
+      const safeArray = (arr) => (Array.isArray(arr) ? arr : []);
+
+      setKpis(kpisData);
+      setDesempenhoSemanal(desempenhoFormatado);
+      setDistribuicaoHorario(distribuicaoFormatada);
+      setAvaliacaoFuncionarios(safeArray(avalFunc));
+      setAvaliacaoConsultas(safeArray(avalConsulta));
+    }
+
+    load();
   }, []);
 
-  const cancelamentos = kpis?.kpiCancelamentos?.[0];
+  const cancelamentos = kpis?.cancelamentos?.[0];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
-
       <div>
         <h2>Dashboard de Agendamentos</h2>
         <p>Gestão e análise de consultas agendadas</p>
       </div>
 
+      {/* KPIs */}
       <div style={{ display: "flex", gap: "var(--gap-xl)" }}>
-        <DataCard title="Agendamentos da semana" value={kpis?.kpiAgendamentosSemana ?? 0} />
-
-        <DataCard title="Taxa de comparecimento" value={kpis?.kpiTaxaComparecimento ?? "0%"} />
-
-        <DataCard title="Consultas realizadas" value={kpis?.kpiConsultasRealizadas ?? 0} />
-
+        <DataCard
+          title="Agendamentos da semana"
+          value={kpis?.agendamentosSemana ?? 0}
+        />
+        <DataCard
+          title="Taxa de comparecimento"
+          value={kpis?.taxaComparecimento ?? "0%"}
+        />
+        <DataCard
+          title="Consultas realizadas"
+          value={kpis?.consultasRealizadas ?? 0}
+        />
         <DataCard
           title="Cancelamentos"
           value={cancelamentos?.qtdCanceladas ?? 0}
@@ -44,6 +84,7 @@ export default function DashboardAgendamentos() {
         />
       </div>
 
+      {/* GRÁFICOS PRINCIPAIS */}
       <div style={{ display: "flex", gap: "var(--gap-xl)" }}>
         <TitleCard title="Desempenho semanal">
           <PerformanceChart data={desempenhoSemanal} />
@@ -54,6 +95,7 @@ export default function DashboardAgendamentos() {
         </TitleCard>
       </div>
 
+      {/* AVALIAÇÕES */}
       <div style={{ display: "flex", gap: "var(--gap-xl)" }}>
         <TitleCard title="Avaliações por profissional">
           <AvaliacaoChart data={avaliacaoFuncionarios} />
@@ -63,7 +105,6 @@ export default function DashboardAgendamentos() {
           <AvaliacaoChart data={avaliacaoConsultas} />
         </TitleCard>
       </div>
-
     </div>
   );
 }

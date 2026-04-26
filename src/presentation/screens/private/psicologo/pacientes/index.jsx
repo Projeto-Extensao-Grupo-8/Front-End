@@ -12,18 +12,10 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import ArticleIcon from "@mui/icons-material/Article";
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import { useInfiniteScroll } from "../../../../../hooks";
 import { usePatient, useStockMovement } from "../../../../../data";
 import { useConsultation } from "../../../../../data";
-
-const testesDisponiveis = [
-  "Teste de Ansiedade (BAI)",
-  "Inventário de Depressão (BDI)",
-  "Escala de Estresse Percebido",
-  "Escala de Autoestima de Rosenberg",
-  "Teste de Fobia Social (SPIN)",
-];
+import { ModalPatient } from "../../../../atomic/organism";
 
 const PacientesCard = ({ paciente, onClick }) => (
   <div className={styles.card} onClick={() => onClick(paciente)}>
@@ -57,181 +49,6 @@ const PacientesCard = ({ paciente, onClick }) => (
     </div>
   </div>
 );
-
-const ModalPaciente = ({ paciente, onClose, historico, proximaConsulta, testes }) => {
-  const [tab, setTab] = useState("detalhes");
-  const [novoTeste, setNovoTeste] = useState({ nome: "", observacoes: "" });
-
-  const handleRegistrar = () => {
-    setNovoTeste({ nome: "", observacoes: "" });
-  };
-
-  return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className={styles.modalHeader}>
-          <div className={styles.modalAvatar}>
-            <img src="/src/assets/logoCard.png" alt={paciente.nomeUsuario} />
-            <span className={styles.onlineDot} />
-          </div>
-          <div className={styles.modalPatientInfo}>
-            <h2>{paciente.nomeUsuario}</h2>
-            <div className={styles.modalMeta}>
-              <span className={paciente.ativo ? styles.badgeAtivo : styles.badgeDesativado}>
-                {paciente.ativo ? "Ativo" : "Inativo"}
-              </span>
-              <span className={styles.modalSessoes}>
-                {historico.length} sessões realizadas
-              </span>
-            </div>
-          </div>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <CloseIcon fontSize="small" />
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className={styles.tabs}>
-          <button
-            className={tab === "detalhes" ? styles.tabActive : styles.tab}
-            onClick={() => setTab("detalhes")}
-          >
-            Detalhes
-          </button>
-          <button
-            className={tab === "testes" ? styles.tabActive : styles.tab}
-            onClick={() => setTab("testes")}
-          >
-            Testes Aplicados
-          </button>
-          <button
-            className={tab === "registrar" ? styles.tabActive : styles.tab}
-            onClick={() => setTab("registrar")}
-          >
-            Registrar Teste
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className={styles.modalBody}>
-          {tab === "detalhes" && (
-            <>
-              <div className={styles.infoSection}>
-                <h3>Informações de Contato</h3>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>E-mail</span>
-                  <p className={styles.infoValue}>
-                    <EmailIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.emailUsuario}
-                  </p>
-                </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>Telefone</span>
-                  <p className={styles.infoValue}>
-                    <PhoneIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.telefoneUsuario}
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles.infoSection}>
-                <h3>Informações de Sessões</h3>
-                <div className={styles.sessoesGrid}>
-                  <div className={styles.sessaoCard}>
-                    <span className={styles.sessaoLabel}>Total de Sessões</span>
-                    <div className={styles.sessaoValue}>
-                      <ShowChartIcon fontSize="small" />
-                      <strong>{historico.length}</strong>
-                    </div>
-                  </div>
-                  <div className={`${styles.sessaoCard} ${styles.sessaoCardPurple}`}>
-                    <span className={styles.sessaoLabel}>Próxima Sessão</span>
-                    <div className={styles.sessaoValue}>
-                      <CalendarTodayIcon fontSize="small" />
-                      <strong>
-                        {proximaConsulta
-                          ? `${proximaConsulta.data} ${proximaConsulta.horario}`
-                          : "Não marcada"}
-                      </strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.infoSection}>
-                <h3>Observações Clínicas</h3>
-                <p className={styles.observacoes}>
-                  {paciente.observacoes ?? "Sem observações registradas."}
-                </p>
-              </div>
-            </>
-          )}
-
-          {tab === "testes" && (
-            <div className={styles.testesList}>
-              {!testes || testes.length === 0 ? (
-                <p className={styles.emptyText}>Nenhum teste aplicado ainda.</p>
-              ) : (
-                testes.map((t, idx) => (
-                  <div key={idx} className={styles.testeCard}>
-                    <ArticleIcon className={styles.testeIcon} />
-                    <div>
-                      <p className={styles.testeName}>{t.nome}</p>
-                      <p className={styles.testeData}>
-                        <CalendarTodayIcon fontSize="inherit" /> Aplicado em: {t.datAplicacao}
-                        {t.aplicador && ` • Por: ${t.aplicador}`}
-                        {t.status && ` • ${t.status}`}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {tab === "registrar" && (
-            <div className={styles.registrarForm}>
-              <h3>Registrar Novo Teste</h3>
-              <div className={styles.formGroup}>
-                <label>Nome do Teste *</label>
-                <select
-                  className={styles.select}
-                  value={novoTeste.nome}
-                  onChange={(e) => setNovoTeste((prev) => ({ ...prev, nome: e.target.value }))}
-                >
-                  <option value="">Selecione o teste aplicado</option>
-                  {testesDisponiveis.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>Observações *</label>
-                <textarea
-                  className={styles.textarea}
-                  placeholder="Descreva as observações clínicas sobre o teste aplicado..."
-                  value={novoTeste.observacoes}
-                  onChange={(e) => setNovoTeste((prev) => ({ ...prev, observacoes: e.target.value }))}
-                  rows={5}
-                />
-              </div>
-              <div className={styles.registrarActions}>
-                <button
-                  className={styles.cancelarBtn}
-                  onClick={() => setNovoTeste({ nome: "", observacoes: "" })}
-                >
-                  Cancelar
-                </button>
-                <button className={styles.registrarBtn} onClick={handleRegistrar}>
-                  <AddIcon fontSize="small" /> Registrar Teste
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Pacientes = () => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -267,7 +84,6 @@ const Pacientes = () => {
     return () => observer.disconnect();
   }, [hasNextPage, fetchNextPage]);
 
-  // Busca os movimentos de estoque do funcionário uma vez ao montar
   useEffect(() => {
     getStockMovementByPsychologistId(idFuncionario);
   }, []);
@@ -290,12 +106,10 @@ const Pacientes = () => {
     setPacienteSelecionado(null);
   };
 
-  // Próxima consulta do paciente selecionado
   const proximaConsulta = pacienteSelecionado
     ? nextConsultations?.find((c) => c.idPaciente === pacienteSelecionado.idPaciente) ?? null
     : null;
 
-  // Testes do paciente selecionado, seguindo a mesma lógica do MinhaAgenda
   const testesDoPaciente = pacienteSelecionado
     ? stockMovementByPsychologistId
         .filter((p) => p.idPaciente == pacienteSelecionado.idPaciente)
@@ -370,7 +184,7 @@ const Pacientes = () => {
       </div>
 
       {pacienteSelecionado && (
-        <ModalPaciente
+        <ModalPatient
           paciente={patientById ?? pacienteSelecionado}
           onClose={handleClose}
           historico={patientHistoricConsultations ?? []}

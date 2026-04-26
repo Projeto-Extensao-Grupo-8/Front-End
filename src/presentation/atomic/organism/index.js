@@ -10,6 +10,7 @@ export * from "./card-form";
 export * from "./consultas-chart"
 export * from "./feature-card";
 export * from "./footer";
+export * from "./modal-patient"
 export * from "./performance-chart"
 export * from "./professional-card";
 export * from "./professionals-section";

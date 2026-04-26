@@ -254,7 +254,7 @@ const MinhaAgenda = () => {
                     onChange={(novoStatus) => handleStatusChange(s.id, novoStatus)}
                   />
                 </div>
-                <button className={styles.verPerfilBtn}>Ver perfil</button>
+                {/* <button className={styles.verPerfilBtn}>Ver perfil</button> */}
               </div>
             ))}
           </div>

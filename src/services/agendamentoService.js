@@ -32,49 +32,13 @@ export const agendamentoService = {
     return response.data;
   },
 
-  async getGraficoConsultasMes() {
-    const response = await api.get("/consultas/graficoConsultasMes");
+  async getGraficoAvaliacaoFuncionarios() {
+    const response = await api.get("/avaliacoes/graficoPorFuncionario");
     return response.data;
   },
 
-  async getGraficoFaturamentoMensal() {
-    const response = await api.get("/consultas/graficoFaturamentoMensal");
-    return response.data;
-  },
-
-  async getResumoFinanceiro() {
-    const response = await api.get("/consultas/resumoFinanceiro");
-    return response.data;
-  },
-
-  async getGraficoComparacaoCustoReceita() {
-    const response = await api.get("/consultas/graficoComparacaoCusto");
-    return response.data;
-  },
-
-  async getQtdConsultasFuncionario(idFuncionario) {
-    const response = await api.get(
-      `/consultas/qtdFuncionarioConsultas/${idFuncionario}`
-    );
-    return response.data;
-  },
-
-  async getQtdConsultasPaciente(idPaciente) {
-    const response = await api.get(
-      `/consultas/qtdPacienteConsultas/${idPaciente}`
-    );
-    return response.data;
-  },
-
-  async getConsultasHoje() {
-    const response = await api.get("/consultas/filtrarConsultasHoje");
-    return response.data;
-  },
-
-  async getConsultasHojePorFuncionario(idFuncionario) {
-    const response = await api.get(
-      `/consultas/filtrarConsultasHoje/${idFuncionario}`
-    );
+  async getGraficoAvaliacaoConsultas() {
+    const response = await api.get("/avaliacoes/graficoPorConsulta");
     return response.data;
   },
 };

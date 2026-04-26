@@ -27,7 +27,7 @@ export function PerformanceChart({ data = [] }) {
           <Tooltip />
           <Legend />
 
-          <Bar dataKey="confirmadas" name="Agendadas" fill="#D390A3" />
+          <Bar dataKey="agendadas" name="Agendadas" fill="#D390A3" />
           
           <Bar dataKey="canceladas" name="Canceladas" fill="#BFC9E5" />
           <Bar dataKey="realizadas" name="Realizadas" fill="#364153" />

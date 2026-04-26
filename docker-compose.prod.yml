@@ -1,7 +1,7 @@
 services:
 
   frontend:
-    image: seu-usuario/frontend:latest
+    image: robert1730/frontend:latest
     container_name: frontend
     ports:
       - "80:80"
@@ -12,7 +12,7 @@ services:
       - app-network
 
   strapi:
-    image: seu-usuario/strapi:latest
+    image: robert1730/strapi:latest
     container_name: strapi
     expose:
       - "1337"

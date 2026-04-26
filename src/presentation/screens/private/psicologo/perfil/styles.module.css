@@ -566,3 +566,19 @@
   color: #aaa;
   font-size: 14px;
 }
+
+.calDiaDot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #D4789F;
+  margin: 2px auto 0;
+}
+
+.divBotoes {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  margin-bottom: 12px;
+}

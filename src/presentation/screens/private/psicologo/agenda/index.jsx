@@ -17,40 +17,6 @@ import { inovacaoService } from "../../../../../services/inovacaoService";
 
 const STATUS_OPTIONS = ["Confirmada", "Realizada", "Pendente", "Cancelada"];
 
-const pacientes = [
-  {
-    id: 1,
-    nome: "João da Silva",
-    status: "Paciente Ativo",
-    email: "joao@email.com",
-    telefone: "(00) 99999-9999",
-    foto: null,
-    historico: [
-      { data: "28/12/2025", psicologa: "Dra. Ana Souza", status: "Concluída" },
-      { data: "21/12/2025", psicologa: "Dra. Ana Souza", status: "Concluída" },
-      { data: "07/11/2025", psicologa: "Dra. Claudia Alves", status: "Concluída" },
-      { data: "10/12/2025", psicologa: "Dra. Cilkeira Alves", status: "Cancelada" },
-    ],
-    testes: [
-      { nome: "Teste de Depressão", datAplicacao: "20/07/2025", aplicador: "Dra. Ana Souza", status: "Válido" },
-    ],
-    arquivos: ["arquivo.jpeg"],
-  },
-  {
-    id: 2,
-    nome: "Marcelo Castro",
-    status: "Paciente Ativo",
-    email: "marcelo@email.com",
-    telefone: "(11) 98888-7777",
-    foto: null,
-    historico: [
-      { data: "28/12/2025", psicologa: "Dra. Ana Souza", status: "Concluída" },
-    ],
-    testes: [],
-    arquivos: [],
-  },
-];
-
 const statusSessaoClass = (status) => {
   if (status === "Confirmada") return styles.badgeConfirmada;
   if (status === "Realizada") return styles.badgeRealizada;
@@ -141,7 +107,7 @@ const MinhaAgenda = () => {
   const [expandido, setExpandido] = useState(false);
   const [sessoes, setSessoes] = useState([]);
   const [selectId, setSelectId] = useState(0);
-  const [pacienteSelecionado, setPacienteSelecionado] = useState(pacientes[0]);
+  const [pacienteSelecionado, setPacienteSelecionado] = useState([]);
   const [testesSelecionados, setTestesSelecionados] = useState([])
   // const [arquivos, setArquivos] = useState(pacienteSelecionado.arquivos);
   const fileInputRef = useRef(null);
@@ -252,7 +218,7 @@ const MinhaAgenda = () => {
         {/* Próximas sessões */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Suas próximas sessões</h2>
+            <h2 className={styles.sectionTitle}>Suas sessões de hoje</h2>
             <button
               className={styles.expandBtn}
               onClick={() => setExpandido((v) => !v)}
@@ -383,7 +349,7 @@ const MinhaAgenda = () => {
             <div className={styles.card}>
               <h3 className={styles.cardTitle}>Histórico de Consultas</h3>
               <div className={styles.historicoList}>
-                {selectId != 0 ? patientHistoricConsultations.map((h, idx) => (
+                {selectId != 0 ? patientHistoricConsultations.slice(0, 5).map((h, idx) => (
                   <div key={idx} className={styles.historicoRow}>
                     <div className={styles.historicoBadgeData}>
                       <CalendarTodayIcon fontSize="inherit" />
@@ -392,7 +358,7 @@ const MinhaAgenda = () => {
                     <span className={styles.historicoPsicologa}>{h.psicologa}</span>
                     <span className={statusHistoricoClass(h.status)}>{h.status}</span>
                   </div>
-                )) : historicConsultations.map((h, idx) => (
+                )) : historicConsultations.slice(0, 5).map((h, idx) => (
                   <div key={idx} className={styles.historicoRow}>
                     <div className={styles.historicoBadgeData}>
                       <CalendarTodayIcon fontSize="inherit" />

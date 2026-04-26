@@ -14,106 +14,8 @@ import ArticleIcon from "@mui/icons-material/Article";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useInfiniteScroll } from "../../../../../hooks";
-
-const pacientes = [
-  {
-    id: 1,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [
-      { nome: "Teste de Ansiedade (BAI)", data: "15/11/2025", resultado: "" },
-      { nome: "Inventário de Depressão (BDI)", data: "01/10/2025", resultado: "" },
-      { nome: "Escala de Estresse Percebido", data: "15/09/2025", resultado: "" },
-    ],
-  },
-  {
-    id: 2,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [
-      { nome: "Teste de Ansiedade (BAI)", data: "15/11/2025", resultado: "" },
-    ],
-  },
-  {
-    id: 3,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [],
-  },
-  {
-    id: 4,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [],
-  },
-  {
-    id: 5,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [],
-  },
-  {
-    id: 6,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [],
-  },
-  {
-    id: 7,
-    nome: "João da Silva",
-    status: "Ativo",
-    email: "joao@email.com",
-    telefone: "(11) 98765-4321",
-    sessoes: 12,
-    proximaSessao: "28/12/2025",
-    ultimoTeste: "Teste de Ansiedade (BAI)",
-    ultimoTesteData: "15/11/2025",
-    observacoes: "Paciente apresenta boa evolução no tratamento de ansiedade.",
-    testes: [],
-  },
-];
+import { usePatient, useStockMovement } from "../../../../../data";
+import { useConsultation } from "../../../../../data";
 
 const testesDisponiveis = [
   "Teste de Ansiedade (BAI)",
@@ -132,7 +34,9 @@ const PacientesCard = ({ paciente, onClick }) => (
       </div>
       <div className={styles.cardInfo}>
         <p className={styles.cardName}>{paciente.nomeUsuario}</p>
-        <span className={paciente.ativo ? styles.badgeAtivo : styles.badgeDesativado}>{paciente.ativo}</span>
+        <span className={paciente.ativo ? styles.badgeAtivo : styles.badgeDesativado}>
+          {paciente.ativo ? "Ativo" : "Inativo"}
+        </span>
       </div>
       <ChevronRightIcon className={styles.chevron} />
     </div>
@@ -143,7 +47,7 @@ const PacientesCard = ({ paciente, onClick }) => (
     <div className={styles.cardFooter}>
       <div className={styles.cardSessoes}>
         <ShowChartIcon fontSize="small" />
-        <span>{paciente.qtdSessoes}</span>
+        <span>{paciente.qtdSessoes ?? 0}</span>
         <span className={styles.sessLabel}>sessões</span>
       </div>
       <div className={styles.badgeData}>
@@ -154,7 +58,7 @@ const PacientesCard = ({ paciente, onClick }) => (
   </div>
 );
 
-const ModalPaciente = ({ paciente, onClose }) => {
+const ModalPaciente = ({ paciente, onClose, historico, proximaConsulta, testes }) => {
   const [tab, setTab] = useState("detalhes");
   const [novoTeste, setNovoTeste] = useState({ nome: "", observacoes: "" });
 
@@ -174,8 +78,12 @@ const ModalPaciente = ({ paciente, onClose }) => {
           <div className={styles.modalPatientInfo}>
             <h2>{paciente.nomeUsuario}</h2>
             <div className={styles.modalMeta}>
-              <span className={styles.badgeAtivo}>{paciente.ativo}</span>
-              <span className={styles.modalSessoes}>{paciente.qtdSessoes} sessões realizadas</span>
+              <span className={paciente.ativo ? styles.badgeAtivo : styles.badgeDesativado}>
+                {paciente.ativo ? "Ativo" : "Inativo"}
+              </span>
+              <span className={styles.modalSessoes}>
+                {historico.length} sessões realizadas
+              </span>
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
@@ -213,11 +121,15 @@ const ModalPaciente = ({ paciente, onClose }) => {
                 <h3>Informações de Contato</h3>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>E-mail</span>
-                  <p className={styles.infoValue}><EmailIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.email}</p>
+                  <p className={styles.infoValue}>
+                    <EmailIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.emailUsuario}
+                  </p>
                 </div>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>Telefone</span>
-                  <p className={styles.infoValue}><PhoneIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.telefone}</p>
+                  <p className={styles.infoValue}>
+                    <PhoneIcon fontSize="inherit" className={styles.infoIcon} /> {paciente.telefoneUsuario}
+                  </p>
                 </div>
               </div>
 
@@ -228,48 +140,47 @@ const ModalPaciente = ({ paciente, onClose }) => {
                     <span className={styles.sessaoLabel}>Total de Sessões</span>
                     <div className={styles.sessaoValue}>
                       <ShowChartIcon fontSize="small" />
-                      <strong>{paciente.qtdSessoes}</strong>
+                      <strong>{historico.length}</strong>
                     </div>
                   </div>
                   <div className={`${styles.sessaoCard} ${styles.sessaoCardPurple}`}>
                     <span className={styles.sessaoLabel}>Próxima Sessão</span>
                     <div className={styles.sessaoValue}>
                       <CalendarTodayIcon fontSize="small" />
-                      <strong>{paciente.dataProximaConsulta}</strong>
+                      <strong>
+                        {proximaConsulta
+                          ? `${proximaConsulta.data} ${proximaConsulta.horario}`
+                          : "Não marcada"}
+                      </strong>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className={styles.infoSection}>
-                <h3>Último Teste Aplicado</h3>
-                <div className={styles.testeItem}>
-                  <ArticleIcon className={styles.testeIcon} />
-                  <div>
-                    <p className={styles.testeName}>{paciente.ultimoTeste}</p>
-                    <p className={styles.testeData}>Aplicado em: {paciente.ultimoTesteData}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.infoSection}>
                 <h3>Observações Clínicas</h3>
-                <p className={styles.observacoes}>{paciente.observacoes}</p>
+                <p className={styles.observacoes}>
+                  {paciente.observacoes ?? "Sem observações registradas."}
+                </p>
               </div>
             </>
           )}
 
           {tab === "testes" && (
             <div className={styles.testesList}>
-              {paciente.testes.length === 0 ? (
+              {!testes || testes.length === 0 ? (
                 <p className={styles.emptyText}>Nenhum teste aplicado ainda.</p>
               ) : (
-                paciente.testes.map((teste, idx) => (
+                testes.map((t, idx) => (
                   <div key={idx} className={styles.testeCard}>
                     <ArticleIcon className={styles.testeIcon} />
                     <div>
-                      <p className={styles.testeName}>{teste.nome}</p>
-                      <p className={styles.testeData}><CalendarTodayIcon fontSize="inherit" /> {teste.data} {teste.resultado && `• ${teste.resultado}`}</p>
+                      <p className={styles.testeName}>{t.nome}</p>
+                      <p className={styles.testeData}>
+                        <CalendarTodayIcon fontSize="inherit" /> Aplicado em: {t.datAplicacao}
+                        {t.aplicador && ` • Por: ${t.aplicador}`}
+                        {t.status && ` • ${t.status}`}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -304,7 +215,10 @@ const ModalPaciente = ({ paciente, onClose }) => {
                 />
               </div>
               <div className={styles.registrarActions}>
-                <button className={styles.cancelarBtn} onClick={() => setNovoTeste({ nome: "", observacoes: "" })}>
+                <button
+                  className={styles.cancelarBtn}
+                  onClick={() => setNovoTeste({ nome: "", observacoes: "" })}
+                >
                   Cancelar
                 </button>
                 <button className={styles.registrarBtn} onClick={handleRegistrar}>
@@ -320,7 +234,6 @@ const ModalPaciente = ({ paciente, onClose }) => {
 };
 
 const Pacientes = () => {
-  
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const idFuncionario = usuario?.idFuncionario;
 
@@ -329,6 +242,17 @@ const Pacientes = () => {
     queryName: 'pacientes',
     limit: 20,
   });
+
+  const { getPatientById, patientById, clearPatient } = usePatient();
+
+  const {
+    getPatientHistoricConsultations,
+    patientHistoricConsultations,
+    getNextsConsultations,
+    nextConsultations,
+  } = useConsultation();
+
+  const { getStockMovementByPsychologistId, stockMovementByPsychologistId } = useStockMovement();
 
   const sentinelRef = useRef(null);
 
@@ -343,18 +267,48 @@ const Pacientes = () => {
     return () => observer.disconnect();
   }, [hasNextPage, fetchNextPage]);
 
+  // Busca os movimentos de estoque do funcionário uma vez ao montar
+  useEffect(() => {
+    getStockMovementByPsychologistId(idFuncionario);
+  }, []);
+
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("Todos");
   const [viewGrid, setViewGrid] = useState(true);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
 
-  const pacientesFiltrados = data.length != 0 ? data.filter((p) => {
+  const handleSelectPaciente = (paciente) => {
+    clearPatient?.();
+    setPacienteSelecionado(paciente);
+    getPatientById(paciente.idPaciente);
+    getPatientHistoricConsultations(paciente.idPaciente);
+    getNextsConsultations(idFuncionario);
+  };
+
+  const handleClose = () => {
+    clearPatient?.();
+    setPacienteSelecionado(null);
+  };
+
+  // Próxima consulta do paciente selecionado
+  const proximaConsulta = pacienteSelecionado
+    ? nextConsultations?.find((c) => c.idPaciente === pacienteSelecionado.idPaciente) ?? null
+    : null;
+
+  // Testes do paciente selecionado, seguindo a mesma lógica do MinhaAgenda
+  const testesDoPaciente = pacienteSelecionado
+    ? stockMovementByPsychologistId
+        .filter((p) => p.idPaciente == pacienteSelecionado.idPaciente)
+        ?.[0]?.infoTestes ?? []
+    : [];
+
+  const pacientesFiltrados = data.length !== 0 ? data.filter((p) => {
     const matchBusca =
       p.nomeUsuario.toLowerCase().includes(busca.toLowerCase()) ||
       p.emailUsuario.toLowerCase().includes(busca.toLowerCase());
-    const matchFiltro = filtro === "Todos" || p.ativo === (filtro == "true");
+    const matchFiltro = filtro === "Todos" || p.ativo === (filtro === "true");
     return matchBusca && matchFiltro;
-  }) : []; 
+  }) : [];
 
   return (
     <PsicologoTemplate>
@@ -409,7 +363,7 @@ const Pacientes = () => {
         {/* Cards Grid */}
         <div className={viewGrid ? styles.grid : styles.list}>
           {pacientesFiltrados.map((p) => (
-            <PacientesCard key={p.id} paciente={p} onClick={setPacienteSelecionado} />
+            <PacientesCard key={p.idPaciente} paciente={p} onClick={handleSelectPaciente} />
           ))}
         </div>
         <div ref={sentinelRef} />
@@ -417,8 +371,11 @@ const Pacientes = () => {
 
       {pacienteSelecionado && (
         <ModalPaciente
-          paciente={pacienteSelecionado}
-          onClose={() => setPacienteSelecionado(null)}
+          paciente={patientById ?? pacienteSelecionado}
+          onClose={handleClose}
+          historico={patientHistoricConsultations ?? []}
+          proximaConsulta={proximaConsulta}
+          testes={testesDoPaciente}
         />
       )}
     </PsicologoTemplate>

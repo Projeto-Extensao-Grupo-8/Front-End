@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { DataCard, TitleCard } from "../../../../atomic/molecule";
-import { ConsultasChart, PerformanceChart } from "../../../../atomic/organism";
+import {
+  ConsultasChart,
+  PerformanceChart,
+} from "../../../../atomic/organism";
 import { AvaliacaoChart } from "../../../../atomic/organism/avaliacao-chart";
 import { agendamentoService } from "../../../../../services/agendamentoService";
 
@@ -13,42 +16,70 @@ export default function DashboardAgendamentos() {
 
   useEffect(() => {
     async function load() {
-      const [
-        kpisData,
-        desempenho,
-        distribuicao,
-        avalFunc,
-        avalConsulta,
-      ] = await Promise.all([
-        agendamentoService.getKpis(),
-        agendamentoService.getGraficoDesempenhoSemanal(),
-        agendamentoService.getGraficoDistribuicaoHorario(),
-        agendamentoService.getGraficoAvaliacaoFuncionarios(),
-        agendamentoService.getGraficoAvaliacaoConsultas(),
-      ]);
+      try {
+        const results = await Promise.allSettled([
+          agendamentoService.getKpis(),
+          agendamentoService.getGraficoDesempenhoSemanal(),
+          agendamentoService.getGraficoDistribuicaoHorario(),
+          agendamentoService.getGraficoAvaliacaoFuncionarios(),
+          agendamentoService.getGraficoAvaliacaoConsultas(),
+        ]);
 
-      // 🔥 ADAPTER DESEMPENHO SEMANAL
-      const desempenhoFormatado = (desempenho || []).map((item) => ({
-        day: item.dia,
-        agendadas: (item.confirmadas || 0) + (item.pendentes || 0),
-        canceladas: item.canceladas || 0,
-        realizadas: item.realizadas || 0,
-      }));
+        const [
+          kpisRes,
+          desempenhoRes,
+          distribuicaoRes,
+          avalFuncRes,
+          avalConsultaRes,
+        ] = results;
 
-      // 🔥 ADAPTER DISTRIBUIÇÃO HORÁRIO
-      const distribuicaoFormatada = (distribuicao || []).map((item) => ({
-        month: item.periodo,
-        value: item.quantidade,
-      }));
+        const kpisData =
+          kpisRes.status === "fulfilled" ? kpisRes.value : null;
 
-      // 🔥 (opcional) fallback segurança avaliações
-      const safeArray = (arr) => (Array.isArray(arr) ? arr : []);
+        const desempenho =
+          desempenhoRes.status === "fulfilled"
+            ? desempenhoRes.value
+            : [];
 
-      setKpis(kpisData);
-      setDesempenhoSemanal(desempenhoFormatado);
-      setDistribuicaoHorario(distribuicaoFormatada);
-      setAvaliacaoFuncionarios(safeArray(avalFunc));
-      setAvaliacaoConsultas(safeArray(avalConsulta));
+        const distribuicao =
+          distribuicaoRes.status === "fulfilled"
+            ? distribuicaoRes.value
+            : [];
+
+        const avalFunc =
+          avalFuncRes.status === "fulfilled"
+            ? avalFuncRes.value
+            : [];
+
+        const avalConsulta =
+          avalConsultaRes.status === "fulfilled"
+            ? avalConsultaRes.value
+            : [];
+
+        // 🔥 ADAPTER DESEMPENHO SEMANAL
+        const desempenhoFormatado = (desempenho || []).map((item) => ({
+          day: item.dia,
+          agendadas: (item.confirmadas || 0) + (item.pendentes || 0),
+          canceladas: item.canceladas || 0,
+          realizadas: item.realizadas || 0,
+        }));
+
+        // 🔥 ADAPTER DISTRIBUIÇÃO HORÁRIO
+        const distribuicaoFormatada = (distribuicao || []).map((item) => ({
+          month: item.periodo,
+          value: item.quantidade,
+        }));
+
+        const safeArray = (arr) => (Array.isArray(arr) ? arr : []);
+
+        setKpis(kpisData);
+        setDesempenhoSemanal(desempenhoFormatado);
+        setDistribuicaoHorario(distribuicaoFormatada);
+        setAvaliacaoFuncionarios(safeArray(avalFunc));
+        setAvaliacaoConsultas(safeArray(avalConsulta));
+      } catch (err) {
+        console.error("Erro ao carregar dashboard:", err);
+      }
     }
 
     load();

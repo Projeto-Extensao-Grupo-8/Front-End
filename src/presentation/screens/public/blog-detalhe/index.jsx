@@ -37,7 +37,7 @@ const BlogDetalhe = () => {
 
         {post.imagem?.url && (
           <img
-            src={post.imagem.url.startsWith("http") ? post.imagem.url : `http://localhost:1337${post.imagem.url}`}
+            src={post.imagem.url}
             alt={post.titulo}
             style={{ width: "100%", borderRadius: 8, margin: "20px 0" }}
           />

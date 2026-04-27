@@ -67,7 +67,7 @@ const Blog = ({ Template = PublicTemplate }) => {
 
         if (!image) return "/placeholder.jpg";
 
-        return image.startsWith("http") ? image : `http://localhost:1337${image}`;
+        return image.startsWith("http") ? image : image;
     };
 
     return (
@@ -111,7 +111,7 @@ const Blog = ({ Template = PublicTemplate }) => {
                                             post.imagem?.url
                                                 ? post.imagem.url.startsWith("http")
                                                     ? post.imagem.url
-                                                    : `http://localhost:1337${post.imagem.url}`
+                                                    : `${post.imagem.url}`
                                                 : "/placeholder.jpg"
                                         }
                                         alt={post.titulo}

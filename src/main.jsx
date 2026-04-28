@@ -79,19 +79,19 @@ const router = createBrowserRouter([
     element: <PsicologoPerfil />,
   },
   {
-    path: "/admin",
+    path: "/administrador",
     element: <AdminHome />,
   },
   {
-    path: "/admin/dashboard",
+    path: "/administrador/dashboard",
     element: <DashboardHub />,
   },
   {
-    path: "/admin/estoque",
+    path: "/administrador/estoque",
     element: <AdminStock/>,
   },
   {
-    path: "/admin/funcionarios",
+    path: "/administrador/funcionarios",
     element: <AdminEmployee/>,
   },
 ]);

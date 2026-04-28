@@ -10,7 +10,7 @@ RUN npm install
 
 COPY . .
 
-ARG PUBLIC_ADMIN_URL=/strapi-admin
+ARG PUBLIC_ADMIN_URL=/admin
 ENV PUBLIC_ADMIN_URL=${PUBLIC_ADMIN_URL}
 
 RUN npm run build

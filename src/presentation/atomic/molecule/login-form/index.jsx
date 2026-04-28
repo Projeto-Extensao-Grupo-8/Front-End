@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../../services/api";
 
 const REDIRECT_BY_ROLE = {
-  "4": "/admin/dashboard",
+  "4": "/administrador/dashboard",
   "3": "/psicologo/pacientes",
   "2": "/paciente/perfil",
   "1": "/paciente/perfil",

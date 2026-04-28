@@ -6,13 +6,18 @@ module.exports = {
     const publicUrl = providerOptions.publicUrl || '';
 
     async function uploadBuffer(buffer, filename, mime) {
-      const blob = new Blob([buffer], { type: mime });
-      const formData = new FormData();
-      formData.append('file', blob, filename);
+      const FormData = require('form-data');
+      
+      const form = new FormData();
+      form.append('file', buffer, {
+        filename: filename,
+        contentType: mime,
+      });
 
       const response = await fetch(`${microserviceUrl}/upload`, {
         method: 'POST',
-        body: formData,
+        body: form,
+        headers: form.getHeaders(),
       });
 
       if (!response.ok) {
@@ -48,9 +53,7 @@ module.exports = {
         file.url = publicUrl ? `${publicUrl}/${key}` : `/${key}`;
       },
 
-      async delete() {
-        // No-op: implement DELETE /upload/{key} on microservice if needed
-      },
+      async delete() {},
 
       isPrivate() {
         return false;

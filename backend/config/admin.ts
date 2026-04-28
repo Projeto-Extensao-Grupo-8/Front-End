@@ -1,7 +1,6 @@
 import type { Core } from '@strapi/strapi';
-
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Admin => ({
-  url: env('PUBLIC_ADMIN_URL', '/strapi-admin'),
+  url: env('PUBLIC_ADMIN_URL', 'http://32.193.185.215/strapi-admin'),
   auth: {
     secret: env('ADMIN_JWT_SECRET'),
   },
@@ -21,5 +20,4 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Admin => 
     promoteEE: env.bool('FLAG_PROMOTE_EE', true),
   },
 });
-
 export default config;

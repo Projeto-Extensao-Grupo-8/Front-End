@@ -7,26 +7,42 @@ module.exports = {
 
     async function uploadBuffer(buffer, filename, mime) {
       const FormData = require('form-data');
-      
+      const http = require('http');
+      const https = require('https');
+
       const form = new FormData();
       form.append('file', buffer, {
         filename: filename,
         contentType: mime,
       });
 
-      const response = await fetch(`${microserviceUrl}/upload`, {
-        method: 'POST',
-        body: form,
-        headers: form.getHeaders(),
+      return new Promise((resolve, reject) => {
+        const url = new URL(`${microserviceUrl}/upload`);
+        const transport = url.protocol === 'https:' ? https : http;
+
+        const options = {
+          hostname: url.hostname,
+          port: url.port || (url.protocol === 'https:' ? 443 : 80),
+          path: url.pathname,
+          method: 'POST',
+          headers: form.getHeaders(),
+        };
+
+        const req = transport.request(options, (res) => {
+          let data = '';
+          res.on('data', (chunk) => { data += chunk; });
+          res.on('end', () => {
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolve(data.trim());
+            } else {
+              reject(new Error(`Microservice upload error ${res.statusCode}: ${data}`));
+            }
+          });
+        });
+
+        req.on('error', reject);
+        form.pipe(req);
       });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Microservice upload error ${response.status}: ${text}`);
-      }
-
-      const key = await response.text();
-      return key.trim();
     }
 
     return {

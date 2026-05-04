@@ -394,6 +394,8 @@
   border-radius: 50%;
   background: #e8e8e8;
   margin: 0 auto 12px;
+  display: block;
+  object-fit: cover;
 }
 
 .psychProfileName {

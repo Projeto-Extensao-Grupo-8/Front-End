@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { Badge } from "../../../../atomic/atom";
@@ -55,6 +55,27 @@ const Perfil = () => {
   });
   const [saveError, setSaveError] = useState("");
   const [ratingError, setRatingError] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(usuarioLocal.foto || null);
+  const fileInputRef = useRef(null);
+
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("foto", file);
+    try {
+      const res = await api.patch(`/usuarios/${usuarioLocal.id}/foto`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const novaFoto = res.data.fotoUrl || res.data.foto || URL.createObjectURL(file);
+      setAvatarUrl(novaFoto);
+      const stored = JSON.parse(localStorage.getItem("usuario") || "{}");
+      localStorage.setItem("usuario", JSON.stringify({ ...stored, foto: novaFoto }));
+    } catch (err) {
+      console.error("Erro ao enviar foto:", err);
+    }
+    e.target.value = "";
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -176,10 +197,25 @@ const Perfil = () => {
         {/* Profile Card */}
         <div className={styles.profileCard}>
           <div className={styles.profileLeft}>
-            <div className={styles.avatarWrapper}>
-              <img src="/src/assets/logoCard.png" alt={usuario.nome} className={styles.avatar} />
+            <div
+              className={styles.avatarWrapper}
+              onClick={() => fileInputRef.current?.click()}
+              title="Clique para alterar a foto"
+            >
+              <img
+                src={avatarUrl || "/src/assets/logoCard.png"}
+                alt={usuario.nome}
+                className={styles.avatar}
+              />
               <span className={styles.avatarEditIcon}>📷</span>
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handlePhotoChange}
+            />
           </div>
           <div className={styles.profileCenter}>
             <p className={styles.nameLabel}>Nome:</p>
@@ -379,8 +415,13 @@ const Perfil = () => {
             {saveError && <p className={styles.errorMsg}>{saveError}</p>}
 
             <div className={styles.modalButtons}>
-              <button className={styles.cancelBtn} onClick={handleCancel}>Cancelar</button>
-              <button className={styles.saveBtn} onClick={handleSaveChanges}>Salvar Alterações</button>
+              <button className={styles.photoBtn} onClick={() => fileInputRef.current?.click()}>
+                📷 Alterar Foto
+              </button>
+              <div className={styles.modalButtonsRight}>
+                <button className={styles.cancelBtn} onClick={handleCancel}>Cancelar</button>
+                <button className={styles.saveBtn} onClick={handleSaveChanges}>Salvar Alterações</button>
+              </div>
             </div>
           </div>
         </div>

@@ -88,7 +88,11 @@ const PsychProfileCard = ({ psych, selectedTypeEnumKey }) => {
   const price = getPriceForType(psych, selectedTypeEnumKey);
   return (
     <div className={styles.psychProfileCard}>
-      <div className={styles.psychAvatar}></div>
+      {psych.fotoPerfil ? (
+        <img src={psych.fotoPerfil} alt={psych.nomeUsuario} className={styles.psychAvatar} />
+      ) : (
+        <div className={styles.psychAvatar} />
+      )}
       <h3 className={styles.psychProfileName}>Sobre {psych.nomeUsuario}</h3>
       <p className={styles.psychProfileCrp}>{psych.crp}</p>
       {psych.especialidade && (

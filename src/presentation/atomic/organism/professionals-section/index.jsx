@@ -45,7 +45,7 @@ export const ProfessionalsSection = () => {
                 .map((p) => (
                   <ProfessionalCard
                     key={p.idFuncionario}
-                    image={p.imagem || p.foto || null}
+                    image={p.fotoPerfil || null}
                     name={p.nomeUsuario}
                     clinic={p.modalidade}
                     specialties={p.especialidades.nome}

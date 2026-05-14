@@ -1,126 +1,95 @@
 .card {
-  background-color: #fff;
-  padding: 30px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 32px 22px 28px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s;
+  border: 1px solid transparent;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .card:hover {
+  border-color: #F5E6ED;
   transform: translateY(-5px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(180, 100, 120, 0.10);
 }
 
-.imageContainer {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+.avatarWrap {
+  margin: 0 auto 16px;
 }
 
-.image {
-  width: 80px;
-  height: 80px;
+.avatarImg {
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.placeholder {
-  width: 80px;
-  height: 80px;
+.avatarPlaceholder {
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  background-color: #d4d4d4;
-}
-
-.name {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333;
-}
-
-.clinic {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: #666;
-}
-
-.price {
-  margin: 0 0 20px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #D390A3;
-}
-
-.specialtiesContainer {
-  flex-grow: 1;
-  margin-bottom: 20px;
-}
-
-.specialtiesLabel {
-  margin: 0 0 10px 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-}
-
-.specialties {
+  background: linear-gradient(135deg, #F0C8D8, #D390A3);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
   justify-content: center;
 }
 
-.badge {
-  display: inline-block;
-  background-color: #f5f5f5;
-  color: #666;
-  padding: 4px 10px;
-  border-radius: 12px;
+.initials {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: #ffffff;
+  font-weight: 700;
+  user-select: none;
+}
+
+.name {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  color: #2A1A14;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 12px;
+  color: #D390A3;
+  font-weight: 500;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: center;
+}
+
+.tag {
+  background: #FDF0F5;
+  color: #B8728A;
   font-size: 11px;
   font-weight: 500;
-}
-
-.button {
-  background-color: #D390A3;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-  width: 100%;
-}
-
-.button:hover {
-  background-color: #c07a8f;
+  padding: 5px 12px;
+  border-radius: 9999px;
 }
 
 @media (max-width: 768px) {
   .card {
-    padding: 24px 16px;
+    padding: 24px 18px 22px;
   }
 
-  .image,
-  .placeholder {
-    width: 70px;
-    height: 70px;
+  .avatarImg,
+  .avatarPlaceholder {
+    width: 72px;
+    height: 72px;
   }
 
-  .name {
-    font-size: 15px;
-  }
-
-  .clinic {
-    font-size: 12px;
-  }
-
-  .price {
-    font-size: 13px;
+  .initials {
+    font-size: 20px;
   }
 }

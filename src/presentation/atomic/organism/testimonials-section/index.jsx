@@ -78,7 +78,8 @@ export const TestimonialsSection = () => {
   return (
     <section className={styles.section}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Depoimentos</h2>
+        <div className={styles.eyebrow}>Depoimentos</div>
+        <h2 className={styles.title}>O que nossos pacientes dizem</h2>
         <p className={styles.subtitle}>O que nossos pacientes dizem sobre a nossa clínica</p>
       </div>
 

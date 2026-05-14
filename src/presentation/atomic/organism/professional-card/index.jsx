@@ -1,45 +1,41 @@
 import React from "react";
 import styles from "./styles.module.css";
 
-export const ProfessionalCard = ({ 
-  image, 
-  name, 
-  clinic,
-  specialties,
-  onViewMore
-}) => {
+const getInitials = (name) => {
+  if (!name) return "?";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
+export const ProfessionalCard = ({ image, name, clinic, specialties }) => {
   const specialtiesArray = (() => {
     if (Array.isArray(specialties)) {
-      return specialties.map(s => typeof s === 'string' ? s : s?.nome || s).filter(Boolean);
+      return specialties.map((s) => (typeof s === "string" ? s : s?.nome || s)).filter(Boolean);
     }
     return specialties ? [specialties] : [];
   })();
 
   return (
     <div className={styles.card}>
-      <div className={styles.imageContainer}>
+      <div className={styles.avatarWrap}>
         {image ? (
-          <img src={image} alt={name} className={styles.image} />
+          <img src={image} alt={name} className={styles.avatarImg} />
         ) : (
-          <div className={styles.placeholder}></div>
+          <div className={styles.avatarPlaceholder}>
+            <span className={styles.initials}>{getInitials(name)}</span>
+          </div>
         )}
       </div>
       <h3 className={styles.name}>{name}</h3>
-      <p className={styles.clinic}>{clinic}</p>
-      <div className={styles.specialtiesContainer}>
-        <p className={styles.specialtiesLabel}>Especialidades:</p>
-        <div className={styles.specialties}>
-          {specialtiesArray.length > 0 ? specialtiesArray.map((specialty, index) => (
-            <span key={index} className={styles.badge}>{specialty}</span>
-          )) : (
-            <span className={styles.badge}>Nenhuma especialidade</span>
-          )}
+      {clinic && <p className={styles.role}>{clinic}</p>}
+      {specialtiesArray.length > 0 && (
+        <div className={styles.tags}>
+          {specialtiesArray.map((s, i) => (
+            <span key={i} className={styles.tag}>{s}</span>
+          ))}
         </div>
-      </div>
-
-      <button className={styles.button} onClick={onViewMore}>
-        Ver mais
-      </button>
+      )}
     </div>
   );
 };

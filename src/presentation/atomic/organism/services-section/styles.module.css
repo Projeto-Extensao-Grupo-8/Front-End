@@ -1,38 +1,46 @@
 .section {
   width: 100%;
-  padding: 60px 20px;
-  background-color: #ffffff;
+  padding: 80px 40px;
+  background-color: #FDF8F4;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 52px;
+}
+
+.eyebrow {
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #D390A3;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
 .title {
-  margin: 0 0 12px 0;
-  font-size: 36px;
-  font-weight: 700;
-  color: #D390A3;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.5vw, 40px);
+  color: #2A1A14;
+  margin-bottom: 14px;
   line-height: 1.2;
+  font-weight: 700;
 }
 
 .subtitle {
-  margin: 0;
   font-size: 15px;
-  font-weight: 400;
-  color: #666;
-  line-height: 1.6;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  color: #6B4F48;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 300;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  max-width: 1200px;
+  gap: 22px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -44,37 +52,17 @@
 
 @media (max-width: 768px) {
   .section {
-    padding: 40px 20px;
-  }
-
-  .title {
-    font-size: 28px;
-  }
-
-  .subtitle {
-    font-size: 14px;
+    padding: 60px 24px;
   }
 
   .grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 }
 
 @media (max-width: 480px) {
   .section {
-    padding: 30px 16px;
-  }
-
-  .title {
-    font-size: 24px;
-  }
-
-  .subtitle {
-    font-size: 13px;
-  }
-
-  .grid {
-    gap: 16px;
+    padding: 40px 20px;
   }
 }

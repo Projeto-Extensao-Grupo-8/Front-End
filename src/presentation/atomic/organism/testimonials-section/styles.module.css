@@ -1,35 +1,43 @@
 .section {
   width: 100%;
-  padding: 60px 20px;
-  background-color: #f9f9f9;
+  padding: 80px 40px;
+  background-color: #FDF8F4;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 52px;
+}
+
+.eyebrow {
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #D390A3;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
 .title {
-  margin: 0 0 12px 0;
-  font-size: 36px;
-  font-weight: 700;
-  color: #D390A3;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.5vw, 40px);
+  color: #2A1A14;
+  margin-bottom: 14px;
   line-height: 1.2;
+  font-weight: 700;
 }
 
 .subtitle {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 400;
-  color: #666;
-  line-height: 1.6;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 15px;
+  color: #6B4F48;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 300;
 }
 
 .carouselWrapper {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -39,18 +47,17 @@
 
 .carouselTrack {
   display: flex;
-  align-items: stretch; /* faz todos os cards terem a mesma altura */
+  align-items: stretch;
 }
 
 .carouselItem {
   flex-shrink: 0;
-  width: 33.33333% ;
+  width: 33.3333%;
   padding: 10px;
   box-sizing: border-box;
-  display: flex; /* necessário para o filho ocupar 100% da altura */
+  display: flex;
 }
 
-/* garante que o TestimonialCard dentro ocupe a altura total */
 .carouselItem > * {
   width: 100%;
   height: 100%;
@@ -63,7 +70,17 @@
 }
 
 @media (max-width: 768px) {
+  .section {
+    padding: 60px 24px;
+  }
+
   .carouselItem {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 40px 20px;
   }
 }

@@ -1,21 +1,32 @@
 import React from "react";
 import styles from "./styles.module.css";
 
+const getInitials = (name) => {
+  if (!name) return "?";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 export const TestimonialCard = ({ author, date, text }) => {
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.avatar}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-          </svg>
-        </div>
-        <div>
-          <h4 className={styles.author}>{author}</h4>
-          <p className={styles.date}>{date}</p>
-        </div>
+      <span className={styles.quoteSymbol}>&ldquo;</span>
+      <div className={styles.stars}>
+        {[...Array(5)].map((_, i) => (
+          <span key={i} className={styles.star}>★</span>
+        ))}
       </div>
       <p className={styles.text}>{text}</p>
+      <div className={styles.authorRow}>
+        <div className={styles.avatar}>
+          <span className={styles.initials}>{getInitials(author)}</span>
+        </div>
+        <div>
+          <div className={styles.authorName}>{author}</div>
+          <div className={styles.authorDate}>{date}</div>
+        </div>
+      </div>
     </div>
   );
 };

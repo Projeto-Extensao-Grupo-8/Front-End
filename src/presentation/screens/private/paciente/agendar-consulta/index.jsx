@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientTemplate } from "../../../../atomic/template";
 import { StepIndicator, SelectableCard } from "../../../../atomic/molecule";
@@ -15,22 +15,97 @@ const appointmentTypes = [
 ];
 
 const DAY_NAMES = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const MONTH_NAMES_FULL = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
 const MONTH_NAMES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-function getAvailableDates() {
-  const dates = [];
+const CalendarPicker = ({ selectedDate, onSelectDate }) => {
   const today = new Date();
-  let d = new Date(today);
-  d.setHours(0, 0, 0, 0);
-  while (dates.length < 6) {
-    d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (day !== 0) {
-      dates.push({ date: new Date(d), disabled: day === 6 });
-    }
-  }
-  return dates;
-}
+  today.setHours(0, 0, 0, 0);
+
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const prevMonth = () => {
+    if (viewMonth === 0) { setViewYear((y) => y - 1); setViewMonth(11); }
+    else setViewMonth((m) => m - 1);
+  };
+  const nextMonth = () => {
+    if (viewMonth === 11) { setViewYear((y) => y + 1); setViewMonth(0); }
+    else setViewMonth((m) => m + 1);
+  };
+
+  const canGoPrev =
+    viewYear > today.getFullYear() ||
+    (viewYear === today.getFullYear() && viewMonth > today.getMonth());
+
+  const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  const cells = [];
+  for (let i = 0; i < firstDayOfWeek; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  return (
+    <div className={styles.calendar}>
+      <div className={styles.calendarHeader}>
+        <button
+          className={styles.calendarNavBtn}
+          onClick={prevMonth}
+          disabled={!canGoPrev}
+          type="button"
+        >
+          ‹
+        </button>
+        <span className={styles.calendarMonthTitle}>
+          {MONTH_NAMES_FULL[viewMonth]} {viewYear}
+        </span>
+        <button className={styles.calendarNavBtn} onClick={nextMonth} type="button">
+          ›
+        </button>
+      </div>
+
+      <div className={styles.calendarGrid}>
+        {DAY_NAMES.map((d) => (
+          <div key={d} className={styles.calendarDayName}>{d}</div>
+        ))}
+        {cells.map((day, idx) => {
+          if (!day) return <div key={`e-${idx}`} />;
+          const date = new Date(viewYear, viewMonth, day);
+          const isPast = date < today;
+          const isSunday = date.getDay() === 0;
+          const isDisabled = isPast || isSunday;
+          const isSelected =
+            selectedDate &&
+            selectedDate.getFullYear() === viewYear &&
+            selectedDate.getMonth() === viewMonth &&
+            selectedDate.getDate() === day;
+          const isToday = date.getTime() === today.getTime();
+
+          let cls = styles.calendarDay;
+          if (isDisabled) cls += ` ${styles.calendarDayDisabled}`;
+          else cls += ` ${styles.calendarDayAvailable}`;
+          if (isSelected) cls += ` ${styles.calendarDaySelected}`;
+          if (isToday && !isDisabled) cls += ` ${styles.calendarDayToday}`;
+
+          return (
+            <button
+              key={day}
+              type="button"
+              className={cls}
+              onClick={() => !isDisabled && onSelectDate(date)}
+              disabled={isDisabled}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 function buildDateTime(date, time) {
   const [hours, minutes] = time.split(":");
@@ -171,7 +246,6 @@ export const AgendarConsulta = () => {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const availableDates = useMemo(() => getAvailableDates(), []);
   const selectedType = appointmentTypes.find((t) => t.id === selectedTypeId);
   const selectedPsych = psychologists.find((p) => p.idFuncionario === selectedPsychologistId);
   const totalSteps = 4;
@@ -354,39 +428,31 @@ export const AgendarConsulta = () => {
     const generatedSlots = generateSlotsFromAgendamentos(agendamentos);
     const availableSlots = generatedSlots.filter((t) => !horariosOcupados.includes(t));
 
+    const selectedDateLabel = selectedDate
+      ? `${DAY_NAMES[selectedDate.getDay()]}, ${selectedDate.getDate()} de ${MONTH_NAMES_FULL[selectedDate.getMonth()]}`
+      : null;
+
     return (
       <>
         <h2 className={styles.stepHeading}>Escolha data e horário</h2>
         <p className={styles.stepSubheading}>
           Selecione o dia e horário que melhor se adequa à sua rotina
         </p>
-        <p className={styles.sectionLabel}>Datas disponíveis:</p>
-        <div className={styles.datesGrid}>
-          {availableDates.map((item, idx) => {
-            const d = item.date;
-            const label = `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
-            const isSelected = selectedDate && selectedDate.getTime() === d.getTime();
-            return (
-              <button
-                key={idx}
-                className={`${styles.dateCard} ${item.disabled ? styles.dateCardDisabled : ""} ${isSelected ? styles.dateCardSelected : ""}`}
-                onClick={() => {
-                  if (!item.disabled) {
-                    setSelectedDate(d);
-                    setSelectedTime(null);
-                  }
-                }}
-                disabled={item.disabled}
-              >
-                📅 {label}
-              </button>
-            );
-          })}
-        </div>
+
+        <CalendarPicker
+          selectedDate={selectedDate}
+          onSelectDate={(date) => {
+            setSelectedDate(date);
+            setSelectedTime(null);
+          }}
+        />
 
         {selectedDate && (
           <>
-            <p className={styles.sectionLabel}>Horários disponíveis:</p>
+            <p className={styles.sectionLabel}>
+              Horários disponíveis —{" "}
+              <span className={styles.selectedDateBadge}>{selectedDateLabel}</span>
+            </p>
             {loadingSlots ? (
               <p className={styles.stepSubheading}>Carregando horários...</p>
             ) : agendamentos.length === 0 ? (

@@ -582,3 +582,23 @@
   flex-direction: column;
   margin-bottom: 12px;
 }
+
+.addHorarioBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #D4789F;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.addHorarioBtn:hover {
+  background: #c0637f;
+}

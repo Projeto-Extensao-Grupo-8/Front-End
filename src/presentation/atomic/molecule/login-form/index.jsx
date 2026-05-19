@@ -32,6 +32,7 @@ export const LoginForm = () => {
         nivelPermissao: data.nivelPermissao,
         idPaciente: data.idPaciente ?? null,
         idFuncionario: data.idFuncionario ?? null,
+        fotoPerfil: data.fotoPerfil ?? null,
       }));
 
       const destino = REDIRECT_BY_ROLE[data.nivelPermissao] ?? "/paciente/perfil";

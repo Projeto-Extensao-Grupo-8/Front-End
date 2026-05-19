@@ -55,7 +55,7 @@ const Perfil = () => {
   });
   const [saveError, setSaveError] = useState("");
   const [ratingError, setRatingError] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(usuarioLocal.foto || null);
+  const [avatarUrl, setAvatarUrl] = useState(usuarioLocal.fotoPerfil || null);
   const fileInputRef = useRef(null);
 
   const handlePhotoChange = async (e) => {
@@ -64,13 +64,13 @@ const Perfil = () => {
     const formData = new FormData();
     formData.append("foto", file);
     try {
-      const res = await api.patch(`/usuarios/${usuarioLocal.id}/foto`, formData, {
+      const res = await api.patch(`/usuarios/${usuarioLocal.id}/foto-perfil`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const novaFoto = res.data.fotoUrl || res.data.foto || URL.createObjectURL(file);
+      const novaFoto = res.data.fotoPerfil || URL.createObjectURL(file);
       setAvatarUrl(novaFoto);
       const stored = JSON.parse(localStorage.getItem("usuario") || "{}");
-      localStorage.setItem("usuario", JSON.stringify({ ...stored, foto: novaFoto }));
+      localStorage.setItem("usuario", JSON.stringify({ ...stored, fotoPerfil: novaFoto }));
     } catch (err) {
       console.error("Erro ao enviar foto:", err);
     }

@@ -158,13 +158,15 @@ const PerfilPsicologo = () => {
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const blobUrl = URL.createObjectURL(file);
+    setAvatarUrl(blobUrl);
     const formData = new FormData();
     formData.append("foto", file);
     try {
       const res = await api.patch(`/usuarios/${usuario.id}/foto-perfil`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const novaFoto = res.data.fotoPerfil || URL.createObjectURL(file);
+      const novaFoto = res.data.fotoPerfil || blobUrl;
       setAvatarUrl(novaFoto);
       const stored = JSON.parse(localStorage.getItem("usuario") || "{}");
       localStorage.setItem("usuario", JSON.stringify({ ...stored, fotoPerfil: novaFoto }));
@@ -358,6 +360,7 @@ const PerfilPsicologo = () => {
                           borderRadius: "50%",
                           objectFit: "cover",
                         }}
+                        onError={(e) => { e.target.onerror = null; setAvatarUrl(null); }}
                       />
                     ) : (
                       <PersonIcon style={{ fontSize: 56, color: "#D4789F" }} />
@@ -593,6 +596,7 @@ const PerfilPsicologo = () => {
                   src={avatarUrl}
                   alt="Foto de perfil"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={(e) => { e.target.onerror = null; setAvatarUrl(null); }}
                 />
               ) : (
                 <PersonIcon style={{ fontSize: 36, color: "#D4789F" }} />

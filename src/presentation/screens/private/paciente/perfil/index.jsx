@@ -61,13 +61,15 @@ const Perfil = () => {
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const blobUrl = URL.createObjectURL(file);
+    setAvatarUrl(blobUrl);
     const formData = new FormData();
     formData.append("foto", file);
     try {
       const res = await api.patch(`/usuarios/${usuarioLocal.id}/foto-perfil`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const novaFoto = res.data.fotoPerfil || URL.createObjectURL(file);
+      const novaFoto = res.data.fotoPerfil || blobUrl;
       setAvatarUrl(novaFoto);
       const stored = JSON.parse(localStorage.getItem("usuario") || "{}");
       localStorage.setItem("usuario", JSON.stringify({ ...stored, fotoPerfil: novaFoto }));
@@ -206,6 +208,7 @@ const Perfil = () => {
                 src={avatarUrl || "/src/assets/logoCard.png"}
                 alt={usuario.nome}
                 className={styles.avatar}
+                onError={(e) => { e.target.onerror = null; setAvatarUrl(null); }}
               />
               <span className={styles.avatarEditIcon}>📷</span>
             </div>

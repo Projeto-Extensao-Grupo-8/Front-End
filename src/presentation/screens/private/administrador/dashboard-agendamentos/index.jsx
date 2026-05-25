@@ -5,6 +5,7 @@ import {
   PerformanceChart,
 } from "../../../../atomic/organism";
 import { AvaliacaoChart } from "../../../../atomic/organism/avaliacao-chart";
+import { AvaliacaoMediaChart } from "../../../../atomic/organism/avaliacao-media-chart";
 import { agendamentoService } from "../../../../../services/agendamentoService";
 
 export default function DashboardAgendamentos() {
@@ -144,7 +145,7 @@ export default function DashboardAgendamentos() {
       {/* AVALIAÇÕES */}
       <div style={{ display: "flex", gap: "var(--gap-xl)" }}>
         <TitleCard title="Avaliações por profissional">
-          <AvaliacaoChart data={avaliacaoFuncionarios} />
+          <AvaliacaoMediaChart data={avaliacaoFuncionarios} />
         </TitleCard>
 
         <TitleCard title="Avaliações por consulta">

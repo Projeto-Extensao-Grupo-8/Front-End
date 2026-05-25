@@ -74,12 +74,7 @@ export default function DashboardAgendamentos() {
 
         const avalFuncFormatado = safeArray(avalFunc).map((item) => ({
           name: item.nome,
-          cinco: item.cincoEstrelas,
-          quatro: item.quatroEstrelas,
-          tres: item.tresEstrelas,
-          duas: item.duasEstrelas,
-          uma: item.umaEstrela,
-          zero: item.zeroEstrelas,
+          media: item.mediaEstrelas,
         }));
 
         const avalConsultaFormatado = safeArray(avalConsulta).map((item, i) => ({

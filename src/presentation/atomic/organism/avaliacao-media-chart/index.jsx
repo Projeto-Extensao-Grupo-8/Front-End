@@ -18,6 +18,14 @@ function getBarColor(media) {
 }
 
 export function AvaliacaoMediaChart({ data = [] }) {
+  if (data.length === 0) {
+    return (
+      <div style={{ width: "100%", height: 350, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#9ca3af", fontSize: "14px" }}>Sem avaliações registradas</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: "100%", height: 350 }}>
       <ResponsiveContainer>

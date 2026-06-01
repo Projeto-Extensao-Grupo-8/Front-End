@@ -29,27 +29,13 @@ export const Banner = ({
             </button>
           </div>
           <div className={styles.heroStats}>
-            <div>
-              <div className={styles.statNum}>200+</div>
-              <div className={styles.statLabel}>Pacientes atendidos</div>
-            </div>
-            <div>
-              <div className={styles.statNum}>15</div>
-              <div className={styles.statLabel}>Especialistas</div>
-            </div>
+         
           </div>
         </div>
 
         <div className={styles.heroImageWrap}>
           <div className={styles.heroVisual}>
             <span className={styles.heroLotus}>🪷</span>
-            <div className={styles.heroCardFloat}>
-              <div className={styles.heroCardDot}></div>
-              <div>
-                <div className={styles.heroCardText}>Próxima sessão</div>
-                <div className={styles.heroCardSub}>Hoje às 15h · Online</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

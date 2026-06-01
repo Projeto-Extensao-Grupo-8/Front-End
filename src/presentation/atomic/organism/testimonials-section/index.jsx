@@ -99,6 +99,7 @@ export const TestimonialsSection = () => {
                   author={t.nomePaciente}
                   date={formatarData(t.data)}
                   text={t.descricao}
+                   stars={t.estrelas}
                 />
               </div>
             ))}

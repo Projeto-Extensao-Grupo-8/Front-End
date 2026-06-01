@@ -21,7 +21,7 @@ export const WhyChooseSection = () => {
     {
       num: "04",
       title: "Plataforma completa",
-      desc: "Agendamento, prontuário e videochamada integrados num só lugar, simples e seguro.",
+      desc: "Agendamento integrados num só lugar, simples e seguro.",
     },
   ];
 
@@ -48,14 +48,7 @@ export const WhyChooseSection = () => {
           <div className={styles.blob}>
             <span className={styles.blobIcon}>🪷</span>
           </div>
-          <div className={`${styles.floatCard} ${styles.floatCard1}`}>
-            <div className={styles.miniStat}>4.9★</div>
-            <div className={styles.miniLabel}>Avaliação média dos pacientes</div>
-          </div>
-          <div className={`${styles.floatCard} ${styles.floatCard2}`}>
-            <div className={styles.miniStat}>+200</div>
-            <div className={styles.miniLabel}>Sessões realizadas este mês</div>
-          </div>
+
         </div>
       </div>
     </section>

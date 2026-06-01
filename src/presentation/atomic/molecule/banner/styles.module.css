@@ -14,17 +14,25 @@
   align-items: center;
   min-height: 500px;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* troque hidden por visible */
 }
+
 
 .hero::before {
   content: '';
   position: absolute;
-  right: -100px;
-  top: -60px;
-  width: 560px;
-  height: 560px;
-  background: radial-gradient(circle, #F7E0EA 0%, transparent 70%);
+  right: -180px;
+  top: -120px;
+  width: 720px;
+  height: 720px;
+  background: radial-gradient(
+    circle,
+    rgba(247, 224, 234, 0.95) 0%,
+    rgba(247, 224, 234, 0.65) 38%,
+    rgba(247, 224, 234, 0.28) 58%,
+    rgba(247, 224, 234, 0.08) 72%,
+    transparent 85%
+  );
   border-radius: 50%;
   z-index: 0;
   pointer-events: none;

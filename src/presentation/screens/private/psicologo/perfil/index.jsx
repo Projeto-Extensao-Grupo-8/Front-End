@@ -176,21 +176,34 @@ const PerfilPsicologo = () => {
     e.target.value = "";
   };
 
+  const expandirSlots = (appt) => {
+    const [ih, im] = appt.inicioTempo.split(":").map(Number);
+    const [fh, fm] = appt.finalTempo.split(":").map(Number);
+    const inicioMin = ih * 60 + im;
+    const fimMin = fh * 60 + fm;
+    const duracaoTotal = fimMin - inicioMin;
+    const intervalo = appt.dividirEm || (duracaoTotal > 60 ? 60 : duracaoTotal);
+
+    const slots = [];
+    for (let t = inicioMin; t < fimMin; t += intervalo) {
+      const slotFim = Math.min(t + intervalo, fimMin);
+      const h = String(Math.floor(t / 60)).padStart(2, "0");
+      const m = String(t % 60).padStart(2, "0");
+      slots.push({
+        hora: `${h}:${m}`,
+        duracao: `${slotFim - t} min`,
+        disponivel: true,
+        paciente: appt.nomeFuncionario,
+        status: "Confirmado",
+      });
+    }
+    return slots;
+  };
+
   const horarios = Array.isArray(appointmentsByPsychologistId)
     ? [...appointmentsByPsychologistId]
         .sort((a, b) => a.inicioTempo.localeCompare(b.inicioTempo))
-        .map((appt) => ({
-          hora: appt.inicioTempo?.slice(0, 5),
-          duracao: (() => {
-            const [ih, im] = appt.inicioTempo.split(":").map(Number);
-            const [fh, fm] = appt.finalTempo.split(":").map(Number);
-            const mins = (fh * 60 + fm) - (ih * 60 + im);
-            return `${mins} min`;
-          })(),
-          disponivel: true,
-          paciente: appt.nomeFuncionario,
-          status: "Confirmado",
-        }))
+        .flatMap(expandirSlots)
     : [];
 
   const labelData = dataSelecionada
